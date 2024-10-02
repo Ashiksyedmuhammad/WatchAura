@@ -1,0 +1,96 @@
+<%- include('../admin-layouts/header.ejs') %>
+
+
+</head>
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="row w-100 m-0">
+        <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+          <div class="card col-lg-4 mx-auto">
+            <div class="card-body px-5 py-5">
+              <h3 class="card-title text-left mb-3">Login</h3>
+              <% if (errorMessage) { %>
+                  <p style="color: red;"><%= errorMessage %></p>
+              <% } %>
+              <form id="adminLoginForm" action="/admin/login" method="POST" novalidate>
+                <div class="form-group">
+                  <label for="email">Username or email *</label>
+                  <input type="text" id="email" name="email" class="form-control p_input" required>
+                  <div class="invalid-feedback">Please enter a valid email address or username.</div>
+                </div>
+                <div class="form-group">
+                  <label for="password">Password *</label>
+                  <input type="password" id="password" name="password" class="form-control p_input" required>
+                  <div class="invalid-feedback">Password is required and must be at least 8 characters long.</div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary btn-block enter-btn">Login</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="/admin-assets/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/admin-assets/assets/js/off-canvas.js"></script>
+    <script src="/admin-assets/assets/js/hoverable-collapse.js"></script>
+    <script src="/admin-assets/assets/js/misc.js"></script>
+    <script src="/admin-assets/assets/js/settings.js"></script>
+    <script src="/admin-assets/assets/js/todolist.js"></script>
+    <!-- endinject -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('adminLoginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+      
+        form.addEventListener('submit', function(event) {
+          let isValid = true;
+      
+          // Validate email/username
+          if (emailInput.value.trim() === '') {
+            emailInput.classList.add('is-invalid');
+            isValid = false;
+          } else {
+            emailInput.classList.remove('is-invalid');
+          }
+      
+          // Validate password
+          if (passwordInput.value.length < 8) {
+            passwordInput.classList.add('is-invalid');
+            isValid = false;
+          } else {
+            passwordInput.classList.remove('is-invalid');
+          }
+      
+          if (!isValid) {
+            event.preventDefault();
+          }
+        });
+      
+        // Real-time validation
+        emailInput.addEventListener('input', function() {
+          if (this.value.trim() !== '') {
+            this.classList.remove('is-invalid');
+          }
+        });
+      
+        passwordInput.addEventListener('input', function() {
+          if (this.value.length >= 8) {
+            this.classList.remove('is-invalid');
+          }
+        });
+      });
+      </script>
+
+  </body>
+
+
+
+  <%- include('../admin-layouts/footer.ejs') %>

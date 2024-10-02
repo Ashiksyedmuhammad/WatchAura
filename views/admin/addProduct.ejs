@@ -1,0 +1,456 @@
+<%- include('../admin-layouts/header.ejs') %>
+
+<style>
+            input.error {
+            border-color: red;
+        }
+        label.error {
+            color: red;
+        }
+    .image-upload-container {
+    position: relative;
+    text-align: center;
+}
+
+.img-preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    margin-top: 10px;
+}
+
+.upload-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    border: 2px dashed #ddd;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.upload-placeholder i {
+    font-size: 2em;
+    margin-right: 10px;
+}
+
+.image-actions {
+    margin-top: 10px;
+}
+
+</style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Add Product</h2>
+        <form id="addProductForm" enctype="multipart/form-data">
+            <div class="container-xxl flex-grow-1 container-p-y">
+                <div class="app-ecommerce">
+
+                    <!-- Add Product -->
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 gap-4 gap-md-0">
+
+                        <div class="d-flex flex-column justify-content-center">
+                            <h4 class="mb-1">Add a new Product</h4>
+                        </div>
+                        <div class="d-flex align-content-center flex-wrap gap-4">
+                           
+                            <button type="submit" class="btn btn-primary waves-effect waves-light">Publish
+                                product</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <!-- First column-->
+                        <div class="col-12 col-lg-8">
+                            <!-- Product Information -->
+                            <div class="card mb-6">
+                                <div class="card-header">
+                                    <h5 class="card-tile mb-0">Product information</h5>
+                                </div>
+
+
+
+
+                                <div class="card-body">
+                                    <div class="form-floating form-floating-outline mb-5 ">
+                                        <div class="formgroup1">
+                                            <label for="ecommerce-product-name" class="errMsgSignup">Product Name</label>
+                                            <input type="text" class="form-control" id="ecommerce-product-name"
+                                                placeholder="Product title" name="productTitle"
+                                                aria-label="Product title" > 
+                                        </div>
+                                       
+                                       
+                                    </div>
+
+
+                                    <div class="row gx-5 mb-5">
+                                        <div class="col">
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                    <!-- Comment -->
+                                    <div class="form-control p-0 pt-1 comment-editor border-0 pb-1 ql-container ql-snow "  id="ecommerce-category-description">
+                                        
+                                        <div class="formgroup1">                                                   
+                                            <label for="ecommerce-product-description" class="mb-1 errMsgSignup">Description</label>
+                                                <input type="text" class="form-control" id="ecommerce-product-description"
+                                                placeholder="Description" name="ProductDescription"
+                                                aria-label="Product title" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Product Information -->
+                            <!-- Media -->
+                            <div class="card mb-6">
+                                <div class="card-header">
+                                    <h5 class="mb-0 card-title">Product Images</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <div class="image-upload-container formgroup1">
+                                                <input type="file" class="image-upload-input" id="productImage1" name="productImage1" accept="image/*" onchange="previewImage(this, 'imagePreview1', 1)">
+                                                <label for="productImage1" class="image-upload-label errMsgSignup">
+                                                    <div class="upload-placeholder">
+                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                        <span>Click or drag image here</span>
+                                                    </div>
+                                                    <img id="imagePreview1" src="#" alt="Preview" class="img-preview">
+                                                </label>
+                                                <div class="image-actions" id="actions1"></div>
+                                            </div>
+                                            <div class="form-control formgroup1">
+                                                <label for="diii1" class="errMsgSignup"></label>
+                                                <input type="hidden" id="diii1">
+                                            </div>
+                                            <!-- <button type="button" class="btn btn-primary mt-2" onclick="openCropper(1)">Crop Image</button> -->
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="image-upload-container">
+                                                <input type="file" class="image-upload-input" id="productImage2" name="productImage2" accept="image/*" onchange="previewImage(this, 'imagePreview2', 2)">
+                                                <label for="productImage2" class="image-upload-label errMsgSignup">
+                                                    <div class="upload-placeholder">
+                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                        <span>Click or drag image here</span>
+                                                    </div>
+                                                    <img id="imagePreview2" src="#" alt="Preview" class="img-preview">
+                                                </label>
+                                                <div class="image-actions" id="actions2"></div>
+                                            </div>
+                                            <div class="form-control formgroup1">
+                                                <label for="diii2" class="errMsgSignup"></label>
+                                                <input type="hidden" id="diii2">
+                                            </div>
+                                            <!-- <button type="button" class="btn btn-primary mt-2" onclick="openCropper(2)">Crop Image</button> -->
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <div class="image-upload-container">
+                                                <input type="file" class="image-upload-input" id="productImage3" name="productImage3" accept="image/*" onchange="previewImage(this, 'imagePreview3', 3)">
+                                                <label for="productImage3" class="image-upload-label errMsgSignup">
+                                                    <div class="upload-placeholder">
+                                                        <i class="fas fa-cloud-upload-alt"></i>
+                                                        <span>Click or drag image here</span>
+                                                    </div>
+                                                    <img id="imagePreview3" src="#" alt="Preview" class="img-preview">
+                                                </label>
+                                                <div class="image-actions" id="actions3"></div>
+                                            </div>
+                                            <div class="form-control formgroup1">
+                                                <label for="diii3" class="errMsgSignup"></label>
+                                                <input type="hidden" id="diii3">
+                                            </div>
+                                            <!-- <button type="button" class="btn btn-primary mt-2" onclick="openCropper(3)">Crop Image</button> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Media -->
+
+                        </div>
+
+                        <!-- Second column -->
+                        <div class="col-12 col-lg-4">
+                            <!-- Pricing Card -->
+                            <div class="card mb-6">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Pricing</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Base Price -->
+                                    <div class="form-floating form-floating-outline mb-5 formgroup1">
+                                        <input type="number" class="form-control" id="ecommerce-product-price"
+                                            placeholder="Price" name="productPrice" aria-label="Product price" >
+                                        <label for="ecommerce-product-price" class="errMsgSignup">Price</label>
+                                    </div>
+
+                                    <!-- Discounted Price -->
+                                    <div class="form-floating form-floating-outline mb-5 formgroup1">
+                                        <input type="number" class="form-control"
+                                            id="productCount" placeholder="Product Count"
+                                            name="productCount" aria-label="Product Count" >
+                                        <label for="productCount" class="errMsgSignup">Product Count</label>
+                                    </div>
+                                    <div class="form-floating form-floating-outline form-floating-select2 pb-3 formgroup1">
+                                        <div class="position-relative formgroup1"> <label for="ecommerce-category" class="errMsgSignup">Select Category</label>
+                                            <select name="categorySelection"
+                                                id="ecommerce-category"
+                                                class="select2 form-select select2-hidden-accessible"
+                                                data-placeholder="Select category status"
+                                                data-select2-id="ecommerce-category" tabindex="-1"
+                                                aria-hidden="true" >
+                                                <option value="" data-select2-id="4">Select Category</option>
+                                                <% if (typeof categories !== "undefined" && categories.length > 0) { %>
+                                                    <% for (let i = 0; i < categories.length; i++) { %>
+                                                        <option value="<%= categories[i]._id %>"><%= categories[i].categoryName %></option>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <option value="" disabled>No categories available</option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-floating form-floating-outline form-floating-select2 pt-2 formgroup1">
+                                        <div class="position-relative formgroup1">
+                                            <label for="product-status" class="errMsgSignup">Select Product Status</label>
+                                            <select name="productOption"
+                                                id="product-status"
+                                                class="select2 form-select select2-hidden-accessible"
+                                                data-placeholder="Select category status"
+                                                data-select2-id="product-status" tabindex="-1"
+                                                aria-hidden="true" >
+                                                
+                                                <option value="true">Listed</option>
+                                                <option value="false">Unlisted</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- /Pricing Card -->
+                            <!-- Organize Card -->
+                            
+                            <!-- /Organize Card -->
+                        </div>
+                        <!-- /Second column -->
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script defer src="https://cdn.crop.guide/loader/l.js?c=YMDXKG"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+   // Function to validate form fields
+function validateForm() {
+    let isValid = true;
+    const productName = document.getElementById('ecommerce-product-name');
+    const productDescription = document.getElementById('ecommerce-product-description');
+    const productPrice = document.getElementById('ecommerce-product-price');
+    const productCount = document.getElementById('productCount');
+    const categorySelection = document.getElementById('ecommerce-category');
+    const productStatus = document.getElementById('product-status');
+    const productImage1 = document.getElementById('productImage1');
+
+    // Validate Product Name
+    if (productName.value.trim() === '') {
+        showError(productName, 'Product Name is required');
+        isValid = false;
+    } else {
+        removeError(productName);
+    }
+
+    // Validate Product Description
+    if (productDescription.value.trim() === '') {
+        showError(productDescription, 'Product Description is required');
+        isValid = false;
+    } else {
+        removeError(productDescription);
+    }
+
+    // Validate Product Price
+    if (productPrice.value.trim() === '' || isNaN(productPrice.value) || Number(productPrice.value) <= 0) {
+        showError(productPrice, 'Please enter a valid price');
+        isValid = false;
+    } else {
+        removeError(productPrice);
+    }
+
+    // Validate Product Count
+    if (productCount.value.trim() === '' || isNaN(productCount.value) || Number(productCount.value) < 0) {
+        showError(productCount, 'Please enter a valid product count');
+        isValid = false;
+    } else {
+        removeError(productCount);
+    }
+
+    // Validate Category Selection
+    if (categorySelection.value === '') {
+        showError(categorySelection, 'Please select a category');
+        isValid = false;
+    } else {
+        removeError(categorySelection);
+    }
+
+    // Validate Product Status
+    if (productStatus.value === '') {
+        showError(productStatus, 'Please select a product status');
+        isValid = false;
+    } else {
+        removeError(productStatus);
+    }
+
+    // Validate Product Image
+    if (productImage1.files.length === 0) {
+        showError(productImage1, 'Please upload at least one product image');
+        isValid = false;
+    } else {
+        removeError(productImage1);
+    }
+
+    return isValid;
+}
+
+// Function to show error message
+function showError(input, message) {
+    const formGroup = input.closest('.formgroup1');
+    const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
+    console.log(errorElement);
+    
+    errorElement.className = 'error-message text-danger mt-1';
+    errorElement.textContent = message;
+    if (!formGroup.querySelector('.error-message')) {
+        formGroup.appendChild(errorElement);
+    }
+    input.classList.add('is-invalid');
+}
+
+// Function to remove error message
+function removeError(input) {
+    const formGroup = input.closest('.formgroup1');
+    const errorElement = formGroup.querySelector('.error-message');
+    if (errorElement) {
+        formGroup.removeChild(errorElement);
+    }
+    input.classList.remove('is-invalid');
+}
+
+// Event listener for form submission
+document.getElementById('addProductForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    
+    
+    if (!validateForm()) {
+        return; // Stop form submission if validation fails
+    }
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch('/admin/product/addProduct', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/admin/product';
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        console.error('Error during fetch request:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An error occurred while adding the product.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+});
+
+function previewImage(input, previewId, imageNumber) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = function () {
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        input.closest('.image-upload-container').querySelector('.upload-placeholder').style.display = 'none';
+        
+        // Add remove button
+        const actionsDiv = document.getElementById(`actions${imageNumber}`);
+        if (!actionsDiv.querySelector('.remove-btn')) {
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.className = 'btn btn-danger btn-sm mt-2 remove-btn';
+            removeBtn.onclick = function() { removeImage(previewId, input, imageNumber); };
+            actionsDiv.appendChild(removeBtn);
+        }
+    }
+
+    if (file) {
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = "";
+        preview.style.display = 'none';
+        input.closest('.image-upload-container').querySelector('.upload-placeholder').style.display = 'flex';
+    }
+}
+
+function removeImage(previewId, input, imageNumber) {
+    const preview = document.getElementById(previewId);
+    const actionsDiv = document.getElementById(`actions${imageNumber}`);
+    
+    input.value = '';
+    preview.src = '';
+    preview.style.display = 'none';
+    
+    input.closest('.image-upload-container').querySelector('.upload-placeholder').style.display = 'flex';
+    
+    const removeBtn = actionsDiv.querySelector('.remove-btn');
+    if (removeBtn) {
+        actionsDiv.removeChild(removeBtn);
+    }
+}
+    </script>
+
+    <!-- <script src="/path/to/jquery.js"></script>
+    <script src="/path/to/bootstrap.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    
+
+    </body>
+
+
+
+<%- include('../admin-layouts/footer.ejs') %>

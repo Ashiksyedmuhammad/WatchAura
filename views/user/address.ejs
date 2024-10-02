@@ -1,0 +1,891 @@
+<%- include('../user-layouts/header.ejs') %>
+    <link rel="stylesheet" href="/assets/userCss.css">
+
+    <style>
+        /* Container styles for the form */
+        .show-form-address {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .grid-2-lg {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .box-field {
+            margin-bottom: 20px;
+        }
+
+        .tf-field {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .tf-field-input {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: border 0.3s ease;
+        }
+
+        .tf-field-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .tf-field-label {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            font-size: 0.875rem;
+            color: #666;
+            background-color: #f9f9f9;
+            padding: 0 5px;
+            transition: top 0.3s ease, font-size 0.3s ease;
+            pointer-events: none;
+        }
+
+        .tf-field-input:not(:placeholder-shown)+.tf-field-label,
+        .tf-field-input:focus+.tf-field-label {
+            top: -20px;
+            font-size: 0.75rem;
+            color: #007bff;
+        }
+
+        /* Styling for the select dropdown */
+        .select-custom select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: border 0.3s ease;
+        }
+
+        .select-custom select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .grid-2-lg {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mb_10 {
+            margin-bottom: 10px;
+        }
+
+        .fw-4 {
+            font-weight: 400;
+        }
+
+        .text_black-2 {
+            color: #333;
+        }
+    </style>
+    </head>
+    <header id="header" class="header-default">
+        <div class="px_15 lg-px_40">
+            <div class="row wrapper-header align-items-center">
+                <div class="col-md-4 col-3 tf-lg-hidden">
+                    <a href="#mobileMenu" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 16" fill="none">
+                            <path
+                                d="M2.00056 2.28571H16.8577C17.1608 2.28571 17.4515 2.16531 17.6658 1.95098C17.8802 1.73665 18.0006 1.44596 18.0006 1.14286C18.0006 0.839753 17.8802 0.549063 17.6658 0.334735C17.4515 0.120408 17.1608 0 16.8577 0H2.00056C1.69745 0 1.40676 0.120408 1.19244 0.334735C0.978109 0.549063 0.857702 0.839753 0.857702 1.14286C0.857702 1.44596 0.978109 1.73665 1.19244 1.95098C1.40676 2.16531 1.69745 2.28571 2.00056 2.28571ZM0.857702 8C0.857702 7.6969 0.978109 7.40621 1.19244 7.19188C1.40676 6.97755 1.69745 6.85714 2.00056 6.85714H22.572C22.8751 6.85714 23.1658 6.97755 23.3801 7.19188C23.5944 7.40621 23.7148 7.6969 23.7148 8C23.7148 8.30311 23.5944 8.59379 23.3801 8.80812C23.1658 9.02245 22.8751 9.14286 22.572 9.14286H2.00056C1.69745 9.14286 1.40676 9.02245 1.19244 8.80812C0.978109 8.59379 0.857702 8.30311 0.857702 8ZM0.857702 14.8571C0.857702 14.554 0.978109 14.2633 1.19244 14.049C1.40676 13.8347 1.69745 13.7143 2.00056 13.7143H12.2863C12.5894 13.7143 12.8801 13.8347 13.0944 14.049C13.3087 14.2633 13.4291 14.554 13.4291 14.8571C13.4291 15.1602 13.3087 15.4509 13.0944 15.6653C12.8801 15.8796 12.5894 16 12.2863 16H2.00056C1.69745 16 1.40676 15.8796 1.19244 15.6653C0.978109 15.4509 0.857702 15.1602 0.857702 14.8571Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-md-4 col-6">
+                    <a href="index.html" class="logo-header">
+                        <img src="assets/images/logo/logo.svg" alt="logo" class="logo">
+                    </a>
+                </div>
+                <div class="col-xl-6 tf-md-hidden">
+                    <nav class="box-navigation text-center">
+                        <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-30">
+                            <li class="menu-item">
+                                <a href="/" class="item-link">Home<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/shop" class="item-link">Shope<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="#" class="item-link">About<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="#" class="item-link">Contact<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-xl-3 col-md-4 col-3">
+                    <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
+                        <!-- Search Icon -->
+                        <li class="nav-search">
+                            <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft"
+                                class="nav-icon-item">
+                                <i class="icon icon-search"></i>
+                            </a>
+                        </li>
+
+                        <!-- Conditional for showing Logout and User name if logged in, or Login if not -->
+                        <% if(locals.userData){ %>
+                            <!-- Show Logout Button -->
+                            <li class="nav-logout">
+                                <form action="/logout" method="POST" class="nav-icon-item" style="display: inline;">
+                                    <button type="submit" class="btn-logout"
+                                        style="background: none; border: none; padding: 0; cursor: pointer;">
+                                        <i class="icon icon-logout"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+
+                            <!-- Show User Name -->
+                            <li class="nav-user">
+                                <p class="mb-0">
+                                    <%= locals.userData[0]?.firstName %>
+                                </p>
+                            </li>
+                            <% } else { %>
+                                <!-- Show Login Button if not logged in -->
+                                <li class="nav-account">
+                                    <a href="/login"  class="nav-icon-item">
+                                        <i class="icon icon-account"></i> Login
+                                    </a>
+                                </li>
+                                <% } %>
+
+                                    <!-- Wishlist Icon -->
+                                    <li class="nav-wishlist">
+                                        <a href="wishlist.html" class="nav-icon-item">
+                                            <i class="icon icon-heart"></i><span class="count-box">0</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Cart Icon -->
+                                    <li class="nav-cart">
+                                        <a href="/cart"  class="nav-icon-item">
+                                            <i class="icon icon-bag"></i><span class="count-box">0</span>
+                                        </a>
+                                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <div class="tf-page-title">
+        <div class="container-full">
+            <div class="heading text-center">Address</div>
+            <!-- <p class="text-center text-2 text_black-2 mt_5">Shop through our all products</p>  -->
+        </div>
+    </div>
+    <section class="flat-spacing-11">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="my-account-nav">
+                        <li><a href="/profile" class="my-account-nav-item ">Dashboard</a></li>
+                        <li><a href="my-account-orders.html" class="my-account-nav-item">Orders</a></li>
+                        <li><a href="/address" class="my-account-nav-item active ">Address</a></li>
+                        <li><a href="/account" class="my-account-nav-item">Account Details</a></li>
+                        <li><a href="my-account-wishlist.html" class="my-account-nav-item">Wishlist</a></li>
+                    </ul>
+                </div>
+
+                <!-- ADD ADDRESS -->
+                <div class="col-lg-9">
+                    <div class="my-account-content account-address">
+                        <div class="text-center widget-inner-address">
+                            <!-- Modal Trigger Button -->
+                            <button style="margin-bottom: 40px;" type="button" class="btn btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#addressModal">
+                                Add New Address
+                            </button>
+                            <div id="addressCardContainer">
+                                <div class="row">
+
+                                    <% address.forEach((data)=> { %>
+                                        <div class="col-md-6 mb-4" id="addressCard-<%= data.id %>">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        <%=data.firstName%>  <%=data.lastName%>
+                                                    </h5>
+                                                    <p class="card-text">
+                                                        <%=data.address%><br>
+                                                            <%=data.city%>, <%=data.state%><br>
+                                                                    Postal Code: <%=data.postal_code%><br>
+                                                                        Phone: <%=data.phone%>
+                                                    </p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <button class="btn btn-sm btn-outline-secondary btn-edit"
+                                                                data-id="<%=data._id%>" data-bs-toggle="modal"
+                                                                data-bs-target="#editModal-<%=data._id%>">
+                                                                Edit
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-danger btn-delete"
+                                                                data-id="<%=data.id%>">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+
+                            <!-- Modal Structure -->
+                            <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addressModalLabel">Add a new address</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Form Inside Modal -->
+                                            <form class="show-form-address wd-form-address" id="formnewAddress"
+                                                style="display: block;">
+                                                <div class="box-field grid-2-lg">
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="firstname" name="first_name">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="firstname">First name</label>
+                                                    </div>
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="lastname" name="last_name">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="lastname">Last name</label>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="address" name="address">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="address">Address</label>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="city" name="city">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="city">City</label>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <label for="country"
+                                                        class="mb_10 fw-4 text-start d-block text_black-2">State</label>
+                                                    <div class="select-custom">
+                                                        <select class="tf-select w-100" id="state" name="state"
+                                                            data-default="">
+                                                            <option value="---" data-cities="[]">---</option>
+                                                            <option value="Andhra Pradesh"
+                                                                data-cities="[['Hyderabad','Hyderabad'],['Vijayawada','Vijayawada'],['Visakhapatnam','Visakhapatnam']]">
+                                                                Andhra Pradesh</option>
+                                                            <option value="Arunachal Pradesh"
+                                                                data-cities="[['Itanagar','Itanagar'],['Tawang','Tawang'],['Bomdila','Bomdila']]">
+                                                                Arunachal Pradesh</option>
+                                                            <option value="Assam"
+                                                                data-cities="[['Guwahati','Guwahati'],['Dibrugarh','Dibrugarh'],['Silchar','Silchar']]">
+                                                                Assam</option>
+                                                            <option value="Bihar"
+                                                                data-cities="[['Patna','Patna'],['Gaya','Gaya'],['Bhagalpur','Bhagalpur']]">
+                                                                Bihar</option>
+                                                            <option value="Chhattisgarh"
+                                                                data-cities="[['Raipur','Raipur'],['Bilaspur','Bilaspur'],['Korba','Korba']]">
+                                                                Chhattisgarh</option>
+                                                            <option value="Goa"
+                                                                data-cities="[['Panaji','Panaji'],['Margao','Margao'],['Vasco da Gama','Vasco da Gama']]">
+                                                                Goa</option>
+                                                            <option value="Gujarat"
+                                                                data-cities="[['Ahmedabad','Ahmedabad'],['Surat','Surat'],['Vadodara','Vadodara']]">
+                                                                Gujarat</option>
+                                                            <option value="Haryana"
+                                                                data-cities="[['Chandigarh','Chandigarh'],['Gurugram','Gurugram'],['Faridabad','Faridabad']]">
+                                                                Haryana</option>
+                                                            <option value="Himachal Pradesh"
+                                                                data-cities="[['Shimla','Shimla'],['Manali','Manali'],['Dharamshala','Dharamshala']]">
+                                                                Himachal Pradesh</option>
+                                                            <option value="Jharkhand"
+                                                                data-cities="[['Ranchi','Ranchi'],['Jamshedpur','Jamshedpur'],['Dhanbad','Dhanbad']]">
+                                                                Jharkhand</option>
+                                                            <option value="Karnataka"
+                                                                data-cities="[['Bengaluru','Bengaluru'],['Mysuru','Mysuru'],['Hubli','Hubli']]">
+                                                                Karnataka</option>
+                                                            <option value="Kerala"
+                                                                data-cities="[['Thiruvananthapuram','Thiruvananthapuram'],['Kochi','Kochi'],['Kozhikode','Kozhikode']]">
+                                                                Kerala</option>
+                                                            <option value="Madhya Pradesh"
+                                                                data-cities="[['Bhopal','Bhopal'],['Indore','Indore'],['Gwalior','Gwalior']]">
+                                                                Madhya Pradesh</option>
+                                                            <option value="Maharashtra"
+                                                                data-cities="[['Mumbai','Mumbai'],['Pune','Pune'],['Nagpur','Nagpur']]">
+                                                                Maharashtra</option>
+                                                            <option value="Manipur"
+                                                                data-cities="[['Imphal','Imphal'],['Churachandpur','Churachandpur'],['Thoubal','Thoubal']]">
+                                                                Manipur</option>
+                                                            <option value="Meghalaya"
+                                                                data-cities="[['Shillong','Shillong'],['Tura','Tura'],['Jowai','Jowai']]">
+                                                                Meghalaya</option>
+                                                            <option value="Mizoram"
+                                                                data-cities="[['Aizawl','Aizawl'],['Lunglei','Lunglei'],['Champhai','Champhai']]">
+                                                                Mizoram</option>
+                                                            <option value="Nagaland"
+                                                                data-cities="[['Kohima','Kohima'],['Dimapur','Dimapur'],['Mokokchung','Mokokchung']]">
+                                                                Nagaland</option>
+                                                            <option value="Odisha"
+                                                                data-cities="[['Bhubaneswar','Bhubaneswar'],['Cuttack','Cuttack'],['Rourkela','Rourkela']]">
+                                                                Odisha</option>
+                                                            <option value="Punjab"
+                                                                data-cities="[['Chandigarh','Chandigarh'],['Amritsar','Amritsar'],['Ludhiana','Ludhiana']]">
+                                                                Punjab</option>
+                                                            <option value="Rajasthan"
+                                                                data-cities="[['Jaipur','Jaipur'],['Udaipur','Udaipur'],['Jodhpur','Jodhpur']]">
+                                                                Rajasthan</option>
+                                                            <option value="Sikkim"
+                                                                data-cities="[['Gangtok','Gangtok'],['Namchi','Namchi'],['Mangan','Mangan']]">
+                                                                Sikkim</option>
+                                                            <option value="Tamil Nadu"
+                                                                data-cities="[['Chennai','Chennai'],['Coimbatore','Coimbatore'],['Madurai','Madurai']]">
+                                                                Tamil Nadu</option>
+                                                            <option value="Telangana"
+                                                                data-cities="[['Hyderabad','Hyderabad'],['Warangal','Warangal'],['Khammam','Khammam']]">
+                                                                Telangana</option>
+                                                            <option value="Tripura"
+                                                                data-cities="[['Agartala','Agartala'],['Udaipur','Udaipur'],['Kailashahar','Kailashahar']]">
+                                                                Tripura</option>
+                                                            <option value="Uttar Pradesh"
+                                                                data-cities="[['Lucknow','Lucknow'],['Kanpur','Kanpur'],['Varanasi','Varanasi']]">
+                                                                Uttar Pradesh</option>
+                                                            <option value="Uttarakhand"
+                                                                data-cities="[['Dehradun','Dehradun'],['Haridwar','Haridwar'],['Nainital','Nainital']]">
+                                                                Uttarakhand</option>
+                                                            <option value="West Bengal"
+                                                                data-cities="[['Kolkata','Kolkata'],['Siliguri','Siliguri'],['Howrah','Howrah']]">
+                                                                West Bengal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="postal_code" name="postal_code">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="postal_code">Postal Code</label>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <div class="tf-field style-1">
+                                                        <input class="tf-field-input tf-input" placeholder=" "
+                                                            type="text" id="phone" name="phone">
+                                                        <label class="tf-field-label fw-4 text_black-2"
+                                                            for="phone">Phone</label>
+                                                    </div>
+                                                </div>
+                                                <div class="box-field">
+                                                    <button type="submit" class="btn">Save address</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDIT ADDRESS -->
+    <!-- Edit Modal Structure -->
+    <% address.forEach((address)=> { %>
+        <div class="modal fade" id="editModal-<%= address._id %>" tabindex="-1" aria-labelledby="editAddressModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="editAddressForm" data-id="<%= address._id %>">
+                            <input type="hidden" id="addressId<%= address._id %>" name="address_id"
+                                value="<%= address._id %>">
+                            <div class="box-field grid-2-lg">
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input" type="text" id="editFirstName<%= address._id %>"
+                                        name="first_name" value="<%= address.firstName %>" placeholder=" ">
+                                    <label for="editFirstName<%= address._id %>">First Name</label>
+                                </div>
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input" type="text" id="editLastName<%= address._id %>"
+                                        name="last_name" value="<%= address.lastName %>" placeholder=" ">
+                                    <label for="editLastName<%= address._id %>">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="box-field">
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input tf-input" placeholder=" " type="text"
+                                        id="address<%= address._id %>" name="address" value="<%= address.address %>">
+                                    <label class="tf-field-label fw-4 text_black-2"
+                                        for="address<%= address._id %>">Address</label>
+                                </div>
+                            </div>
+                            <div class="box-field">
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input tf-input" placeholder=" " type="text"
+                                        id="city<%= address._id %>" name="city" value="<%= address.city %>">
+                                    <label class="tf-field-label fw-4 text_black-2"
+                                        for="city<%= address._id %>">City</label>
+                                </div>
+                            </div>
+                            <div class="box-field">
+                                <label for="state<%= address._id %>"
+                                    class="mb_10 fw-4 text-start d-block text_black-2">State</label>
+                                <div class="select-custom">
+                                    <select class="tf-select w-100" id="state<%= address._id %>" name="state">
+                                        <option value="---" data-cities="[]" <%=address.state==='---' ? 'selected' : ''
+                                            %>>---</option>
+                                        <option value="Andhra Pradesh"
+                                            data-cities="[['Hyderabad','Hyderabad'],['Vijayawada','Vijayawada'],['Visakhapatnam','Visakhapatnam']]"
+                                            <%=address.state==='Andhra Pradesh' ? 'selected' : '' %>>Andhra Pradesh
+                                        </option>
+                                        <option value="Arunachal Pradesh"
+                                            data-cities="[['Itanagar','Itanagar'],['Tawang','Tawang'],['Bomdila','Bomdila']]"
+                                            <%=address.state==='Arunachal Pradesh' ? 'selected' : '' %>>Arunachal
+                                            Pradesh</option>
+                                        <option value="Assam"
+                                            data-cities="[['Guwahati','Guwahati'],['Dibrugarh','Dibrugarh'],['Silchar','Silchar']]"
+                                            <%=address.state==='Assam' ? 'selected' : '' %>>Assam</option>
+                                        <option value="Bihar"
+                                            data-cities="[['Patna','Patna'],['Gaya','Gaya'],['Bhagalpur','Bhagalpur']]"
+                                            <%=address.state==='Bihar' ? 'selected' : '' %>>Bihar</option>
+                                        <option value="Chhattisgarh"
+                                            data-cities="[['Raipur','Raipur'],['Bilaspur','Bilaspur'],['Korba','Korba']]"
+                                            <%=address.state==='Chhattisgarh' ? 'selected' : '' %>>Chhattisgarh</option>
+                                        <option value="Goa"
+                                            data-cities="[['Panaji','Panaji'],['Margao','Margao'],['Vasco da Gama','Vasco da Gama']]"
+                                            <%=address.state==='Goa' ? 'selected' : '' %>>Goa</option>
+                                        <option value="Gujarat"
+                                            data-cities="[['Ahmedabad','Ahmedabad'],['Surat','Surat'],['Vadodara','Vadodara']]"
+                                            <%=address.state==='Gujarat' ? 'selected' : '' %>>Gujarat</option>
+                                        <option value="Haryana"
+                                            data-cities="[['Chandigarh','Chandigarh'],['Gurugram','Gurugram'],['Faridabad','Faridabad']]"
+                                            <%=address.state==='Haryana' ? 'selected' : '' %>>Haryana</option>
+                                        <option value="Himachal Pradesh"
+                                            data-cities="[['Shimla','Shimla'],['Manali','Manali'],['Dharamshala','Dharamshala']]"
+                                            <%=address.state==='Himachal Pradesh' ? 'selected' : '' %>>Himachal Pradesh
+                                        </option>
+                                        <option value="Jharkhand"
+                                            data-cities="[['Ranchi','Ranchi'],['Jamshedpur','Jamshedpur'],['Dhanbad','Dhanbad']]"
+                                            <%=address.state==='Jharkhand' ? 'selected' : '' %>>Jharkhand</option>
+                                        <option value="Karnataka"
+                                            data-cities="[['Bengaluru','Bengaluru'],['Mysuru','Mysuru'],['Hubli','Hubli']]"
+                                            <%=address.state==='Karnataka' ? 'selected' : '' %>>Karnataka</option>
+                                        <option value="Kerala"
+                                            data-cities="[['Thiruvananthapuram','Thiruvananthapuram'],['Kochi','Kochi'],['Kozhikode','Kozhikode']]"
+                                            <%=address.state==='Kerala' ? 'selected' : '' %>>Kerala</option>
+                                        <option value="Madhya Pradesh"
+                                            data-cities="[['Bhopal','Bhopal'],['Indore','Indore'],['Gwalior','Gwalior']]"
+                                            <%=address.state==='Madhya Pradesh' ? 'selected' : '' %>>Madhya Pradesh
+                                        </option>
+                                        <option value="Maharashtra"
+                                            data-cities="[['Mumbai','Mumbai'],['Pune','Pune'],['Nagpur','Nagpur']]"
+                                            <%=address.state==='Maharashtra' ? 'selected' : '' %>>Maharashtra</option>
+                                        <option value="Manipur"
+                                            data-cities="[['Imphal','Imphal'],['Churachandpur','Churachandpur'],['Thoubal','Thoubal']]"
+                                            <%=address.state==='Manipur' ? 'selected' : '' %>>Manipur</option>
+                                        <option value="Meghalaya"
+                                            data-cities="[['Shillong','Shillong'],['Tura','Tura'],['Jowai','Jowai']]"
+                                            <%=address.state==='Meghalaya' ? 'selected' : '' %>>Meghalaya</option>
+                                        <option value="Mizoram"
+                                            data-cities="[['Aizawl','Aizawl'],['Lunglei','Lunglei'],['Champhai','Champhai']]"
+                                            <%=address.state==='Mizoram' ? 'selected' : '' %>>Mizoram</option>
+                                        <option value="Nagaland"
+                                            data-cities="[['Kohima','Kohima'],['Dimapur','Dimapur'],['Mokokchung','Mokokchung']]"
+                                            <%=address.state==='Nagaland' ? 'selected' : '' %>>Nagaland</option>
+                                        <option value="Odisha"
+                                            data-cities="[['Bhubaneswar','Bhubaneswar'],['Cuttack','Cuttack'],['Rourkela','Rourkela']]"
+                                            <%=address.state==='Odisha' ? 'selected' : '' %>>Odisha</option>
+                                        <option value="Punjab"
+                                            data-cities="[['Chandigarh','Chandigarh'],['Amritsar','Amritsar'],['Ludhiana','Ludhiana']]"
+                                            <%=address.state==='Punjab' ? 'selected' : '' %>>Punjab</option>
+                                        <option value="Rajasthan"
+                                            data-cities="[['Jaipur','Jaipur'],['Udaipur','Udaipur'],['Jodhpur','Jodhpur']]"
+                                            <%=address.state==='Rajasthan' ? 'selected' : '' %>>Rajasthan</option>
+                                        <option value="Sikkim"
+                                            data-cities="[['Gangtok','Gangtok'],['Namchi','Namchi'],['Mangan','Mangan']]"
+                                            <%=address.state==='Sikkim' ? 'selected' : '' %>>Sikkim</option>
+                                        <option value="Tamil Nadu"
+                                            data-cities="[['Chennai','Chennai'],['Coimbatore','Coimbatore'],['Madurai','Madurai']]"
+                                            <%=address.state==='Tamil Nadu' ? 'selected' : '' %>>Tamil Nadu</option>
+                                        <option value="Telangana"
+                                            data-cities="[['Hyderabad','Hyderabad'],['Warangal','Warangal'],['Khammam','Khammam']]"
+                                            <%=address.state==='Telangana' ? 'selected' : '' %>>Telangana</option>
+                                        <option value="Tripura"
+                                            data-cities="[['Agartala','Agartala'],['Udaipur','Udaipur'],['Kailashahar','Kailashahar']]"
+                                            <%=address.state==='Tripura' ? 'selected' : '' %>>Tripura</option>
+                                        <option value="Uttar Pradesh"
+                                            data-cities="[['Lucknow','Lucknow'],['Kanpur','Kanpur'],['Varanasi','Varanasi']]"
+                                            <%=address.state==='Uttar Pradesh' ? 'selected' : '' %>>Uttar Pradesh
+                                        </option>
+                                        <option value="Uttarakhand"
+                                            data-cities="[['Dehradun','Dehradun'],['Haridwar','Haridwar'],['Nainital','Nainital']]"
+                                            <%=address.state==='Uttarakhand' ? 'selected' : '' %>>Uttarakhand</option>
+                                        <option value="West Bengal"
+                                            data-cities="[['Kolkata','Kolkata'],['Siliguri','Siliguri'],['Howrah','Howrah']]"
+                                            <%=address.state==='West Bengal' ? 'selected' : '' %>>West Bengal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="box-field">
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input tf-input" placeholder=" " type="text"
+                                        id="postal_code<%= address._id %>" name="postal_code"
+                                        value="<%= address.postal_code %>">
+                                    <label class="tf-field-label fw-4 text_black-2"
+                                        for="postal_code<%= address._id %>">Postal Code</label>
+                                </div>
+                            </div>
+                            <div class="box-field">
+                                <div class="tf-field style-1">
+                                    <input class="tf-field-input tf-input" placeholder=" " type="text"
+                                        id="phone<%= address._id %>" name="phone" value="<%= address.phone %>">
+                                    <label class="tf-field-label fw-4 text_black-2"
+                                        for="phone<%= address._id %>">Phone</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+
+
+            <!-- ADD ADDRESS  -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.getElementById('formnewAddress');
+
+                    form.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+
+                        if (!validateForm()) {
+                            return;
+                        }
+
+                        // Create a formData object and convert it into a plain object
+                        const formData = new FormData(form);
+                        const data = Object.fromEntries(formData.entries());
+
+                        try {
+                            // Send the address data to the server
+                            const response = await fetch('/addAddress', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(data),
+                            });
+                            const result = await response.json();
+                            if (!response.ok) {
+                                throw new Error(result.error || 'Network response was not ok');
+                            }
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Address added successfully',
+                            }).then(() => {
+                                location.reload()
+                            });
+
+                            // Clear form fields
+                            form.reset();
+                        } catch (error) {
+                            console.error('Error:', error);
+                            // Show error message
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.message || 'There was a problem saving your address. Please try again.',
+                            });
+                        }
+                    });
+
+                    // Function to validate the form
+                    function validateForm() {
+                        const requiredFields = ['first_name', 'last_name', 'address', 'city', 'state', 'postal_code'];
+                        let isValid = true;
+
+                        requiredFields.forEach(fieldName => {
+                            const field = form.elements[fieldName];
+                            if (!field.value.trim()) {
+                                isValid = false;
+                                showFieldError(field, 'This field is required');
+                            } else {
+                                clearFieldError(field);
+                            }
+                        });
+
+                        // Validate phone number (optional field)
+                        const phoneField = form.elements['phone'];
+                        if (phoneField && phoneField.value.trim() && !isValidPhone(phoneField.value)) {
+                            isValid = false;
+                            showFieldError(phoneField, 'Please enter a valid phone number');
+                        }
+
+                        // Validate postal code
+                        const postalCodeField = form.elements['postal_code'];
+                        if (!isValidPostalCode(postalCodeField.value)) {
+                            isValid = false;
+                            showFieldError(postalCodeField, 'Please enter 6 digit postal code');
+                        }
+
+                        return isValid;
+                    }
+
+                    // Helper function to validate phone number format
+                    function isValidPhone(phone) {
+                        const phoneRegex = /^\+?1?\s*\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+                        return phoneRegex.test(phone);
+                    }
+
+
+                    function isValidPostalCode(postalCode) {
+                        const postalCodeRegex = /^[1-9][0-9]{5}$/;
+                        return postalCodeRegex.test(postalCode);
+                    }
+
+
+                    // Function to show field-specific error messages
+                    function showFieldError(field, message) {
+                        clearFieldError(field);
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'field-error text-danger';
+                        errorDiv.textContent = message;
+                        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+                        field.classList.add('is-invalid');
+                    }
+
+                    // Function to clear field-specific error messages
+                    function clearFieldError(field) {
+                        const existingError = field.parentNode.querySelector('.field-error');
+                        if (existingError) {
+                            existingError.remove();
+                        }
+                        field.classList.remove('is-invalid');
+                    }
+
+                    // Function to display success or error messages
+                    function showMessage(message, type) {
+
+                        const existingAlert = document.querySelector('.alert');
+                        if (existingAlert) existingAlert.remove();
+
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `alert alert-${type}`;
+                        messageDiv.textContent = message;
+
+                        form.prepend(messageDiv);
+
+                        setTimeout(() => {
+                            messageDiv.remove();
+                        }, 3000);
+                    }
+                });
+            </script>
+
+            <!-- EDIT ADDRESS -->
+            <script>
+                const editAddressForms = document.querySelectorAll('.editAddressForm');
+                editAddressForms.forEach((element) => {
+                    element.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const id = element.getAttribute('data-id');
+                        const firstName = document.getElementById(`editFirstName${id}`);
+                        const lastName = document.getElementById(`editLastName${id}`);
+                        const address = document.getElementById(`address${id}`);
+                        const city = document.getElementById(`city${id}`);
+                        const state = document.getElementById(`state${id}`);
+                        const postalCode = document.getElementById(`postal_code${id}`);
+                        const phone = document.getElementById(`phone${id}`);
+
+
+                        element.querySelectorAll('.error-message').forEach(el => el.remove());
+
+                        // Validation
+                        let isValid = true;
+
+                        function showError(input, message) {
+                            isValid = false;
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.style.color = 'red';
+                            errorDiv.textContent = message;
+                            input.parentNode.insertBefore(errorDiv, input.nextSibling);
+                        }
+
+                        if (!firstName.value.trim() || firstName.value.trim().length < 2) {
+                            showError(firstName, "First name should be at least 2 characters long.");
+                        }
+
+                        if (!lastName.value.trim() || lastName.value.trim().length < 2) {
+                            showError(lastName, "Last name should be at least 2 characters long.");
+                        }
+
+                        if (!address.value.trim() || address.value.trim().length < 5) {
+                            showError(address, "Address should be at least 5 characters long.");
+                        }
+
+                        if (!city.value.trim() || city.value.trim().length < 2) {
+                            showError(city, "City should be at least 2 characters long.");
+                        }
+
+                        if (!state.value) {
+                            showError(state, "Please select a state.");
+                        }
+
+                        if (!postalCode.value.trim() || !/^[1-9][0-9]{5}$/.test(postalCode.value.trim())) {
+                            showError(postalCode, "Please enter a valid 6-digit PIN code.");
+                        }
+
+                        if (!phone.value.trim() || !/^[6-9]\d{9}$/.test(phone.value.trim())) {
+                            showError(phone, "Please enter a valid 10-digit mobile number.");
+                        }
+
+                        if (!isValid) {
+                            return;
+                        }
+
+                        const data = {
+                            firstName: firstName.value.trim(),
+                            lastName: lastName.value.trim(),
+                            address: address.value.trim(),
+                            city: city.value.trim(),
+                            state: state.value,
+                            postal_code: postalCode.value.trim(),
+                            phone: phone.value.trim()
+                        };
+
+                        try {
+                            const response = await fetch(`/editAddress/${id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(data),
+                            });
+
+                            const result = await response.json();
+
+                            if (!result.success) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: result.message
+                                });
+                                return;
+                            }
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: result.message
+                            }).then(() => {
+                                location.reload();
+                            });
+
+                        } catch (error) {
+                            console.error('Error submitting form:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred. Please try again.'
+                            });
+                        }
+                    });
+                });
+            </script>
+
+            <!-- DELETE ADDRESS -->
+
+            <script>
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const addressId = this.dataset.id;
+
+                        // Confirmation with SweetAlert
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This action will permanently delete the address.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'No, keep it'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Perform the delete action
+                                fetch(`/deleteAddress/${addressId}`, {
+                                    method: 'DELETE',
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            Swal.fire(
+                                                'Deleted!',
+                                                'The address has been deleted.',
+                                                'success'
+                                            );
+
+                                            // Optionally, remove the address card from the DOM
+                                            document.querySelector(`#addressCard-${addressId}`).remove();
+                                        } else {
+                                            Swal.fire('Error', 'Failed to delete the address.', 'error');
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            }
+                        });
+                    });
+                });
+
+            </script>
+
+            <%- include('../user-layouts/footer.ejs') %>

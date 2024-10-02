@@ -1,0 +1,58 @@
+
+    /* General styles */
+body {
+    font-family: 'Albert Sans', sans-serif;
+    font-size: 16px;
+    line-height: 30px;
+    font-weight: 500;
+}
+
+/* Navigation styles */
+.my-account-nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.my-account-nav-item {
+    display: block;
+    padding: 15px;
+    text-decoration: none;
+    color: #000000;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.my-account-nav-item:hover,
+.my-account-nav-item:focus {
+    background-color: #f5f5f5;
+    color: #e53935; /* Red color on hover */
+}
+
+.my-account-nav-item.active {
+    background-color: #f0f0f0;
+    font-weight: 600;
+}
+
+.text_primary {
+    color: #e53935; /* Red color for primary text links */
+    text-decoration: none;
+}
+
+.text_primary:hover {
+    text-decoration: underline;
+}
+
+/* Utility classes */
+.mb_20 {
+    margin-bottom: 20px;
+}
+
+.mb_60 {
+    margin-bottom: 60px;
+}
+
+.fw-5 {
+    font-weight: 500;
+}
