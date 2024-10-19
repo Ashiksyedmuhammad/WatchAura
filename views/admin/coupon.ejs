@@ -1,0 +1,592 @@
+<%- include('../admin-layouts/header.ejs') %>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.25em;
+        }
+    </style>
+
+    </head>
+
+    <body>
+        <div class="container-scroller">
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                    <a class="sidebar-brand brand-logo" href="index.html"><img
+                            src="/admin-assets/assets/images/logo.svg" alt="logo" /></a>
+                    <a class="sidebar-brand brand-logo-mini" href="index.html"><img
+                            src="/admin-assets/assets/images/logo-mini.svg" alt="logo" /></a>
+                </div>
+                <ul class="nav">
+                    <li class="nav-item profile">
+                        <div class="profile-desc">
+                            <div class="profile-pic">
+                                <div class="count-indicator">
+                                    <img class="img-xs rounded-circle"
+                                        src="/admin-assets/assets/images/faces/face15.jpg" alt="">
+                                    <span class="count bg-success"></span>
+                                </div>
+                                <div class="profile-name">
+                                    <h5 class="mb-0 font-weight-normal">ADMIN</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Sidebar menu items -->
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-speedometer"></i>
+                            </span>
+                            <span class="menu-title">DASHBOARD</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/product">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-playlist-play"></i>
+                            </span>
+                            <span class="menu-title">PRODUCTS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/category">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-table-large"></i>
+                            </span>
+                            <span class="menu-title">CATEGORIES</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="#">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-table-large"></i>
+                            </span>
+                            <span class="menu-title">ORDERS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/customers">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-contacts"></i>
+                            </span>
+                            <span class="menu-title">CUSTOMERS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/coupon">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-ticket-percent"></i>
+                            </span>
+                            <span class="menu-title">COUPONS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/offer">
+                            <span class="menu-icon">
+                                <i class="fas fa-percent"></i>
+                            </span>
+                            <span class="menu-title">OFFERS</span>
+                        </a>
+                        <ul class="nav flex-column sub-menu" id="offerSubMenu"
+                            style="display: none; padding-left: 20px;">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/product-offer">
+                                    <span class="menu-title">Product Offer</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/category-offer">
+                                    <span class="menu-title">Category Offer</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Navbar -->
+            <div class="col-12">
+                <nav class="navbar p-0 fixed-top d-flex flex-row">
+                    <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                        <a class="navbar-brand brand-logo-mini" href="index.html"><img
+                                src="/admin-assets/assets/images/logo-mini.svg" alt="logo" /></a>
+                    </div>
+                    <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                        <button class="navbar-toggler navbar-toggler align-self-center" type="button"
+                            data-toggle="minimize">
+                            <span class="mdi mdi-menu"></span>
+                        </button>
+                        <ul class="navbar-nav navbar-nav-right">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                                    <div class="navbar-profile">
+                                        <img class="img-xs rounded-circle"
+                                            src="/admin-assets/assets/images/faces/face15.jpg" alt="">
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">ADMIN</p>
+                                        <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                                    aria-labelledby="profileDropdown">
+                                    <h6 class="p-3 mb-0">Profile</h6>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item">
+                                        <form action="/admin/logout" method="post">
+                                            <div class="preview-thumbnail">
+                                                <div class="preview-icon bg-dark rounded-circle">
+                                                    <button type="submit"><i
+                                                            class="mdi mdi-logout text-danger"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                            data-toggle="offcanvas">
+                            <span class="mdi mdi-format-line-spacing"></span>
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- Table -->
+
+                <div class="container-xxl flex-grow-1 container-p-y m-3">
+                    <div class="card">
+                        <div class="card-header m-5 mr-3">
+                            <h5 class="mb-0">COUPONS</h5>
+                        </div>
+                        <div class="card-datatable table-responsive">
+                            <div class="card-header d-flex border-top rounded-0 flex-wrap py-2">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <button type="button" class="btn btn-primary waves-effect waves-light"
+                                        data-bs-toggle="modal" data-bs-target="#addCoupon">
+                                        <i class="ri-add-line ri-16px me-0 me-sm-1"></i>
+                                        <span class="d-none d-sm-inline-block">Add Coupon</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row row-cols-1 row-cols-md-2 g-4 mb-6">
+                                <% coupons.forEach(function(coupon,index) { %>
+                                    <div class="col-lg-4">
+
+                                        <div class="offer-card card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <%= coupon.couponId %>
+                                                </h5>
+                                                <div class="card-text">
+                                                    <p class="discount"><strong>Discount:</strong>
+                                                        <%= coupon.discount %>%
+                                                    </p>
+                                                    <p class="status"><strong>Status:</strong> <span
+                                                            class="status-badge <%= coupon.isActive ? 'active' : 'inactive' %>">
+                                                            <%= coupon.isActive ? 'Active' : 'Inactive' %>
+                                                        </span></p>
+                                                    <p class="min-purchase-amount"><strong>Min Purchase Amount:</strong>
+                                                        <%= coupon.minPurchaseAmount %>
+                                                    </p>
+                                                    <p class="max-amount"><strong>Max Amount:</strong>
+                                                        <%= coupon.maxAmount %>
+                                                    </p>
+                                                    <p class="expiry-date"><strong>Expiry Date:</strong>
+                                                        <%= coupon.expiryDate.toLocaleDateString() %>
+                                                    </p>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <button class="btn btn-primary waves-effect waves-light me-2"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editCoupon<%=index%>">
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-danger delete-coupon waves-effect waves-light me-2"
+                                                        data-coupon-id="<%= coupon._id %>">
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <% }); %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Coupon Modal -->
+                    <div class="modal fade" id="addCoupon" tabindex="-1" aria-labelledby="addCouponLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addCouponLabel">Add New Coupon</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addCouponForm">
+                                        <div class="mb-3">
+                                            <label for="couponId" class="form-label">Coupon ID</label>
+                                            <input type="text" class="form-control" id="couponId" name="couponId"
+                                                required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="discount" class="form-label">Discount (%)</label>
+                                            <input type="number" class="form-control" id="discount" name="discount"
+                                                required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="minPurchaseAmount" class="form-label">Minimum Purchase
+                                                Amount</label>
+                                            <input type="number" class="form-control" id="minPurchaseAmount"
+                                                name="minPurchaseAmount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="maxAmount" class="form-label">Maximum Amount</label>
+                                            <input type="number" class="form-control" id="maxAmount" name="maxAmount"
+                                                required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="expiryDate" class="form-label">Expiry Date</label>
+                                            <input type="date" class="form-control" id="expiryDate" name="expiryDate"
+                                                required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">Add Coupon</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Coupon Modal -->
+                    <% coupons.forEach(function(coupon,index) { %>
+                        <div class="modal fade" id="editCoupon<%= index %>" tabindex="-1"
+                            aria-labelledby="editCouponLabel<%= coupon._id %>" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editCouponLabel<%= coupon._id %>">Edit Coupon
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="edit-coupon-form<%=index%>" onsubmit="hello('<%=index%>',event,this)" data-coupon-id="<%= coupon._id %>">
+                                            <div class="mb-3">
+                                                <label for="couponId<%= coupon._id %>" class="form-label">Coupon
+                                                    ID</label>
+                                                <input type="text" class="form-control" id="couponId<%= coupon._id %>"
+                                                    name="couponId" value="<%= coupon.couponId %>"  oninput="g(event,this)" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="discount<%= coupon._id %>" class="form-label">Discount
+                                                    (%)</label>
+                                                <input type="number" class="form-control" id="discount<%= coupon._id %>"
+                                                    name="discount" value="<%= coupon.discount %>"  oninput="g(event,this)" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="minPurchaseAmount<%= coupon._id %>"
+                                                    class="form-label">Minimum Purchase Amount</label>
+                                                <input type="number" class="form-control"
+                                                    id="minPurchaseAmount<%= coupon._id %>" name="minPurchaseAmount"
+                                                    value="<%= coupon.minPurchaseAmount %>"  oninput="g(event,this)" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="maxAmount<%= coupon._id %>" class="form-label">Maximum
+                                                    Amount</label>
+                                                <input type="number" class="form-control"
+                                                    id="maxAmount<%= coupon._id %>" name="maxAmount"
+                                                    value="<%= coupon.maxAmount %>"
+                                                    oninput="g(event,this)"
+                                                     required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="expiryDate<%= coupon._id %>" class="form-label">Expiry
+                                                    Date</label>
+                                                <input type="date" class="form-control" id="expiryDate<%= coupon._id %>"
+                                                    name="expiryDate"
+                                                    oninput="g(event,this)"
+                                                    value="<%= coupon.expiryDate.toISOString().split('T')[0] %>"
+                                                    required>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary">Update Coupon</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                        <script>
+                           
+                        </script>
+
+                        <script>
+                            const obj={}
+                            function g(event,e){
+                               obj[e.name]=event.target.value  
+                            }
+                            function hello(i,e,elem){
+                                e.preventDefault();
+                                const form=event.target;
+                                const inputs=form.querySelectorAll('input')
+                                inputs.forEach(e=>{
+                                    if(!obj[e.name]){
+                                        obj[e.name]=e.value
+                                    }
+                                })
+                                
+                                const formData = new FormData(form);
+                                            const errors = validateCouponForm(formData);
+                                            console.log(obj)
+
+                                            // if (Object.keys(errors).length === 0) {
+
+                                            const couponId = elem.dataset.couponId;
+                                            fetch(`/admin/edit-coupon/${couponId}`, {
+                                                method: 'PUT',
+                                                body: JSON.stringify(obj),
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                }
+                                            })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Success!',
+                                                            text: data.message,
+                                                        }).then(() => {
+                                                            window.location.reload();
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: data.message,
+                                                        });
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Oops...',
+                                                        text: 'An error occurred while updating the coupon.',
+                                                    });
+                                                });
+                               
+                               
+                                
+                            }
+                        </script>
+                            <script src="/admin-assets/assets/vendors/js/vendor.bundle.base.js"></script>
+                            <script src="/admin-assets/assets/vendors/chart.js/Chart.min.js"></script>
+                            <script src="/admin-assets/assets/vendors/progressbar.js/progressbar.min.js"></script>
+                            <script src="/admin-assets/assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+                            <script
+                                src="/admin-assets/assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+                            <script src="/admin-assets/assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+                            <script src="/admin-assets/assets/js/off-canvas.js"></script>
+                            <script src="/admin-assets/assets/js/hoverable-collapse.js"></script>
+                            <script src="/admin-assets/assets/js/misc.js"></script>
+                            <script src="/admin-assets/assets/js/settings.js"></script>
+                            <script src="/admin-assets/assets/js/todolist.js"></script>
+                            <script src="/admin-assets/assets/js/dashboard.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                            <script
+                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                            <script>
+                                // Validation function
+                                function validateCouponForm(formData) {
+                                    const errors = {};
+
+                                    // Coupon ID validation
+                                    const couponId = formData.get('couponId');
+                                    if (!couponId || couponId.trim() === '') {
+                                        errors.couponId = 'Coupon ID is required';
+                                    } else if (!/^[A-Za-z0-9]+$/.test(couponId)) {
+                                        errors.couponId = 'Coupon ID should only contain letters and numbers';
+                                    }
+
+                                    // Discount validation
+                                    const discount = formData.get('discount');
+                                    if (!discount || isNaN(discount) || discount < 0 || discount > 100) {
+                                        errors.discount = 'Discount must be a number between 0 and 100';
+                                    }
+
+                                    // Minimum Purchase Amount validation
+                                    const minPurchaseAmount = formData.get('minPurchaseAmount');
+                                    if (!minPurchaseAmount || isNaN(minPurchaseAmount) || minPurchaseAmount < 0) {
+                                        errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number';
+                                    }
+
+
+                                    const maxPurchaseAmount = parseFloat(formData.get('maxAmount'));
+                                    if (isNaN(maxPurchaseAmount) || maxPurchaseAmount < 0) {
+                                        errors.maxPurchaseAmount = 'Maximum Purchase Amount must be a positive number';
+                                    }
+
+                                    if (minPurchaseAmount >= maxPurchaseAmount) {
+                                        errors.maxPurchaseAmount = 'Maximum Purchase Amount must be greater than Minimum Purchase Amount';
+                                    }
+
+                                    // Maximum Amount validation
+                                    const maxAmount = formData.get('maxAmount');
+                                    if (!maxAmount || isNaN(maxAmount) || maxAmount < 0) {
+                                        errors.maxAmount = 'Maximum Amount must be a positive number';
+                                    }
+
+                                    // Expiry Date validation
+                                    const expiryDate = new Date(formData.get('expiryDate'));
+                                    const today = new Date();
+                                    if (isNaN(expiryDate.getTime()) || expiryDate < today) {
+                                        errors.expiryDate = 'Expiry Date must be a valid future date';
+                                    }
+
+
+
+                                    return errors;
+                                }
+
+
+                                //  function displayErrors(errors, formId) {
+                                //     const form = document.getElementById(formId);
+
+                                //     form.querySelectorAll('.error-message').forEach(el => el.remove());
+
+
+                                //     for (const [field, message] of Object.entries(errors)) {
+                                //         const input = form.querySelector(`[name="${field}"]`);
+                                //         const errorElement = document.createElement('div');
+                                //         errorElement.className = 'error-message text-danger mt-1';
+                                //         errorElement.textContent = message;
+                                //         input.parentNode.appendChild(errorElement);
+                                //     }
+                                // }
+
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    // Add Coupon Form Validation
+                                    const addCouponForm = document.getElementById('addCouponForm');
+                                    if (addCouponForm) {
+                                        addCouponForm.addEventListener('submit', function (e) {
+                                            e.preventDefault();
+                                            const formData = new FormData(this);
+                                            const errors = validateCouponForm(formData);
+
+                                            if (Object.keys(errors).length === 0) {
+
+                                                fetch('/admin/add-coupon', {
+                                                    method: 'POST',
+                                                    body: new URLSearchParams(formData),
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                    }
+                                                })
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        if (data.success) {
+                                                            Swal.fire({
+                                                                icon: 'success',
+                                                                title: 'Success!',
+                                                                text: data.message,
+                                                            }).then(() => {
+                                                                window.location.href = data.redirectUrl;
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Oops...',
+                                                                text: data.message,
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: 'An error occurred while adding the coupon.',
+                                                        });
+                                                    });
+                                            } else {
+
+                                                // displayErrors(errors, 'addCouponForm');
+                                            }
+                                        });
+                                    }
+
+                                    // Edit Coupon Form Validation
+                                    const editCouponForms = document.querySelectorAll('.edit-coupon-form');
+                                    editCouponForms.forEach(form => {
+                                          });
+                                });
+
+                                // Delete Coupon
+                                const deleteCouponButtons = document.querySelectorAll('.delete-coupon');
+                                deleteCouponButtons.forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const couponId = this.dataset.couponId;
+                                        Swal.fire({
+                                            title: 'Are you sure?',
+                                            text: "You won't be able to revert this!",
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#3085d6',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: 'Yes, delete it!'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                fetch(`/admin/delete-coupon/${couponId}`, {
+                                                    method: 'DELETE'
+                                                })
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        if (data.success) {
+                                                            Swal.fire(
+                                                                'Deleted!',
+                                                                data.message,
+                                                                'success'
+                                                            ).then(() => {
+
+                                                                window.location.reload();
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Oops...',
+                                                                text: data.message,
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: 'An error occurred while deleting the coupon.',
+                                                        });
+                                                    });
+                                            }
+                                        });
+                                    });
+                                });
+
+                            </script>
+
+
+    </body>
+
+    <%- include('../admin-layouts/footer.ejs') %>

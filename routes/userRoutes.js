@@ -11,13 +11,13 @@ const passport = require('../config/passport');
 require('../config/passport');
 const userAuth = require('../middleware/userAuth');
 const checkOutController = require('../controller/user/checkOutController');
-
+const userOrder = require('../model/user/userOrder');
+const coupon = require('../model/admin/coupon');
 
 
 userRoute.use(session({
   secret: config.userSessionSecret,
   resave: false,
-
   saveUninitialized: true
 }));
 
@@ -50,29 +50,43 @@ userRoute.get('/auth/google/callback',
 userRoute.post('/forgot-password', userController.forgotPassword);
 userRoute.get('/resetpassword/:token', userController.loadResetPassword); 
 userRoute.post('/reset-password', userController.resetPassword);
+userRoute.get('/404', userController.fourNotFour); 
 
 //LOADSHOPE
 userRoute.get('/shop', productController.loadShop);
 userRoute.get('/product/:id', productController.productDetails);
 
 //CART
-userRoute.get('/cart',cartController.loadCart);
-userRoute.post('/addCartItem',cartController.addToCart);
-userRoute.post('/update-cart-quantity',cartController.updateCartQuantity);
-userRoute.post('/remove-cart-item',cartController.removeItem)
+userRoute.get('/cart',userAuth.isLogin,cartController.loadCart);
+userRoute.post('/addCartItem',userAuth.isLogin,cartController.addToCart);
+userRoute.post('/update-cart-quantity',userAuth.isLogin,cartController.updateCartQuantity);
+userRoute.post('/remove-cart-item',userAuth.isLogin,cartController.removeItem)
 
 //CHECKOUT
-userRoute.get('/checkOut',checkOutController.loadCheckOut)
+userRoute.get('/checkOut',userAuth.isLogin,checkOutController.loadCheckOut);
+userRoute.get('/placeOrder',userAuth.isLogin,checkOutController.placeOrder);
+userRoute.post('/place-order',userAuth.isLogin,checkOutController.placeOrder);
+userRoute.get('/orderSummary/:id',userAuth.isLogin,dashboard.loadOrderSummary);
+userRoute.post('/verify-payment',checkOutController.verifyPayment)
+
+
+// COUPON
+userRoute.post('/apply-coupon', checkOutController.applyCoupon);
+userRoute.post('/remove-coupon', checkOutController.removeCoupon);
+
 
 //DASHBOARD
-userRoute.get('/profile', dashboard.loadDashboard);
-userRoute.get('/address', dashboard.loadAddressPage);
+userRoute.get('/profile',userAuth.isLogin, dashboard.loadDashboard);
+userRoute.get('/address',userAuth.isLogin, dashboard.loadAddressPage);
 userRoute.post('/addAddress', dashboard.addAddress);
 userRoute.put('/editAddress/:id', dashboard.editAddress);
 userRoute.delete('/deleteAddress/:id', dashboard.deleteAddress);
-userRoute.get('/account', dashboard.loadAccount);
+userRoute.get('/account',userAuth.isLogin, dashboard.loadAccount);
 userRoute.post('/update-account', dashboard.updateUserData)
-
+userRoute.get('/orders',userAuth.isLogin,dashboard.loadOrder)
+userRoute.get('/order-details/:id',userAuth.isLogin,dashboard.getOrderDetails);
+userRoute.post('/cancelOrder', dashboard.cancelOrder);
+userRoute.post('/orders/:id/return', dashboard.returnOrder);
 
 
 

@@ -17,7 +17,9 @@ const loadShop = async (req, res) => {
         res.render('shope', {
             products,
             categories,
-            userData
+            userData,
+            item:{productId:products,quantity:1}
+            
         });
     } catch (error) {
         console.error('Error Loading Shop:', error);

@@ -6282,7 +6282,7 @@ fieldset:disabled .btn {
     outline: 0
 }
 
-.modal-backdrop {
+/* .modal-backdrop {
     --bs-backdrop-zindex: 1050;
     --bs-backdrop-bg: #000;
     --bs-backdrop-opacity: 0.5;
@@ -6301,7 +6301,7 @@ fieldset:disabled .btn {
 
 .modal-backdrop.show {
     opacity: var(--bs-backdrop-opacity)
-}
+} */
 
 .modal-header {
     display: flex;

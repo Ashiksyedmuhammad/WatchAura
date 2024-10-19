@@ -1,0 +1,467 @@
+<%- include('../user-layouts/header.ejs') %>
+    <link rel="stylesheet" href="/assets/userCss.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        .btn {
+            background-color: #000;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .order-detail-image {
+            width: 80px;
+            height: 80px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .order-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .order-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .item-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .quantity,
+        .price {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .order-summary {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .order-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+    </style>
+
+    </head>
+    <header id="header" class="header-default">
+        <div class="px_15 lg-px_40">
+            <div class="row wrapper-header align-items-center">
+                <div class="col-md-4 col-3 tf-lg-hidden">
+                    <a href="#mobileMenu" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 16" fill="none">
+                            <path
+                                d="M2.00056 2.28571H16.8577C17.1608 2.28571 17.4515 2.16531 17.6658 1.95098C17.8802 1.73665 18.0006 1.44596 18.0006 1.14286C18.0006 0.839753 17.8802 0.549063 17.6658 0.334735C17.4515 0.120408 17.1608 0 16.8577 0H2.00056C1.69745 0 1.40676 0.120408 1.19244 0.334735C0.978109 0.549063 0.857702 0.839753 0.857702 1.14286C0.857702 1.44596 0.978109 1.73665 1.19244 1.95098C1.40676 2.16531 1.69745 2.28571 2.00056 2.28571ZM0.857702 8C0.857702 7.6969 0.978109 7.40621 1.19244 7.19188C1.40676 6.97755 1.69745 6.85714 2.00056 6.85714H22.572C22.8751 6.85714 23.1658 6.97755 23.3801 7.19188C23.5944 7.40621 23.7148 7.6969 23.7148 8C23.7148 8.30311 23.5944 8.59379 23.3801 8.80812C23.1658 9.02245 22.8751 9.14286 22.572 9.14286H2.00056C1.69745 9.14286 1.40676 9.02245 1.19244 8.80812C0.978109 8.59379 0.857702 8.30311 0.857702 8ZM0.857702 14.8571C0.857702 14.554 0.978109 14.2633 1.19244 14.049C1.40676 13.8347 1.69745 13.7143 2.00056 13.7143H12.2863C12.5894 13.7143 12.8801 13.8347 13.0944 14.049C13.3087 14.2633 13.4291 14.554 13.4291 14.8571C13.4291 15.1602 13.3087 15.4509 13.0944 15.6653C12.8801 15.8796 12.5894 16 12.2863 16H2.00056C1.69745 16 1.40676 15.8796 1.19244 15.6653C0.978109 15.4509 0.857702 15.1602 0.857702 14.8571Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-md-4 col-6">
+                    <a href="index.html" class="logo-header">
+                        <img src="assets/images/logo/logo.svg" alt="logo" class="logo">
+                    </a>
+                </div>
+                <div class="col-xl-6 tf-md-hidden">
+                    <nav class="box-navigation text-center">
+                        <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-30">
+                            <li class="menu-item">
+                                <a href="/" class="item-link">Home<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/shop" class="item-link">Shope<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="#" class="item-link">About<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="#" class="item-link">Contact<i class="icon icon-arrow-down"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-xl-3 col-md-4 col-3">
+                    <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
+                        <!-- Search Icon -->
+                        <li class="nav-search">
+                            <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft"
+                                class="nav-icon-item">
+                                <i class="icon icon-search"></i>
+                            </a>
+                        </li>
+
+                        <!-- Conditional for showing Logout and User name if logged in, or Login if not -->
+                        <% if(locals.userData){ %>
+                            <!-- Show Logout Button -->
+                            <li class="nav-logout">
+                                <form action="/logout" method="POST" class="nav-icon-item" style="display: inline;">
+                                    <button type="submit" class="btn-logout"
+                                        style="background: none; border: none; padding: 0; cursor: pointer;">
+                                        <i class="icon icon-logout"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+
+                            <!-- Show User Name -->
+                            <li class="nav-user">
+                                <p class="mb-0">
+                                    <%= locals.userData[0]?.firstName %>
+                                </p>
+                            </li>
+                            <% } else { %>
+                                <!-- Show Login Button if not logged in -->
+                                <li class="nav-account">
+                                    <a href="/login" class="nav-icon-item">
+                                        <i class="icon icon-account"></i> Login
+                                    </a>
+                                </li>
+                                <% } %>
+
+                                    <!-- Wishlist Icon -->
+                                    <li class="nav-wishlist">
+                                        <a href="wishlist.html" class="nav-icon-item">
+                                            <i class="icon icon-heart"></i><span class="count-box">0</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Cart Icon -->
+                                    <li class="nav-cart">
+                                        <a href="/cart" class="nav-icon-item">
+                                            <i class="icon icon-bag"></i><span class="count-box">0</span>
+                                        </a>
+                                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <div class="tf-page-title">
+        <div class="container-full">
+            <div class="heading text-center">Your Orders</div>
+            <!-- <p class="text-center text-2 text_black-2 mt_5">Shop through our all products</p>  -->
+        </div>
+    </div>
+    <section class="flat-spacing-11">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="my-account-nav">
+                        <li><a href="/profile" class="my-account-nav-item ">Dashboard</a></li>
+                        <li><a href="my-account-orders.html" class="my-account-nav-item active">Orders</a></li>
+                        <li><a href="/address" class="my-account-nav-item  ">Address</a></li>
+                        <li><a href="/account" class="my-account-nav-item">Account Details</a></li>
+                        <li><a href="my-account-wishlist.html" class="my-account-nav-item">Wishlist</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="my-account-content account-order">
+                        <div class="wrap-account-order">
+                            <div class="wd-form-order">
+                                <div class="order-head">
+                                    <div class="content">
+                                        <div class="badge">
+                                            <%= order ? order.status : 'N/A' %>
+                                        </div>
+                                        <h6 class="mt-8 fw-5">Order #<%= order ? order.orderId : 'N/A' %>
+                                        </h6>
+                                    </div>
+                                </div>
+
+                                <% if (order && order.items && order.items.length> 0) { %>
+                                    <% order.items.forEach((item, index)=> { %>
+                                        <div class="order-item">
+                                            <div class="item-details">
+                                                <figure class="img-product order-detail-image">
+                                                    <% if (item.productId && item.productId.images &&
+                                                        item.productId.images[0]) { %>
+                                                        <img src="/uploads/<%= item.productId.images[0] %>"
+                                                            alt="<%= item.productName || 'Product Image' %>">
+                                                        <% } else { %>
+                                                            <img src="/images/placeholder-product.jpg"
+                                                                alt="Product image placeholder">
+                                                            <% } %>
+                                                </figure>
+                                                <div class="item-info">
+                                                    <h6 class="product-name">
+                                                        <%= item.productId.productName || 'N/A' %>
+                                                    </h6>
+                                                    <p class="quantity">Quantity: <%= item.quantity || 'N/A' %>
+                                                    </p>
+                                                    <p class="price">Price: ₹<%= item.price ? item.price.toFixed(2)
+                                                            : 'N/A' %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="order-actions mt-4 ">
+
+                                                <% if ( item.status=="Pending" ) { %>
+
+                                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#cancelOrderModal<%= item._id %>">CANCEL
+                                                        ORDER</button>
+                                                    <% } else { %>
+                                                        <h5>Cancelled</h5>
+                                                        <% } %>
+
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <p>No items found in this order.</p>
+                                                <% } %>
+
+                                                    <div class="order-summary">
+                                                        <div class="item">
+                                                            <div class="text-2 text_black-2">Order Date</div>
+                                                            <div class="text-2 mt_4 fw-6">
+                                                                <%= order && order.createdAt ? new
+                                                                    Date(order.createdAt).toLocaleString('en-IN', {
+                                                                    year: 'numeric' , month: 'long' , day: 'numeric' ,
+                                                                    hour: '2-digit' , minute: '2-digit' }) : 'N/A' %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="item">
+                                                            <div class="text-2 text_black-2">Shipping Address</div>
+                                                            <div class="text-2 mt_4 fw-6">
+                                                                <% if (order && order.shippingAddress) { %>
+                                                                    <p class="mb-2">
+                                                                        <%= order.shippingAddress.firstName %>
+                                                                            <%= order.shippingAddress.lastName %>
+                                                                    </p>
+                                                                    <p class="mb-2">
+                                                                        <%= order.shippingAddress.address %>
+                                                                    </p>
+                                                                    <p class="mb-2">
+                                                                        <%= order.shippingAddress.city %>,
+                                                                            <%= order.shippingAddress.state %>
+                                                                                <%= order.shippingAddress.postal_code %>
+                                                                    </p>
+                                                                    <p class="mb-2">
+                                                                        <%= order.shippingAddress.phone %>
+                                                                    </p>
+                                                                    <% } else { %>
+                                                                        <p>No shipping address available</p>
+                                                                        <% } %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="item">
+                                                            <div class="text-2 text_black-2">Total Amount</div>
+                                                            <div class="text-2 mt_4 fw-6">
+                                                                ₹<%= order && order.totalAmount ?
+                                                                    order.totalAmount.toFixed(2) : 'N/A' %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="item">
+                                                            <div class="text-2 text_black-2">Payment Status</div>
+                                                            <div class="text-2 mt_4 fw-6">
+                                                                <%= order ? order.paymentStatus : 'N/A' %>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <% order.items.forEach(products=> { %>
+        <div class="modal fade" id="cancelOrderModal<%= products._id %>" tabindex="-1"
+            aria-labelledby="cancelOrderModalLabel<%= products._id %>" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content pr-5 pl-5">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="cancelOrderModalLabel<%= products._id %>">Cancel
+                            Order</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="cancelOrderForm<%= products._id %>" data-cancel-id="<%= products._id %>"
+                        data-order-id="<%= order?._id %>" class="cancel-order-form">
+
+                        <div class="modal-body">
+                            <div class="mb-3 form-group">
+                                <label for="cancelReason<%= products._id %>" class="form-label errMsg">Reason for
+                                    Cancellation</label>
+                                <textarea class="form-control" id="cancelReason<%= products._id %>" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Cancel
+                                Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+
+            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const cancelOrderForms = document.querySelectorAll('.cancel-order-form');
+                    cancelOrderForms.forEach(form => {
+                        form.addEventListener('submit', handleCancelOrder);
+                    });
+                });
+
+                async function handleCancelOrder(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const itemId = form.getAttribute('data-cancel-id');
+                    const orderId = form.getAttribute('data-order-id');
+                    const reasonInput = form.querySelector('textarea');
+
+                    if (!validateReason(reasonInput)) return;
+
+                    const isConfirmed = await showConfirmationDialog();
+                    if (!isConfirmed) return;
+
+                    try {
+                        const response = await cancelOrderRequest(orderId, itemId, reasonInput.value);
+                        handleCancelResponse(response);
+                    } catch (error) {
+                        console.error('Error during cancel order:', error);
+                        showErrorAlert('An error occurred while cancelling the order.');
+                    }
+                }
+
+                function validateReason(reasonInput) {
+                    const reason = reasonInput.value.trim();
+                    if (reason.length < 5) {
+                        setInputError(reasonInput, 'Please enter a valid reason (at least 5 characters)');
+                        return false;
+                    }
+                    setInputSuccess(reasonInput);
+                    return true;
+                }
+
+                function setInputError(input, message) {
+                    const formGroup = input.closest('.form-group');
+                    const errorDisplay = formGroup.querySelector('.errMsg');
+                    errorDisplay.textContent = message;
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                }
+
+                function setInputSuccess(input) {
+                    const formGroup = input.closest('.form-group');
+                    const errorDisplay = formGroup.querySelector('.errMsg');
+                    errorDisplay.textContent = '';
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                }
+
+                async function showConfirmationDialog() {
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, cancel it!'
+                    });
+                    return result.isConfirmed;
+                }
+
+                async function cancelOrderRequest(orderId, itemId, reason) {
+                    const response = await fetch('/cancelOrder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ _id: orderId, cancel_reason: reason, item_id: itemId })
+                    });
+                    return response.json();
+                }
+
+                function handleCancelResponse(data) {
+                    if (data.success) {
+                        Swal.fire('Cancelled!', 'Your order has been canceled.', 'success')
+                            .then(() => location.reload());
+                    } else {
+                        showErrorAlert(data.message || 'Failed to cancel the order.');
+                    }
+                }
+
+                function showErrorAlert(message) {
+                    Swal.fire('Error!', message, 'error');
+                }
+            </script>
+
+
+            <%- include('../user-layouts/footer.ejs') %>

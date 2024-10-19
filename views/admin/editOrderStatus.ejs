@@ -1,0 +1,250 @@
+<%- include('../admin-layouts/header.ejs') %>
+
+    <body>
+        <div class="container-scroller">
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                    <a class="sidebar-brand brand-logo" href="index.html"><img
+                            src="/admin-assets/assets/images/logo.svg" alt="logo" /></a>
+                    <a class="sidebar-brand brand-logo-mini" href="index.html"><img
+                            src="/admin-assets/assets/images/logo-mini.svg" alt="logo" /></a>
+                </div>
+                <ul class="nav">
+                    <li class="nav-item profile">
+                        <div class="profile-desc">
+                            <div class="profile-pic">
+                                <div class="count-indicator">
+                                    <img class="img-xs rounded-circle"
+                                        src="/admin-assets/assets/images/faces/face15.jpg" alt="">
+                                    <span class="count bg-success"></span>
+                                </div>
+                                <div class="profile-name">
+                                    <h5 class="mb-0 font-weight-normal">ADMIN</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Sidebar menu items -->
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-speedometer"></i>
+                            </span>
+                            <span class="menu-title">DASHBOARD</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/product">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-playlist-play"></i>
+                            </span>
+                            <span class="menu-title">PRODUCTS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/category">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-table-large"></i>
+                            </span>
+                            <span class="menu-title">CATEGORIES</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="#">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-table-large"></i>
+                            </span>
+                            <span class="menu-title">ORDERS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/customers">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-contacts"></i>
+                            </span>
+                            <span class="menu-title">CUSTOMERS</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/offer">
+                            <span class="menu-icon">
+                                <i class="fas fa-percent"></i>
+                            </span>
+                            <span class="menu-title">OFFERS</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Navbar -->
+            <div class="col-12">
+                <nav class="navbar p-0 fixed-top d-flex flex-row">
+                    <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                        <a class="navbar-brand brand-logo-mini" href="index.html"><img
+                                src="/admin-assets/assets/images/logo-mini.svg" alt="logo" /></a>
+                    </div>
+                    <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                        <button class="navbar-toggler navbar-toggler align-self-center" type="button"
+                            data-toggle="minimize">
+                            <span class="mdi mdi-menu"></span>
+                        </button>
+                        <ul class="navbar-nav navbar-nav-right">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                                    <div class="navbar-profile">
+                                        <img class="img-xs rounded-circle"
+                                            src="/admin-assets/assets/images/faces/face15.jpg" alt="">
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">ADMIN</p>
+                                        <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+                                    aria-labelledby="profileDropdown">
+                                    <h6 class="p-3 mb-0">Profile</h6>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item">
+                                        <form action="/admin/logout" method="post">
+                                            <div class="preview-thumbnail">
+                                                <div class="preview-icon bg-dark rounded-circle">
+                                                    <button type="submit"><i
+                                                            class="mdi mdi-logout text-danger"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                            data-toggle="offcanvas">
+                            <span class="mdi mdi-format-line-spacing"></span>
+                        </button>
+                    </div>
+                </nav>
+                <form action="/admin/updateStatus" method="POST" id="update-order-status" py-4">
+                    <input type="hidden" id="hiddenid" name="orderid" value="<%= order._id %>">
+                    <input type="hidden" id="hiddenitemid" name="itemid" value="<%= product._id %>">
+                    
+                    
+                
+                    <div class="row m-5 p-5">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Order Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="ecommerce-product-name" class="form-label">Order ID</label>
+                                        <input type="text" class="form-control" id="ecommerce-product-name" value="<%= order.orderId %>" disabled>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Order Date:</strong> <span><%= new Date(order.createdAt).toLocaleDateString() %></span></p>
+                                            <p><strong>Product ID:</strong> <span><%= product.productId._id %></span></p>
+                                            <p><strong>Product Name:</strong> <span><%= product.productId.productName %></span></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Product Quantity:</strong> <span><%= product.quantity %></span></p>
+                                            <p><strong>Product Total Price:</strong> <span>₹<%= product.price %></span></p>
+                                            <p><strong>Payment Status:</strong> <span><%= order.paymentStatus %></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="col-lg-4 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Update Order Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="product-status" class="form-label">Select Product Status</label>
+                                        <select name="productStatus" id="product-status" class="form-select">
+                                            <option value="Pending" <%= product.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="Delivered" <%= product.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                        </select>
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary w-100">Update Status</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+               
+
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+    const updateOrderStatusForm = document.getElementById('update-order-status');
+    const statusSelect = document.getElementById('product-status');
+    const hiddenOrderId = document.getElementById('hiddenid');
+    const hiddenItemId = document.getElementById('hiddenitemid');
+
+    updateOrderStatusForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const statusValue = statusSelect.value.trim();
+        const orderId = hiddenOrderId.value.trim();
+        const itemId = hiddenItemId.value.trim();
+        updateOrderStatus(statusValue, orderId, itemId);
+    });
+
+    const updateOrderStatus = async (statusValue, orderId, itemId) => {
+        try {
+            const response = await fetch('/admin/updateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    orderid: orderId,
+                    itemid: itemId,
+                    productStatus: statusValue
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message || 'Order status has been updated successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message || 'Failed to update order status. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            console.error('Error during order status update:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred. Please try again later.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+});
+                </script>
+               
+
+    <%- include('../admin-layouts/footer.ejs') %>

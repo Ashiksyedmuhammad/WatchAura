@@ -10,26 +10,40 @@ require('dotenv').config();
 const loadCart = async (req, res) => {
     try {
         const userId = req.session.userSession;
-
+        let subTotal = 0;
         const [cart, user] = await Promise.all([
             Cart.findOne({ userId }).populate('items.productId'),
             User.findById(userId)
         ]);
 
+
         if (!user) {
-            return res.json({ message: 'user not found' })
+            res.render('cart', {
+                cart: undefined,
+                subTotal
+            });
+        } else {
+            if (!cart) {
+                res.render('cart', {
+                    cart:undefined,
+                    user,
+                    subTotal
+                });
+            }else{
+            cart.items.forEach((cartItem) => {
+                subTotal += cartItem.productId.price * cartItem.quantity;
+            });
+            res.render('cart', {
+                cart,
+                user,
+                subTotal
+            });}
         }
 
-        let subTotal = 0;
-        cart.items.forEach((cartItem) => {
-            subTotal += cartItem.productId.price * cartItem.quantity;
-        });
 
-        res.render('cart', {
-            cart,
-            user,
-            subTotal
-        });
+
+
+
     } catch (error) {
         console.error('Error Loading Cart:', error);
         res.status(500).json({ success: false, message: 'An error occurred while loading the Cart' });
@@ -38,14 +52,15 @@ const loadCart = async (req, res) => {
 
 
 const addToCart = async (req, res) => {
+    
     const { productId, quantity, userId } = req.body;
 
     try {
-        
+
         let cart = await Cart.findOne({ userId: userId });
 
         if (cart) {
-           
+
             const productExists = cart.items.some(item => item.productId.toString() === productId);
             if (productExists) {
                 return res.status(400).json({ success: false, message: "Product already in cart...!" });
@@ -61,8 +76,9 @@ const addToCart = async (req, res) => {
                 items: [{ productId, quantity }]
             });
 
-            // Save the new cart
+            
             await newCart.save();
+
             return res.status(201).json({ success: true, message: 'New Product added to cart...!' });
         }
 
@@ -80,21 +96,23 @@ const updateCartQuantity = async (req, res) => {
     const cartId = req.query.cartId
 
     try {
-        
+
         let cart = await Cart.findOne({ _id: cartId }).populate('items.productId');
 
         if (cart) {
             const productIndex = cart.items.findIndex(item => item.productId._id.toString() === productId);
 
             if (productIndex > -1) {
-                
+
                 cart.items[productIndex].quantity = quantity;
 
                 await cart.save();
 
-                
+
                 let subTotal = 0;
+
                 let itemTotal = 0
+
                 cart.items.forEach((item) => {
                     subTotal += item.productId.price * item.quantity;
                     if (item.productId._id.toString() === productId) {
@@ -104,7 +122,7 @@ const updateCartQuantity = async (req, res) => {
                 return res.status(200).json({
                     success: true,
                     message: 'Cart item quantity updated',
-                    subTotal: subTotal, 
+                    subTotal: subTotal,
                     quantity,
                     cart,
                     itemTotal
@@ -123,9 +141,10 @@ const updateCartQuantity = async (req, res) => {
 };
 
 
-const removeItem= async (req, res) => {
+const removeItem = async (req, res) => {
     try {
         const { cartId } = req.query;
+        
         const { productId } = req.body;
 
         const cart = await Cart.findById(cartId);

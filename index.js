@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require('mongoose');
-const dotenv = require("dotenv");
+require('dotenv').config()
 const userRoute = require("./routes/userRoutes");
 const bodyParser = require("body-parser");
 const adminRoute = require("./routes/adminRoutes");
@@ -12,10 +12,7 @@ const nocache = require('nocache');
 const flash = require('connect-flash');
 const multer = require('multer');
 
-
-dotenv.config();
-
-mongoose.connect("mongodb://localhost:27017/watchAura")
+mongoose.connect(process.env.MONGO_ID)
     .then(() => {
         console.log("succesfully connected to mongoDB");
     }).catch(() => {
@@ -34,21 +31,16 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use(flash());
-app.use((req, res, next) => {
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
-});
 
 app.use(nocache());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-app.use('/', userRoute);
 app.use('/admin', adminRoute);
-
+app.use('/', userRoute);
+app.use('/*',(req,res)=>{
+    res.redirect('/404')
+});
 
 
 const port = process.env.PORT

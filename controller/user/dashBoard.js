@@ -3,7 +3,7 @@ const User = require('../../model/user/userModel');
 const Product = require('../../model/admin/productModel');
 const Address = require('../../model/user/userAddress');
 const bcrypt = require('bcrypt');
-
+const Order = require('../../model/user/userOrder');
 
 
 
@@ -73,7 +73,7 @@ const addAddress = async (req, res) => {
             userId: req.session.userSession
         };
 
-        // Save new address
+        
         const savedAddress = await Address.create(newAddress);
 
         res.status(201).json({ message: 'Address saved successfully', address: savedAddress });
@@ -160,15 +160,14 @@ const loadAccount = async (req, res) => {
 const updateUserData = async (req, res) => {
     try {
         const userId = req.session.userSession;  // Retrieve user ID from session
-        const { name, currentPassword, newPassword, confirmPassword } = req.body;  // Destructure request body
+        const { name, currentPassword, newPassword, confirmPassword } = req.body;  
 
-        // Find user by ID
         const user = await User.findById(userId);
         if (!user) {
             return res.json({ success: false, message: 'User not found' });
         }
 
-        // Verify the current password
+        
         try {
             const isMatch = await bcrypt.compare(currentPassword, user.password);
             if (!isMatch) {
@@ -179,29 +178,29 @@ const updateUserData = async (req, res) => {
             return res.json({ success: false, message: 'Error verifying password' });
         }
 
-        // Check if new password is provided and meets length requirement
+        
         if (newPassword) {
             if (newPassword.length < 8) {
                 return res.json({ success: false, message: 'New password must be at least 8 characters long' });
             }
 
-            // Ensure new password and confirm password match
+           
             if (newPassword !== confirmPassword) {
                 return res.json({ success: false, message: 'New passwords do not match' });
             }
 
-            // Hash the new password
+            
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-            // Update the password and name
+            
             await User.findByIdAndUpdate(userId, {
-                firstName: name,  // Update the name
-                password: hashedPassword  // Update the hashed password
+                firstName: name, 
+                password: hashedPassword  
             });
         } else {
-            // Only update the name if no new password is provided
+           
             await User.findByIdAndUpdate(userId, {
-                firstName: name  // Update the name
+                firstName: name  
             });
         }
 
@@ -212,6 +211,120 @@ const updateUserData = async (req, res) => {
     }
 };
 
+const loadOrder = async (req, res) => {
+    try {
+        const userId = req.session.userSession;
+        const user = await User.findById(userId);
+        const order = await Order.find({userId}).populate("items.productId");
+        if (!user) {
+            return res.status(404).send('User not found')
+        }
+        res.render('orderList', {
+            userData: user,
+            order
+        });
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        res.status(500).send('Internal server error');
+    }
+};
+
+const getOrderDetails = async (req, res) => {
+    try {
+        const userId = req.session.userSession;
+        const user = await User.findById(userId);
+        const orderId = req.params.id;
+        const order = await Order.findOne({ _id: orderId, userId }).populate("items.productId");
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        res.render('orderDetails', { 
+            userData: user,
+            order 
+        });
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        res.status(500).send('Internal server error');
+    }
+};
+
+
+
+const returnOrder = async (req, res) => {
+    try {
+        const userId = req.session.userSession;
+        const orderId = req.params.id;
+        const order = await Order.findOne({ _id: orderId, userId });
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        if (order.orderStatus.toLowerCase() !== 'placed') {
+            return res.status(400).json({ success: false, message: 'Order cannot be returned at this stage' });
+        }
+
+        order.orderStatus = 'Return Requested';
+        await order.save();
+
+        res.json({ success: true, message: 'Return request submitted successfully' });
+    } catch (error) {
+        console.error('Error processing return request:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+const cancelOrder = async (req, res) => {
+    try {
+        const { _id, cancel_reason, item_id } = req.body;
+
+        const order = await Order.findById(_id)
+            .populate('paymentMethod')
+            .populate('items.productId');
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        const productToCancel = order.items.find(product => product._id.equals(item_id));
+        
+        if (!productToCancel) {
+            return res.status(404).json({ success: false, message: 'Product not found in order' });
+        }
+
+        productToCancel.status = 'Cancelled';
+        productToCancel.cancellationReason = cancel_reason;
+
+        await Product.findByIdAndUpdate(
+            productToCancel.productId,
+            { $inc: { stock: productToCancel.quantity } },
+            { new: true }
+        );
+
+        await order.save();
+
+        res.json({ success: true, message: "Order item cancelled successfully and stock updated" });
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        res.status(500).json({ success: false, message: 'Failed to cancel order' });
+    }
+};
+
+const loadOrderSummary = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId).populate("items.productId");
+        if (!order) {
+            return res.status(404).send('Order Not Found');
+        }
+        res.render('orderSummary', { order });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+};
 
 
 module.exports = {
@@ -222,5 +335,10 @@ module.exports = {
     editAddress,
     deleteAddress,
     loadAccount,
-    updateUserData
+    updateUserData,
+    loadOrder,
+    getOrderDetails,
+    cancelOrder,
+    returnOrder,
+    loadOrderSummary
 }

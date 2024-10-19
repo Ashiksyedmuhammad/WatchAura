@@ -228,11 +228,11 @@ const forgotPassword = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Generate a token and expiration time (1 hour)
+        
         const resetToken = crypto.randomBytes(20).toString('hex');
-        const resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+        const resetPasswordExpires = Date.now() + 3600000; 
 
-        // Update the user's reset token and expiration
+       
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = resetPasswordExpires;
         await user.save();
@@ -280,7 +280,7 @@ const loadResetPassword = async (req, res) => {
             return res.status(400).send('Invalid or expired password reset token');
         }
 
-        // Render the password reset form, passing the token to the form
+       
         res.render('resetpassword', { token: resetToken });
     } catch (error) {
         console.log('Error during load reset password:', error);
@@ -301,10 +301,10 @@ const resetPassword = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid or expired token' });
         }
 
-        // Hash the new password
+        
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update user's password and clear reset token fields
+        
         user.password = hashedPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
@@ -317,6 +317,13 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const fourNotFour = async(req,res)=>{
+    try {
+        res.render('404')
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
 module.exports = {
     loadHome,
     insertUser,
@@ -329,6 +336,6 @@ module.exports = {
     logout,
     forgotPassword,
     loadResetPassword,
-    resetPassword
-
+    resetPassword,
+    fourNotFour
 }

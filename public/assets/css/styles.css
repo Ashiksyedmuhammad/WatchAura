@@ -11153,10 +11153,11 @@ blockquote .text {
 .tf-cart-item .cart-total,
 .tf-cart-item .cart-price {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: self-end;
-  justify-content: safe center;
+  align-items: center;
+  /* flex-direction: row; */
+  /* flex-wrap: wrap; */
+  /* align-items: self-end; */
+  /* justify-content: safe center; */
   gap: 10px;
   line-height: 1;
 }
