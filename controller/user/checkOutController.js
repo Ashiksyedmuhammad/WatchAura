@@ -24,7 +24,7 @@ const loadCheckOut = async (req, res) => {
             Address.find({ userId }),
             Coupon.find()
         ]);
-
+        
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }

@@ -10,16 +10,18 @@ require('dotenv').config();
 
 const loadShop = async (req, res) => {
     try {
+        const userId = req.session.userSession;
+        const user = await User.findById(userId);
         const { 
             sort = 'featured',
             search = '',
             minPrice,
             maxPrice,
             category,
-            page = 1 // default to first page
+            page = 1 
         } = req.query;
 
-        const limit = 8; // Number of products per page
+        const limit = 8; 
         const skip = (page - 1) * limit;
 
         let query = { isListed: true };
@@ -72,12 +74,13 @@ const loadShop = async (req, res) => {
                 .skip(skip)
                 .limit(limit),
             Category.find({}),
-            Product.countDocuments(query) // Get total product count for pagination
+            Product.countDocuments(query) 
         ]);
 
         const totalPages = Math.ceil(totalProducts / limit);
 
         res.render('shope', {
+            userData : user,
             products,
             categories,
             currentPage: parseInt(page),

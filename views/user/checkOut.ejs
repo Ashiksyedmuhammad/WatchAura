@@ -820,8 +820,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <% }); %>
+                 </div>
+                 <% }); %>
 
 
 
@@ -1475,10 +1475,13 @@
                         });
 
                         const availableCoupons = [
-               ` <%coupon.forEach(coupon=>{%>            
-        { code: '<%=coupon.couponId%>', description: '<%=coupon.discount%>% off your order' },
-        <%})%>`
-    ];
+    <% coupon.forEach((coupon, index) => { %>
+        {
+            code: '<%= coupon.couponId %>',
+            description: '<%= coupon.discount %>% off your order'
+        }<% if (index !== coupon.length - 1) { %>,<% } %>
+    <% }); %>
+];
     // COUPON MODAL...
     const modal = document.getElementById('couponModal');
     const showCouponsBtn = document.getElementById('showCouponsBtn');
@@ -1505,6 +1508,9 @@
             modal.style.display = 'none';
         }
     }
+
+    console.log(availableCoupons);
+    
 
     function displayAvailableCoupons() {
         availableCouponsDiv.innerHTML = '';

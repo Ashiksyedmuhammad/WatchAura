@@ -525,14 +525,14 @@
                                             <!-- Wishlist Icon -->
                                             <li class="nav-wishlist">
                                                 <a href="wishlist.html" class="nav-icon-item">
-                                                    <i class="icon icon-heart"></i><span class="count-box">0</span>
+                                                    <i class="icon icon-heart"></i><span class="count-box"></span>
                                                 </a>
                                             </li>
 
                                             <!-- Cart Icon -->
                                             <li class="nav-cart">
                                                 <a href="/cart" class="nav-icon-item">
-                                                    <i class="icon icon-bag"></i><span class="count-box">0</span>
+                                                    <i class="icon icon-bag"></i><span class="count-box"></span>
                                                 </a>
                                             </li>
                             </ul>
@@ -610,15 +610,15 @@
                                         </div>
                                       
                                         <!-- Quantity Selection -->
-                                        <!-- <div class="tf-product-info-quantity">
+                                         <div class="tf-product-info-quantity" hidden>
                                             <div class="quantity-title fw-6">Quantity</div>
-                                            </%if(product.stock > 5) {%>
+                                            <%if(product.stock > 5) {%>
                                                 <input type="number" id="qty" class="form-control" value="1" min="1" max="5" step="1" data-decimals="0" required>
-                                            </%} else {%>
+                                            <%} else {%>
                                                 <input type="number" id="qty" class="form-control" value="1" min="1" max="</%=product.stock%>" step="1" data-decimals="0" required>
-                                            </%}%>
+                                            <%}%>
                                         </div>
-         -->
+         
                                         <!-- Action Buttons -->
                                         <div class="tf-product-info-buy-button">
                                             <% if(locals.userData && locals.userData[0]?.firstName ) { %>

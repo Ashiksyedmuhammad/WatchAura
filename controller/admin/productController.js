@@ -231,18 +231,17 @@ const approveOrder = async (req, res) => {
         const currentItem = order.items;
         const currentTotal = products.price;
         const userId = order.userId;
-        console.log(userId);
+    
         
 
         if (products.status = 'Returned') {
             const randomID = Math.floor(100000 + Math.random() * 900000);
             const refundAmount = parseFloat(currentTotal);
-            console.log(refundAmount);
             
 
             let wallet = await Wallet.findOne({ userId: userId });
             
-            console.log(wallet);
+
              
             
             if (wallet) {
@@ -301,10 +300,6 @@ const rejectOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
-
-        // if (products.status === 'Return Requested' || order.orderStatus === 'Delivered') {
-        //     return res.status(400).json({ success: false, message: 'Cannot Reject this order' });
-        // }
 
         products.status = 'Return Rejected';
         await order.save();

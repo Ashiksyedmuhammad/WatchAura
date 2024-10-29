@@ -98,6 +98,9 @@ const addToCart = async (req, res) => {
 
     try {
 
+        console.log(req.body);
+        
+
         let cart = await Cart.findOne({ userId: userId });
 
         if (cart) {
@@ -109,7 +112,8 @@ const addToCart = async (req, res) => {
 
             cart.items.push({ productId, quantity });
 
-            await cart.save();
+            let aaCart =  await cart.save();
+            console.log('aaCar', aaCart)
             return res.status(200).json({ success: true, message: 'Product added to cart...!' });
         } else {
             const newCart = new Cart({

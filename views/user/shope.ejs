@@ -253,18 +253,18 @@
                                         <% } %>
                                     </a>
                                     <div class="list-product-btn absolute-2">
-                                        <% if(locals.userData && locals.userData[0]?.firstName) { %>
+                                        <% if(locals.userData && locals.userData?.firstName) { %>
                                             <a href="#quick_add" data-bs-toggle="modal"
                                                 class="box-icon bg_white quick-add tf-btn-loading"
                                                 data-product-id="<%= product._id %>"
-                                                data-user-id="<%= locals.userData[0]?._id %>">
+                                                data-user-id="<%= locals.userData?._id %>">
                                                 <span class="icon icon-bag"></span>
                                                 <span class="tooltip">Add to Cart</span>
                                             </a>
                                             <a href="javascript:void(0);"
                                                 class="box-icon bg_white wishlist btn-icon-action"
                                                 data-product-id="<%= product._id %>"
-                                                data-user-id="<%= locals.userData[0]?._id %>">
+                                                data-user-id="<%= locals.userData?._id %>">
                                                 <span class="icon icon-heart"></span>
                                                 <span class="tooltip">Add to Wishlist</span>
                                                 <span class="icon icon-delete"></span>
@@ -653,9 +653,9 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
-    searchInput.addEventListener('input', debounce(updateFilters, 500));
-    minPrice.addEventListener('input', debounce(updateFilters, 500));
-    maxPrice.addEventListener('input', debounce(updateFilters, 500));
+    searchInput.addEventListener('input', debounce(updateFilters, 1000));
+    minPrice.addEventListener('input', debounce(updateFilters,1000));
+    maxPrice.addEventListener('input', debounce(updateFilters, 1000));
 
   
     sortSelect.addEventListener('change', updateFilters);
