@@ -27,7 +27,14 @@ const productSchema = new mongoose.Schema({
     price:{
         type:Number,
         require:true
-    },    
+    },
+    offerPrice:{
+        type: Number
+    },
+    offerId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Offer"
+    }
 },
 {timestamps:true}
 );

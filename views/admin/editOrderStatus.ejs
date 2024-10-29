@@ -162,7 +162,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <label for="product-status" class="form-label">Select Product Status</label>
+                                        <label for="product-status" class="form-label">Select  Order Status</label>
                                         <select name="productStatus" id="product-status" class="form-select">
                                             <option value="Pending" <%= product.status === 'Pending' ? 'selected' : '' %>>Pending</option>
                                             <option value="Delivered" <%= product.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
@@ -177,7 +177,9 @@
                     </div>
                     
                 </form>
-               
+
+                
+               </div>
 
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

@@ -5,6 +5,7 @@ const User = require('../../model/user/userModel')
 const sharp = require('sharp');
 const path = require('path');
 const Coupon = require('../../model/admin/coupon');
+const Wallet = require ('../../model/user/userWallet'); 
 
 const loadProducts = async (req, res) => {
     try {
@@ -213,6 +214,110 @@ const cancelOrder = async (req, res) => {
     }
 };
 
+const approveOrder = async (req, res) => {
+    try {
+        const { _id, itemId } = req.body;
+        const order = await Orders.findById(_id).populate('paymentMethod').populate('items.productId')
+        const products = order.items.find(product => product.equals(itemId))
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+
+        products.status = 'Returned';
+        await order.save();
+        
+        const currentItem = order.items;
+        const currentTotal = products.price;
+        const userId = order.userId;
+        console.log(userId);
+        
+
+        if (products.status = 'Returned') {
+            const randomID = Math.floor(100000 + Math.random() * 900000);
+            const refundAmount = parseFloat(currentTotal);
+            console.log(refundAmount);
+            
+
+            let wallet = await Wallet.findOne({ userId: userId });
+            
+            console.log(wallet);
+             
+            
+            if (wallet) {
+                wallet.balance += refundAmount;
+                wallet.history.push({
+                    amount: refundAmount,
+                    transactionType: "Returned",
+                    description: "Product Return Refund",
+                    transactionId: `TRX-${randomID}`
+                });
+            } else {
+                wallet = new Wallet({
+                    userId: order.userId,
+                    balance: refundAmount,
+                    history: [{
+                        amount: refundAmount,
+                        transactionType: "Returned",
+                        description: "Product Return Refund",
+                        transactionId: `TRX-${randomID}`
+                    }]
+                });
+            }
+
+            await wallet.save({});
+            for (const item of order.items) {
+                await Product.findByIdAndUpdate(
+                    item.productId,
+                    { $inc: { stock: item.quantity } },
+                    { new: true}
+                );
+            }
+        }
+         
+
+        
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(
+                item.productId,
+                { $inc: { stock: item.quantity } }
+            );
+        }
+
+        res.json({ success: true, message: "Request Approved Successfully ..." });
+    } catch (error) {
+        console.error('Error Approving order:', error);
+        res.status(500).json({ success: false, message: 'Failed to Approve order' });
+    }
+};
+
+const rejectOrder = async (req, res) => {
+    try {
+        const { _id, itemId } = req.body;
+        const order = await Orders.findById(_id).populate('paymentMethod').populate('items.productId')
+        const products = order.items.find(product => product.equals(itemId))
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // if (products.status === 'Return Requested' || order.orderStatus === 'Delivered') {
+        //     return res.status(400).json({ success: false, message: 'Cannot Reject this order' });
+        // }
+
+        products.status = 'Return Rejected';
+        await order.save();
+
+
+       
+
+        res.json({ success: true, message: "Request Rejected..." });
+    } catch (error) {
+        console.error('Error Rejecting order:', error);
+        res.status(500).json({ success: false, message: 'Failed to Reject order' });
+    }
+};
 
 const loadupdateStatus = async (req, res) => {
     try {
@@ -294,4 +399,6 @@ module.exports = {
     cancelOrder,
     loadupdateStatus,
     updateStatus,
+    approveOrder,
+    rejectOrder
 }

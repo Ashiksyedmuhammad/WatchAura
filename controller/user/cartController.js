@@ -3,6 +3,7 @@ const Category = require("../../model/admin/categoryList");
 const Product = require('../../model/admin/productModel');
 const User = require('../../model/user/userModel');
 const Cart = require('../../model/user/cart');
+const Offer= require('../../model/admin/offerModal')
 require('dotenv').config();
 
 
@@ -10,11 +11,55 @@ require('dotenv').config();
 const loadCart = async (req, res) => {
     try {
         const userId = req.session.userSession;
-        let subTotal = 0;
+        let subTotal = 0; 
+        
         const [cart, user] = await Promise.all([
             Cart.findOne({ userId }).populate('items.productId'),
             User.findById(userId)
         ]);
+
+        let productDetails = [];
+        
+        if (cart && cart.items) {
+          
+            const offerIds = cart.items.map(item => item.productId.offerId).filter(Boolean);
+            
+           
+            const offers = await Offer.find({ _id: { $in: offerIds } }).lean();
+            const offersMap = new Map(offers.map(offer => [offer._id.toString(), offer.discount]));
+
+            productDetails = await Promise.all(
+                cart.items.map(async (item) => {
+                    const product = item.productId;
+                    const offerId = product.offerId;
+
+                   
+                    const discount = offersMap.get(offerId?.toString()) || 0; 
+
+                    return {
+                        productId: product._id,
+                        name: product.productName,
+                        price: product.price,
+                        offerId: offerId,
+                        discount: discount
+                    };
+                })
+            );
+
+           
+            cart.items.forEach((cartItem) => {
+                const product = cartItem.productId;
+                const quantity = cartItem.quantity;
+
+               
+                const offerId = product.offerId;
+                const discount = offersMap.get(offerId?.toString()) || 0;
+
+            
+                const effectivePrice = product.price * (1 - discount / 100);
+                subTotal += effectivePrice * quantity;
+            });
+        }
 
 
         if (!user) {
@@ -25,30 +70,26 @@ const loadCart = async (req, res) => {
         } else {
             if (!cart) {
                 res.render('cart', {
-                    cart:undefined,
+                    cart: undefined,
                     user,
-                    subTotal
+                    subTotal,
+                    productDetails
                 });
-            }else{
-            cart.items.forEach((cartItem) => {
-                subTotal += cartItem.productId.price * cartItem.quantity;
-            });
-            res.render('cart', {
-                cart,
-                user,
-                subTotal
-            });}
+            } else {
+                res.render('cart', {
+                    cart,
+                    user,
+                    subTotal,
+                    productDetails
+                });
+            }
         }
-
-
-
-
-
     } catch (error) {
         console.error('Error Loading Cart:', error);
         res.status(500).json({ success: false, message: 'An error occurred while loading the Cart' });
     }
 };
+
 
 
 const addToCart = async (req, res) => {
@@ -91,38 +132,56 @@ const addToCart = async (req, res) => {
 
 
 const updateCartQuantity = async (req, res) => {
-
     const { productId, quantity } = req.body;
-    const cartId = req.query.cartId
+    const cartId = req.query.cartId;
 
     try {
-
         let cart = await Cart.findOne({ _id: cartId }).populate('items.productId');
 
         if (cart) {
             const productIndex = cart.items.findIndex(item => item.productId._id.toString() === productId);
 
             if (productIndex > -1) {
-
+             
                 cart.items[productIndex].quantity = quantity;
 
                 await cart.save();
 
-
                 let subTotal = 0;
+                let itemTotal = 0;
 
-                let itemTotal = 0
+           
+                for (const item of cart.items) {
+                    const product = item.productId;
+                    const offerId = product.offerId;
 
-                cart.items.forEach((item) => {
-                    subTotal += item.productId.price * item.quantity;
-                    if (item.productId._id.toString() === productId) {
-                        itemTotal = item.productId.price * item.quantity;
+                    let price = product.price; 
+                    let discount = 0; 
+
+                  
+                    if (offerId) {
+                        const offer = await Offer.findById(offerId);
+                        if (offer) {
+                            discount = offer.discount; 
+                        }
                     }
-                });
+
+                 
+                    const effectivePrice = price * (1 - discount / 100);
+                    
+                  
+                    if (product._id.toString() === productId) {
+                        itemTotal = effectivePrice * quantity;
+                    }
+
+                   
+                    subTotal += effectivePrice * item.quantity;
+                }
+
                 return res.status(200).json({
                     success: true,
                     message: 'Cart item quantity updated',
-                    subTotal: subTotal,
+                    subTotal,
                     quantity,
                     cart,
                     itemTotal

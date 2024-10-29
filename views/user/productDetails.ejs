@@ -2,148 +2,443 @@
 
 
 
-    <style>
-        .related-products {
-            padding: 60px 0;
-            background-color: #ffffff;
+<style>
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #3d464d;
+        --accent-color: #E41E31;
+        --text-color: #333333;
+        --gray-color: #757575;
+        --white-color: #ffffff;
+        --border-color: #e5e7eb;
+    }
+    
+    /* Product Gallery Section */
+    .tf-main-product {
+        padding: 60px 0;
+        background-color: var(--white-color);
+    }
+    
+    .tf-product-media-wrap {
+        position: sticky;
+        top: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .thumbs-slider {
+        display: flex;
+        gap: 24px;
+        max-width: 100%;
+    }
+    
+    .tf-product-media-thumbs {
+        width: 120px;
+        height: 500px;
+        overflow: hidden;
+    }
+    
+    .tf-product-media-thumbs .swiper-slide {
+        height: 120px;
+        cursor: pointer;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid var(--border-color);
+        transition: border-color 0.3s ease;
+    }
+    
+    .tf-product-media-thumbs .swiper-slide:hover {
+        border-color: var(--accent-color);
+    }
+    
+    .tf-product-media-thumbs .swiper-slide.swiper-slide-thumb-active {
+        border-color: var(--accent-color);
+    }
+    
+    .tf-product-media-main {
+        flex: 1;
+        height: 600px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tf-image-zoom {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .tf-image-zoom:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Product Info Section */
+    .tf-product-info-wrap {
+        padding: 30px;
+        background-color: var(--white-color);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tf-product-info-title h4 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--text-color);
+        line-height: 1.2;
+    }
+    
+    .tf-product-info-badges {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .badges {
+        background-color: var(--accent-color);
+        color: var(--white-color);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Price Styles */
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 0;
+        margin: 24px 0;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .price-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+    }
+    
+    .original-price {
+        font-size: 1.25rem;
+        color: var(--gray-color);
+        text-decoration: line-through;
+    }
+    
+    .offer-price {
+        font-size: 2rem;
+        color: var(--accent-color);
+        font-weight: 700;
+    }
+    
+    .regular-price {
+        font-size: 2rem;
+        color: var(--text-color);
+        font-weight: 700;
+    }
+    
+    .discount-badge {
+        background-color: #fecaca;
+        color: #dc2626;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    /* Description */
+    .tf-product-info-description {
+        margin: 24px 0;
+        padding: 24px 0;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .tf-product-info-description h1 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text-color);
+    }
+    
+    .tf-product-info-description p {
+        color: var(--gray-color);
+        line-height: 1.6;
+    }
+    
+    /* Quantity Section */
+    .tf-product-info-quantity {
+        margin: 24px 0;
+    }
+    
+    .quantity-title {
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    #qty {
+        width: 120px;
+        padding: 12px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+    }
+    
+    #qty:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+    
+    /* Button Styles */
+    .tf-product-info-buy-button {
+        display: flex;
+        gap: 16px;
+        margin-top: 24px;
+    }
+    
+    .btn-add-to-cart {
+        flex: 1;
+        padding: 16px 32px;
+        background-color: var(--accent-color);
+        color: var(--white-color);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+    }
+    
+    .btn-add-to-cart:hover {
+        background-color: #c81e2b;
+        transform: translateY(-2px);
+    }
+    
+    .btn-add-to-cart:disabled {
+        background-color: var(--gray-color);
+        cursor: not-allowed;
+    }
+    
+    .tf-product-btn-wishlist {
+        padding: 16px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tf-product-btn-wishlist:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+    
+    /* Related Products Section */
+    .related-products {
+        padding: 60px 0;
+        background-color: #f9fafb;
+    }
+    
+    .related-products h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 32px;
+        text-align: center;
+        color: var(--text-color);
+    }
+    
+    .product-card {
+        background-color: var(--white-color);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover img {
+        transform: scale(1.05);
+    }
+    
+    .product-info {
+        padding: 24px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .product-info h5 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+    }
+    
+    .product-info p {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--accent-color);
+        margin: 0;
+    }
+    
+    .product-info .btn {
+        margin-top: auto;
+        padding: 12px 24px;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+    }
+    
+    .product-info .btn:hover {
+        background-color: var(--secondary-color);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background-color: var(--accent-color);
+        color: var(--white-color);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .tf-main-product {
+            padding: 30px 0;
         }
-
-        .related-products h3 {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 28px;
-            font-weight: 600;
-            color: #333333;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+    
+        .tf-product-media-wrap {
+            position: static;
         }
-
-        .product-card {
-            background-color: #ffffff;
-            border: 1px solid #ffffff;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
+    
+        .thumbs-slider {
+            flex-direction: column-reverse;
+            gap: 16px;
         }
-
-        .product-card:hover {
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-card img {
+    
+        .tf-product-media-thumbs {
             width: 100%;
-            height: 250px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
+            height: 100px;
+            display: flex;
+            gap: 12px;
         }
-
-        .product-card:hover img {
-            transform: scale(1.05);
+    
+        .tf-product-media-thumbs .swiper-slide {
+            width: 100px !important;
+            height: 100px;
         }
-
-        .product-info {
-            padding: 20px;
+    
+        .tf-product-media-main {
+            height: 400px;
         }
-
-        .product-card h5 {
-            font-size: 16px;
-            font-weight: 500;
-            color: #333333;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            text-align: center;
+    
+        .tf-product-info-title h4 {
+            font-size: 24px;
         }
-
-        .product-card p {
-            font-size: 18px;
-            font-weight: 600;
-            color: #4a4a4a;
-            margin-bottom: 15px;
-            text-align: center;
+    
+        .price-container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
         }
-
-        .product-card .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 20px;
-            background-color: #000000;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 100%;
-            /* Full width of its container */
-            box-sizing: border-box;
-        }
-
-        .product-card .btn:hover {
-            background-color: #3d464d;
-        }
-
-        .product-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #e74c3c;
-            color: #ffffff;
-            padding: 5px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 3px;
-        }
-
-        @media (max-width: 991px) {
-            .col-md-3 {
-                width: 50%;
-            }
-        }
-
-        @media (max-width: 575px) {
-            .col-md-3 {
-                width: 100%;
-            }
-
-            .related-products h3 {
-                font-size: 24px;
-            }
-        }
-
+    
         .tf-product-info-buy-button {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
+            flex-direction: column;
         }
-
-        .tf-product-btn-wishlist {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 15px;
+    
+        .product-card img {
+            height: 250px;
         }
-
-        .btn-add-to-cart {
-            flex-grow: 1;
-        }
+    }
     </style>
 
+    <style>
+        .related-products {
+    padding: 40px 0;
+}
+
+.related-products h3 {
+    margin-bottom: 20px;
+}
+
+.product-card {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+}
+
+.product-card img {
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.product-info h5 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.product-info p {
+    font-size: 1rem;
+    color: #333;
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ff5722;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+}
+
+    </style>
 
     </head>
 
     <body class="preload-wrapper">
         <!-- preload -->
-        <div class="preload preload-container">
+        <!-- <div class="preload preload-container">
         <div class="preload-logo">
             <div class="spinner"></div>
         </div>
-    </div>
+    </div> -->
         <!-- /preload -->
         <div id="wrapper">
             <!-- Top bar -->
@@ -245,42 +540,36 @@
 
                     </div>
                 </div>
-
             </header>
             <section class="flat-spacing-4 pt_0">
                 <div class="tf-main-product section-image-zoom">
                     <div class="container">
                         <div class="row">
+                            <!-- Product Gallery -->
                             <div class="col-md-6">
                                 <div class="tf-product-media-wrap sticky-top">
                                     <div class="thumbs-slider">
-                                        <div class="swiper tf-product-media-thumbs other-image-zoom swiper-vertical"
-                                            data-direction="vertical">
+                                        <!-- Thumbnail Slider -->
+                                        <div class="swiper tf-product-media-thumbs other-image-zoom swiper-vertical" data-direction="vertical">
                                             <div class="swiper-wrapper stagger-wrap">
-                                                <% product.images.forEach((image, index)=> { %>
-                                                    <div class="swiper-slide stagger-item" role="group"
-                                                        aria-label="<%= index + 1 %> / <%= product.images.length %>">
+                                                <% product.images.forEach((image, index) => { %>
+                                                    <div class="swiper-slide stagger-item" role="group" aria-label="<%= index + 1 %> / <%= product.images.length %>">
                                                         <div class="item">
-                                                            <img class="lazyload" data-src="/uploads/<%= image %>"
-                                                                src="/uploads/<%= image %>"
-                                                                alt="Product image <%= index + 1 %>">
+                                                            <img class="lazyload" data-src="/uploads/<%= image %>" src="/uploads/<%= image %>" alt="Product image <%= index + 1 %>">
                                                         </div>
                                                     </div>
-                                                    <% }) %>
+                                                <% }) %>
                                             </div>
                                         </div>
+                                        
+                                        <!-- Main Slider -->
                                         <div class="swiper tf-product-media-main" id="gallery-swiper-started">
                                             <div class="swiper-wrapper">
-                                                <% product.images.forEach((image, index)=> { %>
-                                                    <div class="swiper-slide" role="group"
-                                                        aria-label="<%= index + 1 %> / <%= product.images.length %>">
-                                                        <img class="tf-image-zoom lazyload"
-                                                            data-zoom="/uploads/<%= image %>"
-                                                            data-src="/uploads/<%= image %>" src="/uploads/<%= image %>"
-                                                            alt="Product image <%= index + 1 %>">
-
+                                                <% product.images.forEach((image, index) => { %>
+                                                    <div class="swiper-slide" role="group" aria-label="<%= index + 1 %> / <%= product.images.length %>">
+                                                        <img class="tf-image-zoom lazyload" data-zoom="/uploads/<%= image %>" data-src="/uploads/<%= image %>" src="/uploads/<%= image %>" alt="Product image <%= index + 1 %>">
                                                     </div>
-                                                    <% }) %>
+                                                <% }) %>
                                             </div>
                                             <div class="swiper-button-next button-style-arrow thumbs-next"></div>
                                             <div class="swiper-button-prev button-style-arrow thumbs-prev"></div>
@@ -288,138 +577,102 @@
                                     </div>
                                 </div>
                             </div>
+        
+                            <!-- Product Info -->
                             <div class="col-md-6">
-                                <div class="tf-product-info-wrap position-relative">
-                                    <div class="tf-zoom-main"></div>
-                                    <div class="tf-product-info-list other-image-zoom">
+                                <div class="tf-product-info-wrap">
+                                    <div class="tf-product-info-list">  
                                         <div class="tf-product-info-title">
-                                            <h5>
-                                                <%= product.productName %>
-                                            </h5>
+                                            <h4><%= product.productName %></h4>
                                         </div>
+                                        
                                         <div class="tf-product-info-badges">
                                             <div class="badges">Best seller</div>
-                                            <div class="product-status-content">
-                                            </div>
                                         </div>
-                                        <div class="tf-product-info-price">
-                                            <div class="price-on-sale">₹<%= product.price %>
-                                            </div>
+        
+                                        <!-- Price Section -->
+                                        <div class="price-container">
+                                            <% if (product.offerId) { %>
+                                                <div class="price-wrapper">
+                                                    <span class="original-price">₹<%= product.price.toFixed(2) %></span>
+                                                    <span class="offer-price">₹<%= (product.price * (1 - product.offerId.discount/100)).toFixed(2) %></span>
+                                                </div>
+                                                <div class="discount-badge">-<%= product.offerId.discount %>% OFF</div>
+                                            <% } else { %>
+                                                <span class="regular-price">₹<%= product.price.toFixed(2) %></span>
+                                            <% } %>
                                         </div>
-                                        <div class="tf-product-info-liveview">
-                                        </div>
-
+        
+                                        <!-- Description -->
                                         <div class="tf-product-info-description">
-                                            <h6>Description</h6>
-                                            <p>
-                                                <%= product.description %>
-                                            </p>
+                                            <h1 >Description</h1>
+                                            <p><%= product.description %></p>
                                         </div>
-
-
-                                        <div class="tf-product-info-quantity">
+                                      
+                                        <!-- Quantity Selection -->
+                                        <!-- <div class="tf-product-info-quantity">
                                             <div class="quantity-title fw-6">Quantity</div>
-
-                                            <!-- <div class="wg-quantity">
-                                                <span class="btn-quantity minus-btn">-</span>
-                                                <input id="qty" type="number" name="number" value="1" max="5">
-                                                <span class="btn-quantity plus-btn">+</span>
-                                            </div> -->
-                                            <%if(product.stock > 5) {%>
-                                                <input type="number" id="qty" class="form-control"
-                                                    value="1" min="1" max="5" step="1"
-                                                    data-decimals="0" required>
-                                                    <%} else {%>
-                                                        <input type="number" id="qty" class="form-control"
-                                                    value="1" min="1" max="<%=product.stock%>" step="1"
-                                                    data-decimals="0" required>
-                                                    <%}%>
-
-
+                                            </%if(product.stock > 5) {%>
+                                                <input type="number" id="qty" class="form-control" value="1" min="1" max="5" step="1" data-decimals="0" required>
+                                            </%} else {%>
+                                                <input type="number" id="qty" class="form-control" value="1" min="1" max="</%=product.stock%>" step="1" data-decimals="0" required>
+                                            </%}%>
                                         </div>
-
-                                        <div
-                                            class="tf-product-info-buy-button d-flex align-items-center justify-content-between">
-                                            <!-- Add to Cart Button -->
-                                            <% if(locals.userData && locals.userData[0]?.firstName ){ %>
-                                                <button
-                                                    class="btn-add-to-cart btn-product btn-cart tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn btn-add-to-cart"
-                                                    data-product-id="<%= product._id %>"
-                                                    data-user-id="<%= locals.userData[0]?._id %>">
+         -->
+                                        <!-- Action Buttons -->
+                                        <div class="tf-product-info-buy-button">
+                                            <% if(locals.userData && locals.userData[0]?.firstName ) { %>
+                                                <%if (product.stock<=0){%>
+                                                    <span class="offer-price">Out Of Stock</span>
+                                                    <button class="btn-add-to-cart" data-product-id="<%= product._id %>" data-user-id="<%= locals.userData[0]?._id %> " disabled>
+                                                        Add to Cart
+                                                    </button>    
+                                                    <%}else{%>
+                                                <button class="btn-add-to-cart" data-product-id="<%= product._id %>" data-user-id="<%= locals.userData[0]?._id %>">
                                                     Add to Cart
-                                                </button>
-                                                <% } else { %>
-                                                    <a href=""
-                                                        class="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn btn-add-to-cart">
-                                                        <span>Add to cart &nbsp;</span>
-                                                        <span class="tf-qty-price"></span>
-                                                    </a>
-                                                    <% } %>
-
-                                                        <!-- Wishlist Button -->
-                                                        <a href="javascript:void(0);"
-                                                            class="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action ml-3">
-                                                            <span class="icon icon-heart"></span>
-                                                            <span class="tooltip">Add to Wishlist</span>
-                                                            <span class="icon icon-delete"></span>
-                                                        </a>
+                                                </button><%}%>
+                                            <% } else { %>
+                                                <a href="" class="btn-add-to-cart">
+                                                    <span>Add to cart</span>
+                                                </a>
+                                            <% } %>
+                                            <a href="javascript:void(0);" class="tf-product-btn-wishlist">
+                                                <span class="icon icon-heart"></span>
+                                            </a>
                                         </div>
-
-
-
                                     </div>
-                                    <!-- <div class="col-xl-6 col-12"> -->
-                                    <!-- <div class="tf-product-delivery mb-0">
-                                                    <div class="icon"> -->
-                                    <!-- <i class="icon-return-order"></i> -->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="tf-product-info-trust-seal">
-                    <div class="tf-payment">
-                        <img src="images/payments/visa.png" alt="">
-                        <img src="images/payments/img-1.png" alt="">
-                        <img src="images/payments/img-2.png" alt="">
-                        <img src="images/payments/img-3.png" alt="">
-                        <img src="images/payments/img-4.png" alt="">
-                    </div>
-                </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        </section>
-
-        <section class="related-products">
-            <div class="container">
-                <h3>Related Products</h3>
-                <div class="row">
-                    <% relatedProducts.forEach(relatedProduct=> { %>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="product-card">
-                                <img src="/uploads/<%= relatedProduct.images[0] %>"
-                                    alt="<%= relatedProduct.productName %>">
-                                <div class="product-info">
-                                    <h5>
-                                        <%= relatedProduct.productName %>
-                                    </h5>
-                                    <p>₹<%= relatedProduct.price.toLocaleString('en-IN') %>
-                                    </p>
-                                    <a href="/product/<%= relatedProduct._id %>" class="btn">View Details</a>
-                                </div>
-                                <% if (relatedProduct.isNew) { %>
-                                    <span class="product-badge">New</span>
+            </section>
+        
+            <!-- Related Products Section -->
+            <section class="related-products text-center">
+                <div class="container">
+                    <h3>Related Products</h3>
+                    <div class="row justify-content-center">
+                        <% relatedProducts.forEach(relatedProduct => { %>
+                            <div class="col-lg-3 col-md-4 col-sm-6 d-flex justify-content-center">
+                                <div class="product-card text-center">
+                                    <img src="/uploads/<%= relatedProduct.images[0] %>" alt="<%= relatedProduct.productName %>">
+                                    <div class="product-info">
+                                        <h5><%= relatedProduct.productName %></h5>
+                                        <p>₹<%= relatedProduct.price.toLocaleString('en-IN') %></p>
+                                        <a href="/product/<%= relatedProduct._id %>" class="btn">View Details</a>
+                                    </div>
+                                    <% if (relatedProduct.isNew) { %>
+                                        <span class="product-badge">New</span>
                                     <% } %>
+                                </div>
                             </div>
-                        </div>
                         <% }) %>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+            
+
         <footer id="footer" class="footer">
             <div class="footer-wrap">
                 <div class="footer-body">
@@ -621,86 +874,75 @@
        
        
         <script>
+       
+        document.addEventListener('DOMContentLoaded', function() {
             
-
-
-
-            document.querySelectorAll('.btn-add-to-cart').forEach(button => {
-
-                button.addEventListener('click', async function () {
-
-                    const productId = this.getAttribute('data-product-id');
-                    const userId = this.getAttribute('data-user-id');
-                    const quantity = document.getElementById('qty').value;
-
-                    try {
-
-                        await fetch('/addCartItem', {
-
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ productId, quantity, userId }),
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire({
-                                        title: 'Success!',
-                                        text: "Product Added To Cart",
-                                        icon: 'success',
-                                        confirmButtonText: 'OK'
-                                    })
-                                } else {
-                                    Swal.fire({
-                                        title: 'info',
-                                        text: data.message,
-                                        icon: 'info',
-                                        confirmButtonText: 'OK'
-                                    });
-                                }
-                            });
-                    } catch (error) {
-                        console.log(error.message);
-                    }
-
-                });
+            const thumbsSwiper = new Swiper('.tf-product-media-thumbs', {
+                direction: 'vertical',
+                slidesPerView: 'auto',
+                spaceBetween: 10,
+                watchSlidesProgress: true,
             });
 
+           
+            const mainSwiper = new Swiper('.tf-product-media-main', {
+                spaceBetween: 10,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                thumbs: {
+                    swiper: thumbsSwiper,
+                },
+            });
 
-
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                
-                var thumbsSwiper = new Swiper('.tf-product-media-thumbs', {
-                    direction: 'vertical',
-                    slidesPerView: 'auto',
-                    spaceBetween: 10,
-                    watchSlidesProgress: true,
+           
+            $('.tf-image-zoom').each(function() {
+                $(this).zoom({
+                    url: $(this).attr('src'),
+                    magnify: 1.5
                 });
+            });
+        });
 
-                
-                var mainSwiper = new Swiper('.tf-product-media-main', {
-                    spaceBetween: 10,
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    thumbs: {
-                        swiper: thumbsSwiper,
-                    },
-                });
+        // Add to Cart 
+        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            button.addEventListener('click', async function() {
+                const productId = this.getAttribute('data-product-id');
+                const userId = this.getAttribute('data-user-id');
+                const quantity = document.getElementById('qty').value;
 
-                // Initialize zoom functionality
-                $('.tf-image-zoom').each(function () {
-                    $(this).zoom({
-                        url: $(this).attr('src'),
-                        magnify: 1.5
+                try {
+                    const response = await fetch('/addCartItem', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId, quantity, userId }),
                     });
-                });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: "Product Added To Cart",
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Info',
+                            text: data.message,
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                }
             });
-        </script>
+        });
+    </script>
 
         <%- include('../user-layouts/footer.ejs') %>

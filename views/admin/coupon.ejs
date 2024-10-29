@@ -19,92 +19,8 @@
                     <a class="sidebar-brand brand-logo-mini" href="index.html"><img
                             src="/admin-assets/assets/images/logo-mini.svg" alt="logo" /></a>
                 </div>
-                <ul class="nav">
-                    <li class="nav-item profile">
-                        <div class="profile-desc">
-                            <div class="profile-pic">
-                                <div class="count-indicator">
-                                    <img class="img-xs rounded-circle"
-                                        src="/admin-assets/assets/images/faces/face15.jpg" alt="">
-                                    <span class="count bg-success"></span>
-                                </div>
-                                <div class="profile-name">
-                                    <h5 class="mb-0 font-weight-normal">ADMIN</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <!-- Sidebar menu items -->
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/dashboard">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-speedometer"></i>
-                            </span>
-                            <span class="menu-title">DASHBOARD</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/product">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-playlist-play"></i>
-                            </span>
-                            <span class="menu-title">PRODUCTS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/category">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-table-large"></i>
-                            </span>
-                            <span class="menu-title">CATEGORIES</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="#">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-table-large"></i>
-                            </span>
-                            <span class="menu-title">ORDERS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/customers">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-contacts"></i>
-                            </span>
-                            <span class="menu-title">CUSTOMERS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/coupon">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-ticket-percent"></i>
-                            </span>
-                            <span class="menu-title">COUPONS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" href="/admin/offer">
-                            <span class="menu-icon">
-                                <i class="fas fa-percent"></i>
-                            </span>
-                            <span class="menu-title">OFFERS</span>
-                        </a>
-                        <ul class="nav flex-column sub-menu" id="offerSubMenu"
-                            style="display: none; padding-left: 20px;">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/admin/product-offer">
-                                    <span class="menu-title">Product Offer</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/admin/category-offer">
-                                    <span class="menu-title">Category Offer</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                <%- include('../admin-layouts/sideBar.ejs') %>
+
             </nav>
 
             <!-- Navbar -->
@@ -349,9 +265,8 @@
                                 
                                 const formData = new FormData(form);
                                             const errors = validateCouponForm(formData);
-                                            console.log(obj)
-
-                                            // if (Object.keys(errors).length === 0) {
+                                            console.log(obj);
+                                                
 
                                             const couponId = elem.dataset.couponId;
                                             fetch(`/admin/edit-coupon/${couponId}`, {
@@ -460,22 +375,6 @@
 
                                     return errors;
                                 }
-
-
-                                //  function displayErrors(errors, formId) {
-                                //     const form = document.getElementById(formId);
-
-                                //     form.querySelectorAll('.error-message').forEach(el => el.remove());
-
-
-                                //     for (const [field, message] of Object.entries(errors)) {
-                                //         const input = form.querySelector(`[name="${field}"]`);
-                                //         const errorElement = document.createElement('div');
-                                //         errorElement.className = 'error-message text-danger mt-1';
-                                //         errorElement.textContent = message;
-                                //         input.parentNode.appendChild(errorElement);
-                                //     }
-                                // }
 
                                 document.addEventListener('DOMContentLoaded', function () {
                                     // Add Coupon Form Validation

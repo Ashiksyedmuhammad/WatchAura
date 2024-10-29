@@ -86,7 +86,11 @@ userRoute.post('/update-account', dashboard.updateUserData)
 userRoute.get('/orders',userAuth.isLogin,dashboard.loadOrder)
 userRoute.get('/order-details/:id',userAuth.isLogin,dashboard.getOrderDetails);
 userRoute.post('/cancelOrder', dashboard.cancelOrder);
-userRoute.post('/orders/:id/return', dashboard.returnOrder);
+userRoute.post('/returnOrder/:id', dashboard.returnOrder);
+userRoute.get('/wishlist',dashboard.loadWishlist);
+userRoute.post('/addWishlistItem', dashboard.addWishlistItem);
+userRoute.delete('/removeWishlistItem', dashboard.removeWishlistItem);
+userRoute.get('/wallet',dashboard.loadWallet)
 
 
 

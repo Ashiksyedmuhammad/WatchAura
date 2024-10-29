@@ -1,13 +1,10 @@
+const { type } = require("event");
 const mongoose = require("mongoose");
 
 const offerSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true 
-  },
-  description: {
-    type: String,
-    required: true
   },
   discount: {
     type: Number,
@@ -21,7 +18,7 @@ const offerSchema = new mongoose.Schema({
    type: mongoose.Schema.Types.ObjectId,
       ref: 'Product'
     }],
-  category: [{
+  categories: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category'
   }],
@@ -29,6 +26,12 @@ const offerSchema = new mongoose.Schema({
     type: String,
     enum: ['active', 'inactive'], 
     default: 'active' 
+  },
+  expiryDate:{
+    type:Date,
+    index:{
+      expires:0
+    }
   }
 }, {
   timestamps: true 

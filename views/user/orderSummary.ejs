@@ -172,8 +172,8 @@
                                 </td>
                                 <td class="px-4 py-2"><%= item.productId.productName %></td>
                                 <td class="px-4 py-2 text-center"><%= item.quantity %></td>
-                                <td class="px-4 py-2 text-right">₹<%= item.productId.price %></td>
-                                <td class="px-4 py-2 text-right">₹<%= item.productId.price * item.quantity %></td>
+                                <td class="px-4 py-2 text-right">₹<%= item.price %></td>
+                                <td class="px-4 py-2 text-right">₹<%= item.price * item.quantity %></td>
                             </tr>
                             <% }) %>
                         </tbody>

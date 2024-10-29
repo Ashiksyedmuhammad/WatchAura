@@ -2,13 +2,15 @@ const User = require('../model/user/userModel');
 
 const isLogin = async (req,res,next)=>{
     try {
-       if(req.session.userSession) {
-        return next();
+        const user = await User.findById(req.session.userSession)
+       if(req.session.userSession &&  user.isBlocked == false) {
 
        }else{
+       delete req.session.userSession
         return res.redirect('/');
 
        }
+       return next();
     } catch (error) {
         console.log(error,'Error while Logging In');
         
@@ -18,11 +20,17 @@ const isLogin = async (req,res,next)=>{
 
 const isLogout = async (req,res,next)=>{
     try {
-       if(!req.session.userSession) {
-        return next();
-
+        const user = await User.findById(req.session.userSession)
+       if(req.session.userSession) {
+        if( user.isBlocked == false){
+            delete req.session.userSession
+            return res.redirect('/')
+        }
+        else{
+            return next();
+        }
        }else{
-        return res.redirect('/');
+        return next();
 
        }
     } catch (error) {

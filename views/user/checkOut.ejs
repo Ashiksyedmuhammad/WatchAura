@@ -442,25 +442,32 @@
                                     </div>
                                 </div>
                                 <ul class="wrap-checkout-product">
-                                    <%cart.items.forEach((item)=>{%>
-                                        <li class="checkout-product-item ">
+                                    <% cart.items.forEach((item) => { %>
+                                        <% const productDetail = productDetails.find(p => p.productId.toString() === item.productId._id.toString()); %>
+                                        <li class="checkout-product-item">
                                             <figure class="img-product" id="productCards">
-                                                <img width="80px " height="80px"
-                                                    src="/uploads/<%=item.productId.images[0]%>" alt="product">
-                                                <span class="quantity">
-                                                    <%=item.productId.productName%>
+                                                <img width="80px" height="80px"
+                                                    src="/uploads/<%= item.productId.images[0] %>" alt="product">
+                                                <span class="product-name">
+                                                    <%= item.productId.productName %>
                                                 </span>
                                                 <span class="quantity">
-                                                    <%=item.quantity%>
+                                                    <%= item.quantity %>
                                                 </span>
-                                                <span class="quantity">
-                                                    <%=item.productId.price * item.quantity%>
+                                                <span class="price">
+                                                    <% if (productDetail.discount > 0) { %>
+                                                        <!-- Show discounted price if offer exists -->
+                                                        <%= (productDetail.effectivePrice * item.quantity).toFixed(2) %> 
+                                                    <% } else { %>
+                                                        <!-- Show regular price if no offer -->
+                                                        <%= (item.productId.price * item.quantity).toFixed(2) %> 
+                                                    <% } %>
                                                 </span>
                                             </figure>
-
                                         </li>
-                                        <%})%>
+                                    <% }) %>
                                 </ul>
+                                
 
 
 
@@ -469,6 +476,7 @@
                     </div>
                 </div>
             </section>
+
             <!-- Add Address Modal -->
             <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel"
                 aria-hidden="true">
@@ -1467,9 +1475,9 @@
                         });
 
                         const availableCoupons = [
-                <%coupon.forEach(coupon=>{%>            
+               ` <%coupon.forEach(coupon=>{%>            
         { code: '<%=coupon.couponId%>', description: '<%=coupon.discount%>% off your order' },
-        <%})%>
+        <%})%>`
     ];
     // COUPON MODAL...
     const modal = document.getElementById('couponModal');

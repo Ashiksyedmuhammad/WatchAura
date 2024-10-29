@@ -204,11 +204,22 @@
                                                     </div>
                                                 </td>
                                                 <td class="tf-cart-item_price" cart-data-title="Price">
-                                                    <div style="display: flex; justify-content: center;"
-                                                        class="cart-price">
-                                                        <%=item.productId.price%>
+                                                    <div style="display: flex; justify-content: center;" class="cart-price">
+                                                        <% 
+                                                            let productDetail = productDetails.find(detail => 
+                                                                detail.productId.toString() === item.productId._id.toString()
+                                                            ); 
+                                                        %>
+                                                        <% if (productDetail && productDetail.offerId && productDetail.discount) { %>
+                                                            <!-- Calculate and display the offer price with the discount applied -->
+                                                            <%= (productDetail.price * (100 - productDetail.discount)) / 100 %>
+                                                        <% } else { %>
+                                                            <!-- Display the regular price if no discount -->
+                                                            <%= item.productId.price %>
+                                                        <% } %>
                                                     </div>
                                                 </td>
+                                                
 
                                                 <!-- <td class="quantity-col tf-cart-item_quantity" cart-data-title="Quantity"> -->
 
@@ -246,11 +257,17 @@
 
 
                                                 <td class="price-col tf-cart-item_total" cart-data-title="Total">
-
-                                                    <div class="cart-total">
-                                                        <%= item.productId.price*item.quantity%>
-                                                    </div>
-
+                                                        <div class="cart-total">
+                                                            <% 
+                                                             productDetail = productDetails.find(detail => 
+                                                                detail.productId.toString() === item.productId._id.toString()
+                                                            ); 
+                                                        %>
+                                                        <% if (productDetail && productDetail.offerId && productDetail.discount) { %>
+                                                            <%=( (productDetail.price * (100 - productDetail.discount)) / 100)*item.quantity %>
+                                                        <% } else { %>
+                                                            <%= item.productId.price*item.quantity%>                                                        <% } %>
+                                                        </div>
                                                 </td>
                                                 <td class="remove-col">
                                                     <button hidden class="btn-remove"
@@ -268,11 +285,6 @@
                                             </tr>
                                             <%})%>
                                                 <% }else{%>
-
-
-
-
-
 
                                                     <%}%>
                                 </tbody>

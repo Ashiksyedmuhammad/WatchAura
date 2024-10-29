@@ -220,7 +220,8 @@
                         <li><a href="my-account-orders.html" class="my-account-nav-item active">Orders</a></li>
                         <li><a href="/address" class="my-account-nav-item  ">Address</a></li>
                         <li><a href="/account" class="my-account-nav-item">Account Details</a></li>
-                        <li><a href="my-account-wishlist.html" class="my-account-nav-item">Wishlist</a></li>
+                        <li><a href="/wishlist" class="my-account-nav-item">Wishlist</a></li>
+                        <li><a href="/wallet" class="my-account-nav-item">Wallet</a></li>
                     </ul>
                 </div>
 
@@ -263,19 +264,18 @@
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div class="order-actions mt-4 ">
-
-                                                <% if ( item.status=="Pending" ) { %>
-
-                                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#cancelOrderModal<%= item._id %>">CANCEL
-                                                        ORDER</button>
-                                                    <% } else { %>
-                                                        <h5>Cancelled</h5>
-                                                        <% } %>
-
+                                            <div class="order-actions mt-4">
+                                                <% if (item.status === "Pending") { %>
+                                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" 
+                                                        data-bs-target="#cancelOrderModal<%= item._id %>">CANCEL ORDER</button>
+                                                <% } else if (item.status === "Delivered") { %>
+                                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#returnOrderModal<%= item._id %>">RETURN ORDER</button>
+                                                <% } else { %>
+                                                    <h5><%= item.status %></h5>
+                                                <% } %>
                                             </div>
-                                        </div>
+                                          </div>
                                         <% }); %>
                                             <% } else { %>
                                                 <p>No items found in this order.</p>
@@ -369,99 +369,164 @@
             </div>
         </div>
         <% }) %>
+        <% order.items.forEach(products => { %>
+    <div class="modal fade" id="returnOrderModal<%= products._id %>" tabindex="-1"
+        aria-labelledby="returnOrderModalLabel<%= products._id %>" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content pr-5 pl-5">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="returnOrderModalLabel<%= products._id %>">Return Order</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="returnOrderForm<%= products._id %>" data-return-id="<%= products._id %>"
+                    data-order-id="<%= order?._id %>" class="return-order-form">
+                    <div class="modal-body">
+                        <div class="mb-3 form-group">
+                            <label for="returnReason<%= products._id %>" class="form-label errMsg">Reason for Return</label>
+                            <textarea class="form-control" id="returnReason<%= products._id %>" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" id="productId" value="<%= products._id %>">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning">Submit Return Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% }) %>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cancelOrderForms = document.querySelectorAll('.cancel-order-form');
+        const returnOrderForms = document.querySelectorAll('.return-order-form');
 
-            <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        cancelOrderForms.forEach(form => form.addEventListener('submit', handleCancelOrder));
+        returnOrderForms.forEach(form => form.addEventListener('submit', handleReturnOrder));
+    });
 
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const cancelOrderForms = document.querySelectorAll('.cancel-order-form');
-                    cancelOrderForms.forEach(form => {
-                        form.addEventListener('submit', handleCancelOrder);
-                    });
-                });
+    async function handleCancelOrder(e) {
+        e.preventDefault();
+        const form = e.target;
+        const itemId = form.getAttribute('data-cancel-id');
+        const orderId = form.getAttribute('data-order-id');
+        const reasonInput = form.querySelector('textarea');
 
-                async function handleCancelOrder(e) {
-                    e.preventDefault();
-                    const form = e.target;
-                    const itemId = form.getAttribute('data-cancel-id');
-                    const orderId = form.getAttribute('data-order-id');
-                    const reasonInput = form.querySelector('textarea');
+        if (!validateInput(reasonInput, 5, 'Please enter a valid reason (at least 5 characters)')) return;
 
-                    if (!validateReason(reasonInput)) return;
+        const isConfirmed = await showConfirmationDialog('Are you sure?', "You won't be able to revert this!", 'Yes, cancel it!');
+        if (!isConfirmed) return;
 
-                    const isConfirmed = await showConfirmationDialog();
-                    if (!isConfirmed) return;
+        try {
+            const response = await cancelOrderRequest(orderId, itemId, reasonInput.value);
+            handleCancelResponse(response);
+        } catch (error) {
+            console.error('Error during cancel order:', error);
+            showErrorAlert('An error occurred while cancelling the order.');
+        }
+    }
 
-                    try {
-                        const response = await cancelOrderRequest(orderId, itemId, reasonInput.value);
-                        handleCancelResponse(response);
-                    } catch (error) {
-                        console.error('Error during cancel order:', error);
-                        showErrorAlert('An error occurred while cancelling the order.');
-                    }
-                }
+    async function handleReturnOrder(e) {
+        e.preventDefault();
+        const form = e.target;
+        const itemId = form.getAttribute('data-return-id');
+        const orderId = form.getAttribute('data-order-id');
+        const reasonInput = form.querySelector('textarea');
+       
+        const reasonValid = validateInput(reasonInput, 10, 'Please provide a detailed reason (at least 10 characters)');
+        
+        if (!reasonValid ) return;
 
-                function validateReason(reasonInput) {
-                    const reason = reasonInput.value.trim();
-                    if (reason.length < 5) {
-                        setInputError(reasonInput, 'Please enter a valid reason (at least 5 characters)');
-                        return false;
-                    }
-                    setInputSuccess(reasonInput);
-                    return true;
-                }
+        const isConfirmed = await showConfirmationDialog('Confirm Return Request', 'Are you sure you want to return this item?', 'Yes, return it!');
+        if (!isConfirmed) return;
 
-                function setInputError(input, message) {
-                    const formGroup = input.closest('.form-group');
-                    const errorDisplay = formGroup.querySelector('.errMsg');
-                    errorDisplay.textContent = message;
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                }
+        try {
+            const response = await returnOrderRequest(orderId, reasonInput.value, itemId);
+            handleReturnResponse(response);
+        } catch (error) {
+            console.error('Error during return order:', error);
+            showErrorAlert('An error occurred while processing the return request.');
+        }
+    }
 
-                function setInputSuccess(input) {
-                    const formGroup = input.closest('.form-group');
-                    const errorDisplay = formGroup.querySelector('.errMsg');
-                    errorDisplay.textContent = '';
-                    input.classList.remove('is-invalid');
-                    input.classList.add('is-valid');
-                }
+    function validateInput(input, minLength, errorMessage) {
+        const value = input.value.trim();
+        if (value.length < minLength) {
+            setInputError(input, errorMessage);
+            return false;
+        }
+        setInputSuccess(input);
+        return true;
+    }
 
-                async function showConfirmationDialog() {
-                    const result = await Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, cancel it!'
-                    });
-                    return result.isConfirmed;
-                }
+    function setInputError(input, message) {
+        const formGroup = input.closest('.form-group');
+        const errorDisplay = formGroup.querySelector('.errMsg');
+        errorDisplay.textContent = message;
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+    }
 
-                async function cancelOrderRequest(orderId, itemId, reason) {
-                    const response = await fetch('/cancelOrder', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ _id: orderId, cancel_reason: reason, item_id: itemId })
-                    });
-                    return response.json();
-                }
+    function setInputSuccess(input) {
+        const formGroup = input.closest('.form-group');
+        const errorDisplay = formGroup.querySelector('.errMsg');
+        // errorDisplay.textContent = '';
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+    }
 
-                function handleCancelResponse(data) {
-                    if (data.success) {
-                        Swal.fire('Cancelled!', 'Your order has been canceled.', 'success')
-                            .then(() => location.reload());
-                    } else {
-                        showErrorAlert(data.message || 'Failed to cancel the order.');
-                    }
-                }
+    async function showConfirmationDialog(title, text, confirmButtonText) {
+        const result = await Swal.fire({
+            title,
+            text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText
+        });
+        return result.isConfirmed;
+    }
 
-                function showErrorAlert(message) {
-                    Swal.fire('Error!', message, 'error');
-                }
-            </script>
+    async function cancelOrderRequest(orderId, itemId, reason) {
+        const response = await fetch('/cancelOrder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ _id: orderId, cancel_reason: reason, item_id: itemId })
+        });
+        return response.json();
+    }
 
+    async function returnOrderRequest(orderId, reason,itemId) {
+        const response = await fetch(`/returnOrder/${orderId}`, {  
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ return_reason: reason,itemId })
+        });
+        return response.json();
+    }
 
-            <%- include('../user-layouts/footer.ejs') %>
+    function handleCancelResponse(data) {
+        if (data.success) {
+            Swal.fire('Cancelled!', 'Your order has been canceled.', 'success').then(() => location.reload());
+        } else {
+            showErrorAlert(data.message || 'Failed to cancel the order.');
+        }
+    }
+
+    function handleReturnResponse(data) {
+        if (data.success) {
+            Swal.fire('Return Requested!', 'Your return request has been submitted successfully.', 'success').then(() => location.reload());
+        } else {
+            showErrorAlert(data.message || 'Failed to process return request.');
+        }
+    }
+
+    function showErrorAlert(message) {
+        Swal.fire('Error!', message, 'error');
+    }
+    </script>
+    
+    <%- include('../user-layouts/footer.ejs') %>

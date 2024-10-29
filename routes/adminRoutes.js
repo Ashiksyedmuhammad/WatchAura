@@ -10,6 +10,7 @@ const adminAuth = require('../middleware/adminAuth');
 const config = require('../config/config');
 const couponController = require('../controller/admin/couponController');
 const offerController = require('../controller/admin/offerController');
+const salesController = require('../controller/admin/salesController');
 
 
 adminRoute.use(session({
@@ -66,20 +67,26 @@ adminRoute.get('/orders', adminAuth.isLogin, productController.loadOrders);
 adminRoute.post('/cancelOrder', adminAuth.isLogin, productController.cancelOrder);
 adminRoute.get('/updateStatus', adminAuth.isLogin, productController.loadupdateStatus);
 adminRoute.post('/updateStatus', adminAuth.isLogin, productController.updateStatus);
+adminRoute.post('/approveOrder', adminAuth.isLogin, productController.approveOrder);
+adminRoute.post('/rejectOrder', adminAuth.isLogin, productController.rejectOrder);
 
 
 // COUPONS
-
-adminRoute.get('/coupon', couponController.loadCoupon);
-adminRoute.post('/add-coupon', couponController.addCoupon);
-adminRoute.put('/edit-coupon/:id', couponController.editCoupon);
-adminRoute.delete('/delete-coupon/:id', couponController.deleteCoupon);
+adminRoute.get('/coupon', adminAuth.isLogin,couponController.loadCoupon);
+adminRoute.post('/add-coupon', adminAuth.isLogin,couponController.addCoupon);
+adminRoute.put('/edit-coupon/:id', adminAuth.isLogin, couponController.editCoupon);
+adminRoute.delete('/delete-coupon/:id', adminAuth.isLogin, couponController.deleteCoupon);
 
 
 //OFFERS
-adminRoute.get('/offer',offerController.loadOffer);
-adminRoute.post('/offer/add', offerController.addOffer);
-adminRoute.put('/offer/edit/:id', offerController.editOffer);
-adminRoute.delete('/offer/delete/:id', offerController.deleteOffer);
+adminRoute.get('/offer',adminAuth.isLogin,offerController.loadOffer);
+adminRoute.post('/offer/add', adminAuth.isLogin, offerController.addOffer);
+adminRoute.get('/categoryOffer', adminAuth.isLogin, offerController.loadCateOffer)
+adminRoute.put('/offer/edit/:id',adminAuth.isLogin, offerController.updateOffer);
+adminRoute.delete('/delete-offer?:id', adminAuth.isLogin, offerController.deleteOffer);
+
+adminRoute.get('/salesreport', salesController.loadSales);
+adminRoute.get('/salesreport/pdf', salesController.downloadPDF);
+adminRoute.get('/salesreport/excel', salesController.downloadExcel);
 
 module.exports = adminRoute;

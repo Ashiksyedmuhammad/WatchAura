@@ -9,12 +9,14 @@ const Order = require('../../model/user/userOrder');
 const UserOrder = require('../../model/user/userOrder');
 const Coupon = require('../../model/admin/coupon');
 const Razorpay = require('razorpay');
+const Offer = require('../../model/admin/offerModal')
 require('dotenv').config();
 
 
 const loadCheckOut = async (req, res) => {
     try {
         const userId = req.session.userSession;
+        let subTotal = 0; 
 
         const [cart, user, address, coupon] = await Promise.all([
             Cart.findOne({ userId }).populate('items.productId'),
@@ -24,28 +26,65 @@ const loadCheckOut = async (req, res) => {
         ]);
 
         if (!user) {
-            return res.status(404).json({ success: false, message: 'Cart or User not Found...!' })
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
-        if (cart.items.length < 1) {
 
-            return res.redirect("/")
+        if (!cart || cart.items.length < 1) {
+            return res.redirect("/");
         }
-        let subTotal = 0;
-        cart.items.forEach((item) => {
-            subTotal += item.productId.price * item.quantity;
+
+        let productDetails = [];
+
+        const offerIds = cart.items.map(item => item.productId.offerId).filter(Boolean);
+
+        const offers = await Offer.find({ _id: { $in: offerIds } }).lean();
+        const offersMap = new Map(offers.map(offer => [offer._id.toString(), offer.discount]));
+
+        productDetails = await Promise.all(
+            cart.items.map(async (item) => {
+                const product = item.productId;
+                const offerId = product.offerId;
+                
+                const discount = offersMap.get(offerId?.toString()) || 0;
+                const effectivePrice = product.price * (1 - discount / 100);
+
+                return {
+                    productId: product._id,
+                    name: product.productName,
+                    price: product.price,
+                    offerId: offerId,
+                    effectivePrice: effectivePrice, 
+                    discount: discount
+                };
+            })
+        );
+
+        cart.items.forEach((cartItem) => {
+            const product = cartItem.productId;
+            const quantity = cartItem.quantity;
+            const offerId = product.offerId;
+
+            const discount = offersMap.get(offerId?.toString()) || 0;
+            const effectivePrice = product.price * (1 - discount / 100);
+            
+            subTotal += effectivePrice * quantity;
         });
+
         res.render('checkOut', {
             cart,
             user,
             subTotal,
             address,
-            coupon
+            coupon,
+            productDetails
         });
     } catch (error) {
         console.error('Error loading checkout:', error);
         res.status(500).json({ success: false, message: 'An error occurred while loading the checkout' });
     }
-}
+};
+
+
 
 //APPLY COUPON
 
@@ -55,28 +94,47 @@ const applyCoupon = async (req, res) => {
         const { couponCode } = req.body;
         const userId = req.session.userSession;
 
+        
         const coupon = await Coupon.findOne({ couponId: couponCode, isActive: true });
-
         if (!coupon) {
             return res.status(400).json({ success: false, message: 'Invalid or expired coupon' });
         }
 
-        const cart = await Cart.findOne({ userId }).populate('items.productId');
-
+      
+        const cart = await Cart.findOne({ userId }).populate({
+            path: 'items.productId',
+            populate: {
+                path: 'offerId',
+                model: 'Offer' 
+            }
+        });
+        
         if (!cart) {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
-        let subTotal = cart.items.reduce((total, item) => total + (item.productId.price * item.quantity), 0);
+        
+        let subTotal = 0;
+        cart.items.forEach((item) => {
+            const product = item.productId;
+            const offer = product.offerId;
+            const quantity = item.quantity;
 
+           
+            const effectivePrice = offer 
+                ? product.price * (1 - offer.discount / 100)
+                : product.price;
+            
+            subTotal += effectivePrice * quantity;
+        });
 
+       
         if (subTotal < coupon.minPurchaseAmount) {
             return res.status(400).json({
                 success: false,
                 message: `Minimum purchase of ₹${coupon.minPurchaseAmount} required to use this coupon`
             });
         }
-
         if (coupon.maxPurchaseAmount && subTotal > coupon.maxPurchaseAmount) {
             return res.status(400).json({
                 success: false,
@@ -84,23 +142,22 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        let discountAmount;
-        if (coupon.discountType === 'percentage') {
+      
+        let discountAmount = 0;
+     
             discountAmount = (subTotal * coupon.discount) / 100;
-            if (coupon.maxAmount) {
-                discountAmount = Math.min(discountAmount, coupon.maxAmount);
-            }
-        } else {
-            discountAmount = coupon.discount;
-        }
+        
 
+        
         const totalAfterDiscount = subTotal - discountAmount;
-
+      
+      
         req.session.appliedCoupon = {
             code: coupon.couponId,
-            discountAmount: discountAmount,
+            discountAmount,
         };
 
+      
         res.status(200).json({
             success: true,
             message: 'Coupon applied successfully',
@@ -112,6 +169,7 @@ const applyCoupon = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred while applying the coupon' });
     }
 };
+
 
 
 const removeCoupon = async (req, res) => {
@@ -154,7 +212,13 @@ const placeOrder = async (req, res) => {
         const { addressId, paymentMethod } = req.body;
 
         const [cart, user, address] = await Promise.all([
-            Cart.findOne({ userId }).populate('items.productId'),
+            Cart.findOne({ userId }).populate({
+                path: 'items.productId',
+                populate: {
+                    path: 'offerId', 
+                    model: 'Offer'
+                }
+            }),
             User.findById(userId),
             Address.findById(addressId)
         ]);
@@ -169,59 +233,83 @@ const placeOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Address not found' });
         }
 
-        let totalAmount = cart.items.reduce((total, item) => {
-            return total + (item.productId.price * item.quantity);
-        }, 0);
-
-
+        let totalAmount = 0;
         let discountAmount = 0;
         let couponId = null;
+
+       
+        cart.items.forEach(item => {
+            const product = item.productId;
+            let effectivePrice = product.price;
+            if (product.offerId) {
+                effectivePrice -= (effectivePrice * product.offerId.discount) / 100; 
+            }
+            
+            totalAmount += effectivePrice * item.quantity;
+        });
+
+        console.log(totalAmount)
+       
         if (req.session.appliedCoupon) {
             discountAmount = req.session.appliedCoupon.discountAmount;
             couponId = req.session.appliedCoupon.code;
-            totalAmount -= discountAmount;
+            totalAmount -= discountAmount; 
         }
+        console.log(totalAmount)
 
+
+       
         const payment_type_objId = await Payment.findOne({ payType: paymentMethod });
-
         if (!payment_type_objId) {
             return res.status(400).json({ success: false, message: 'Invalid payment type' });
         }
 
+       
         const randomOrderId = Math.floor(10000 + Math.random() * 90000);
 
+       
         const newOrder = new UserOrder({
             userId: userId,
             orderId: `ORD-${randomOrderId}`,
-            items: cart.items.map(item => ({
-                productId: item.productId._id,
-                productName: item.productId.productName,
-                image: item.productId.image,
-                quantity: item.quantity,
-                price: item.productId.price
-            })),
+            items: cart.items.map(item => {
+                const product = item.productId;
+                let effectivePrice = product.price; 
+              
+                if (product.offerId) {
+                    effectivePrice -= (effectivePrice * product.offerId.discount) / 100; 
+                }
+               
+                
+                return {
+                    productId: product._id,
+                    productName: product.productName,
+                    image: product.image,
+                    quantity: item.quantity,
+                    price: effectivePrice
+                };
+            }),
             totalAmount: totalAmount,
             shippingAddress: address,
             paymentMethod: paymentMethod,
             paymentStatus: 'Pending',
             orderStatus: 'Placed',
             couponApplied: couponId,
-            discountAmount: discountAmount
+            discountAmount: discountAmount,
         });
 
         await newOrder.save();
 
+        
         if (couponId) {
-
             await Coupon.findOneAndUpdate(
                 { code: couponId },
                 { $inc: { usedCount: 1 } }
             );
 
-
-            delete req.session.appliedCoupon;
+            delete req.session.appliedCoupon; 
         }
 
+       
         if (paymentMethod === 'COD') {
             for (let item of cart.items) {
                 await Product.findByIdAndUpdate(
@@ -262,6 +350,7 @@ const placeOrder = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred while placing the order' });
     }
 };
+
 
 
 const verifyPayment = async (req, res) => {
