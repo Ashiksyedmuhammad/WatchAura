@@ -63,6 +63,7 @@ const addOffer = async (req, res) => {
       { $set: { offerId: newOffer._id } }, 
       { new: true }  
     );
+    
     console.log(sugu);
     
     

@@ -32,7 +32,29 @@
   content: "\1F5D1"; 
   font-family: Arial, sans-serif;
 }
+.empty-wishlist-container {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
 
+.empty-wishlist-content {
+    padding: 2rem;
+}
+
+.shop-now-btn {
+    padding: 12px 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.shop-now-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
     </style>
     
     </head>
@@ -149,7 +171,7 @@
                 <div class="col-lg-9">
                     <div class="my-account-content account-wishlist">
                         <div class="grid-layout wrapper-shop" data-grid="grid-3">
-                            <% if (wishlist && wishlist.length > 0) { %>
+                            <% if (wishlist && wishlist.length > 0 && wishlist[0].items.length > 0) { %>
                                 <% wishlist[0].items.forEach(item => { %>
                                     <% const product = item.productId %>
                                     <% if (product) { %>
@@ -174,21 +196,21 @@
                                                     <% } %>
                                                 </a>
                                                 <div class="list-product-btn absolute-2">
-                                                    <a onclick="addProWishlistToCart('<%= product._id %>','<%= locals.userId %>')" href="#quick_add" data-bs-toggle="modal"
-                                                class="box-icon bg_white quick-add tf-btn-loading"
-                                                data-product-id="<%=// product._id %>"
-                                                data-user-id="<%=// locals.userData[0]?._id %>">
-                                                <span class="icon icon-bag"></span>
-                                                <span class="tooltip">Add to Cart</span>    
-                                            </a>
-                                            <a href="javascript:void(0);" 
-                                                onclick="removeFromWishlist('<%= product._id %>')"
-                                                class="box-icon bg_white wishlist btn-icon-action"
-                                                data-product-id="<%= product._id %>">
-                                                    <span class="icon icon-delete"></span>
-                                                    <span class="tooltip">Remove from Wishlist</span>
-                                                    <span class="icon icon-delete"></span>
-                                                </a>  
+                                                    <a onclick="addProWishlistToCart('<%= product._id %>','<%= locals.userId %>')" 
+                                                       href="#quick_add" 
+                                                       data-bs-toggle="modal"
+                                                       class="box-icon bg_white quick-add tf-btn-loading">
+                                                        <span class="icon icon-bag"></span>
+                                                        <span class="tooltip">Add to Cart</span>    
+                                                    </a>
+                                                    <a href="javascript:void(0);" 
+                                                       onclick="removeFromWishlist('<%= product._id %>')"
+                                                       class="box-icon bg_white wishlist btn-icon-action"
+                                                       data-product-id="<%= product._id %>">
+                                                        <span class="icon icon-delete"></span>
+                                                        <span class="tooltip">Remove from Wishlist</span>
+                                                        <span class="icon icon-delete"></span>
+                                                    </a>  
                                                 </div>
                                             </div>
                                             <div class="card-product-info">
@@ -205,7 +227,6 @@
                                                         <% product.colors.forEach(color => { %>
                                                             <li class="list-color-item color-swatch">
                                                                 <span class="tooltip"><%= color.name %></span>
-                                                                <!-- <span class="swatch-value" style="background-color: <%=// color.code %>"></span> -->
                                                                 <% if (color.image) { %>
                                                                     <img class="ls-is-cached lazyloaded" 
                                                                          data-src="/uploads/<%= color.image %>" 
@@ -221,9 +242,16 @@
                                     <% } %>
                                 <% }); %>
                             <% } else { %>
-                                <div class="text-center w-100">
-                                    <h3>Your wishlist is empty</h3>
-                                    <p>Browse our products and add items to your wishlist!</p>
+                                <div class="empty-wishlist-container text-center w-100 py-5">
+                                    <div class="empty-wishlist-content" style="justify-content: center;">
+                                        <i class="icon icon-heart empty-wishlist-icon mb-4" style="font-size: 48px; color: #888;"></i>
+                                        <h3 class="mb-3">Your Wishlist is Empty</h3>
+                                        <p class="text-muted mb-4">Discover and save items you love to your wishlist!</p>
+                                        <a href="/shop" class="btn btn-primary shop-now-btn">
+                                            Shop Now
+                                            <i class="icon icon-arrow-right ms-2"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             <% } %>
                         </div>

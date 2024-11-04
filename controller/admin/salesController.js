@@ -7,12 +7,11 @@ const loadSales = async (req, res) => {
   try {
     const { reportType, startDate, endDate } = req.query;
     const query = {};
-
     const dateRange = calculateDateRange(reportType, startDate, endDate);
     if (dateRange.start && dateRange.end) {
       query.createdAt = {
         $gte: dateRange.start,
-        $lte: dateRange.end,
+        $lte: new Date(dateRange.end.setDate(dateRange.end.getDate() + 1)),
       };
     }
 
@@ -116,7 +115,7 @@ function calculateDateRange(reportType, startDate, endDate) {
       break;
     case "weekly":
       start.setDate(now.getDate() - now.getDay());
-      end.setDate(start.getDate() + 6);
+      end.setDate(start.getDate() + 7);
       break;
     case "monthly":
       start.setDate(1);

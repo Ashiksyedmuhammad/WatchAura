@@ -31,9 +31,10 @@
     .upload-placeholder i {
         font-size: 2em;
         margin-right: 10px;
+
     }
 </style>
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <body>
     <div class="container mt-5">
         <!-- <h2 class="text-center mb-4">Edit Product</h2> -->
@@ -122,19 +123,23 @@
                                     </div>
                                     <div class="form-floating form-floating-outline form-floating-select2 pb-3">
                                         <div class="position-relative">
-                                            <label for="ecommerce-category" class="errMsgSignup">Select Category</label>
-                                            <select name="categorySelection" id="category" class="select2 form-select select2-hidden-accessible" required>
+                                            <label for="category" class="errMsgSignup">Select Category</label>
+                                            <select name="categorySelection" id="category" class="form-select" required>
                                                 <option value="">Select Category</option>
                                                 <% categories.forEach(category => { %>
-                                                    <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>><%= category.categoryName %></option>
+                                                    <option value="<%= category._id %>" 
+                                                        <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>>
+                                                        <%= category.categoryName %>
+                                                    </option>
                                                 <% }); %>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-floating form-floating-outline form-floating-select2 pt-2 formgroup1">
+                                    
+                                    <div class="form-floating form-floating-outline form-floating-select2 pt-2">
                                         <div class="position-relative">
                                             <label for="product-status" class="errMsgSignup">Select Product Status</label>
-                                            <select name="productOption" id="product-status" class="select2 form-select select2-hidden-accessible" required>
+                                            <select name="productOption" id="product-status" class="form-select" required>
                                                 <option value="true" <%= product.isListed ? 'selected' : '' %>>Listed</option>
                                                 <option value="false" <%= !product.isListed ? 'selected' : '' %>>Unlisted</option>
                                             </select>
@@ -156,6 +161,10 @@
     
     <script defer src="https://cdn.crop.guide/loader/l.js?c=YMTDVY"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
     <script>
         // Function to validate form fields
 function validateForm() {

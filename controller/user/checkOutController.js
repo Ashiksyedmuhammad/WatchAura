@@ -196,12 +196,12 @@ const removeCoupon = async (req, res) => {
         res.status(500).json({ success: false, message: 'An error occurred while removing the coupon' });
     }
 };
-
 // RAZOR PAY INTEGRATION 
+
 
 const razorpay = new Razorpay({
 
-    key_id: 'rzp_test_O3ME5jMYgYC8PP',
+    key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: 'aPROhAiDugzPGG8hrVTXyck6'
 });
 
@@ -248,14 +248,14 @@ const placeOrder = async (req, res) => {
             totalAmount += effectivePrice * item.quantity;
         });
 
-        console.log(totalAmount)
+        
        
         if (req.session.appliedCoupon) {
             discountAmount = req.session.appliedCoupon.discountAmount;
             couponId = req.session.appliedCoupon.code;
             totalAmount -= discountAmount; 
         }
-        console.log(totalAmount)
+      
 
 
        

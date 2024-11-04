@@ -591,13 +591,31 @@
                                         </div>
         
                                         <!-- Price Section -->
+                                      <!-- Price Section -->
                                         <div class="price-container">
-                                            <% if (product.offerId) { %>
+                                            <% 
+                                            let finalPrice = product.price;
+                                            let discount = 0;
+                                            let offerType = null;
+
+                                            if (product.offerId) {
+                                                discount = product.offerId.discount;
+                                                offerType = 'product';
+                                            } else if (categoryOffer) {
+                                                discount = categoryOffer.discount;
+                                                offerType = 'category';
+                                            }
+
+                                            if (discount > 0) { 
+                                            %>
                                                 <div class="price-wrapper">
                                                     <span class="original-price">₹<%= product.price.toFixed(2) %></span>
-                                                    <span class="offer-price">₹<%= (product.price * (1 - product.offerId.discount/100)).toFixed(2) %></span>
+                                                    <span class="offer-price">₹<%= (product.price * (1 - discount/100)).toFixed(2) %></span>
                                                 </div>
-                                                <div class="discount-badge">-<%= product.offerId.discount %>% OFF</div>
+                                                <div class="discount-badge">
+                                                    -<%= discount %>% OFF 
+                                                    (<%= offerType === 'category' ? 'Category Offer' : 'Product Offer' %>)
+                                                </div>
                                             <% } else { %>
                                                 <span class="regular-price">₹<%= product.price.toFixed(2) %></span>
                                             <% } %>

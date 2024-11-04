@@ -39,6 +39,8 @@
 }
 
 </style>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 <body>
     <div class="container mt-5">
@@ -201,14 +203,10 @@
                                     </div>
                                     <div class="form-floating form-floating-outline form-floating-select2 pb-3 formgroup1">
                                         <div class="position-relative formgroup1"> <label for="ecommerce-category" class="errMsgSignup">Select Category</label>
-                                            <select name="categorySelection"
-                                                id="ecommerce-category"
-                                                class="select2 form-select select2-hidden-accessible"
-                                                data-placeholder="Select category status"
-                                                data-select2-id="ecommerce-category" tabindex="-1"
-                                                aria-hidden="true" >
-                                                <option value="" data-select2-id="4">Select Category</option>
+                                            <select name="categorySelection" id="ecommerce-category" class="select2 form-select">
+                                                <option value="">Select Category</option>
                                                 <% if (typeof categories !== "undefined" && categories.length > 0) { %>
+                                                    <% console.log('Categories:', categories);  %>
                                                     <% for (let i = 0; i < categories.length; i++) { %>
                                                         <option value="<%= categories[i]._id %>"><%= categories[i].categoryName %></option>
                                                     <% } %>
@@ -222,13 +220,8 @@
                                     <div class="form-floating form-floating-outline form-floating-select2 pt-2 formgroup1">
                                         <div class="position-relative formgroup1">
                                             <label for="product-status" class="errMsgSignup">Select Product Status</label>
-                                            <select name="productOption"
-                                                id="product-status"
-                                                class="select2 form-select select2-hidden-accessible"
-                                                data-placeholder="Select category status"
-                                                data-select2-id="product-status" tabindex="-1"
-                                                aria-hidden="true" >
-                                                
+                                            <select name="productOption" id="product-status" class="select2 form-select">
+                                                <option value="">Select Product Status</option>
                                                 <option value="true">Listed</option>
                                                 <option value="false">Unlisted</option>
                                             </select>
@@ -237,23 +230,22 @@
                                     
                                 </div>
                             </div>
-                            <!-- /Pricing Card -->
-                            <!-- Organize Card -->
-                            
-                            <!-- /Organize Card -->
                         </div>
-                        <!-- /Second column -->
                     </div>
                 </div>
             </div>
         </form>
     </div>
     <script defer src="https://cdn.crop.guide/loader/l.js?c=YMTDVY"></script>
+    
 
+<!-- Add these just before your closing </body> tag -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
-   // Function to validate form fields
+   
 function validateForm() {
     let isValid = true;
     const productName = document.getElementById('ecommerce-product-name');
@@ -304,7 +296,7 @@ function validateForm() {
         removeError(categorySelection);
     }
 
-    // Validate Product Status
+    
     if (productStatus.value === '') {
         showError(productStatus, 'Please select a product status');
         isValid = false;
@@ -312,7 +304,7 @@ function validateForm() {
         removeError(productStatus);
     }
 
-    // Validate Product Image
+    
     if (productImage1.files.length === 0) {
         showError(productImage1, 'Please upload at least one product image');
         isValid = false;
@@ -323,7 +315,7 @@ function validateForm() {
     return isValid;
 }
 
-// Function to show error message
+
 function showError(input, message) {
     const formGroup = input.closest('.formgroup1');
     const errorElement = formGroup.querySelector('.error-message') || document.createElement('div');
@@ -337,7 +329,7 @@ function showError(input, message) {
     input.classList.add('is-invalid');
 }
 
-// Function to remove error message
+
 function removeError(input) {
     const formGroup = input.closest('.formgroup1');
     const errorElement = formGroup.querySelector('.error-message');
@@ -347,14 +339,14 @@ function removeError(input) {
     input.classList.remove('is-invalid');
 }
 
-// Event listener for form submission
+
 document.getElementById('addProductForm').addEventListener('submit', async function(event) {
     event.preventDefault();
 
     
     
     if (!validateForm()) {
-        return; // Stop form submission if validation fails
+        return; 
     }
 
     const formData = new FormData(this);
@@ -406,7 +398,7 @@ function previewImage(input, previewId, imageNumber) {
         preview.style.display = 'block';
         input.closest('.image-upload-container').querySelector('.upload-placeholder').style.display = 'none';
         
-        // Add remove button
+       
         const actionsDiv = document.getElementById(`actions${imageNumber}`);
         if (!actionsDiv.querySelector('.remove-btn')) {
             const removeBtn = document.createElement('button');
@@ -442,9 +434,9 @@ function removeImage(previewId, input, imageNumber) {
     }
 }
     </script>
-
-    <!-- <script src="/path/to/jquery.js"></script>
-    <script src="/path/to/bootstrap.js"></script> -->
+<!-- 
+     <script src="/path/to/jquery.js"></script>
+    <script src="/path/to/bootstrap.js"></script>  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
     

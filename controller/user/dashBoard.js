@@ -252,46 +252,22 @@ const getOrderDetails = async (req, res) => {
 };
 
 
-const returnOrder = async (req, res) => {
-    try {
-        const userId = req.session.userSession;
-        const orderId = req.params.id;
-        const itemId  = req.body.itemId;
-        const return_reason = req.body.return_reason;
+const calculateRefundAmount = (order, productToCancel) => {
+   
+    let refundAmount = parseFloat(productToCancel.price) * productToCancel.quantity;
+
+    if (order.couponApplied && order.discountAmount > 0) {
         
-        const order = await Order.findOne({ _id: orderId, userId });
-
-        if (!order) {
-            console.log("Order not found");
-            return res.status(404).json({ success: false, message: 'Order not found' });
-        }
-
-        const products = order.items.find(product=>product._id.equals(itemId))
-        if (products.status !== 'Delivered') {
-            return res.status(400).json({ success: false, message: 'Only delivered orders can be returned' });
-        }
-
-        const returnRequest = new Return({
-            itemId:itemId,
-            orderId: orderId,
-            userId: userId,
-            reason: return_reason,
-            status: 'Pending'
-        });
-
-        await returnRequest.save();
-
-        products.status = 'Return Requested';
-
-        await order.save();
-
-        console.log("Return request submitted successfully");
-        res.json({ success: true, message: 'Return request submitted successfully' });
-    } catch (error) {
-        console.error('Error processing return request:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        const orderSubtotal = order.items.reduce((sum, item) => 
+            sum + (parseFloat(item.price) * item.quantity), 0);
+        const itemPortionOfTotal = (productToCancel.price * productToCancel.quantity) / orderSubtotal;
+        const itemDiscountPortion = order.discountAmount * itemPortionOfTotal;
+        refundAmount -= itemDiscountPortion;
     }
+
+    return refundAmount;
 };
+
 
 
 const cancelOrder = async (req, res) => {
@@ -306,39 +282,34 @@ const cancelOrder = async (req, res) => {
 
         const productToCancel = order.items.find(product => product._id.equals(item_id));
         
-        
         if (!productToCancel) {
             return res.status(404).json({ success: false, message: 'Product not found in order' });
         }
-        if(order.paymentMethod == "RAZORPAY" && order.paymentStatus == 'Completed'){
-           
-            
-            const randomID = Math.floor(100000 + Math.random() * 900000);
 
-            const refundAmount = parseFloat(productToCancel.price);
+        if(order.paymentMethod == "RAZORPAY" && order.paymentStatus == 'Completed') {
+            const randomID = Math.floor(100000 + Math.random() * 900000);
             
             
-           
+            const refundAmount = calculateRefundAmount(order, productToCancel);
+            
             let wallet = await Wallet.findOne({ userId: req.session.userSession });
             
             if (wallet) {
-               
                 wallet.balance += refundAmount;
                 wallet.history.push({
                     amount: refundAmount,
                     transactionType: "Cancelled",
-                    description: "Product Cancelled Refund",
+                    description: `Product Cancelled Refund (Including Discounts)`,
                     transactionId: `TRX-${randomID}`
                 });
             } else {
-                
                 wallet = new Wallet({
                     userId: req.session.userSession,
                     balance: refundAmount,
                     history: [{
                         amount: refundAmount,
                         transactionType: "Cancelled",
-                        description: "Product Cancelling Refund",
+                        description: `Product Cancelling Refund (Including Discounts)`,
                         transactionId: `TRX-${randomID}`
                     }]
                 });
@@ -355,9 +326,6 @@ const cancelOrder = async (req, res) => {
             await order.save();
         }
 
-
-        
-
         await Product.findByIdAndUpdate(
             productToCancel.productId,
             { $inc: { stock: productToCancel.quantity } },
@@ -372,6 +340,52 @@ const cancelOrder = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to cancel order' });
     }
 };
+
+const returnOrder = async (req, res) => {
+    try {
+        const userId = req.session.userSession;
+        const orderId = req.params.id;
+        const itemId = req.body.itemId;
+        const return_reason = req.body.return_reason;
+        
+        const order = await Order.findOne({ _id: orderId, userId });
+
+        if (!order) {
+            console.log("Order not found");
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        const products = order.items.find(product => product._id.equals(itemId));
+        if (products.status !== 'Delivered') {
+            return res.status(400).json({ success: false, message: 'Only delivered orders can be returned' });
+        }
+
+        
+        const refundAmount = calculateRefundAmount(order, products);
+
+        const returnRequest = new Return({
+            itemId: itemId,
+            orderId: orderId,
+            userId: userId,
+            reason: return_reason,
+            status: 'Pending',
+            refundAmount: refundAmount 
+        });
+
+        await returnRequest.save();
+
+        products.status = 'Return Requested';
+
+        await order.save();
+
+        console.log("Return request submitted successfully");
+        res.json({ success: true, message: 'Return request submitted successfully' });
+    } catch (error) {
+        console.error('Error processing return request:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 
 const loadOrderSummary = async (req, res) => {
     try {
@@ -544,5 +558,6 @@ module.exports = {
     loadWishlist,
     addWishlistItem,
     removeWishlistItem,
-    loadWallet
+    loadWallet,
+    calculateRefundAmount
 }

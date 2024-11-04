@@ -321,6 +321,7 @@
                                                                 ₹<%= order && order.totalAmount ?
                                                                     order.totalAmount.toFixed(2) : 'N/A' %>
                                                             </div>
+                                                            
                                                         </div>
                                                         <div class="item">
                                                             <div class="text-2 text_black-2">Payment Status</div>
@@ -369,8 +370,10 @@
             </div>
         </div>
         <% }) %>
-        <% order.items.forEach(products => { %>
-    <div class="modal fade" id="returnOrderModal<%= products._id %>" tabindex="-1"
+
+
+    <% order.items.forEach(products => { %>
+        <div class="modal fade" id="returnOrderModal<%= products._id %>" tabindex="-1"
         aria-labelledby="returnOrderModalLabel<%= products._id %>" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content pr-5 pl-5">

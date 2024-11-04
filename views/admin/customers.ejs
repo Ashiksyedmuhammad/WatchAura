@@ -75,11 +75,15 @@
                                                 <td><%= user.firstName %></td>
                                                 <td><%= user.email %></td>
                                                 <td>
-                                                    <form action="/admin/<%= user.isBlocked ? 'unblock' : 'block' %>/<%= user._id %>" method="POST">
+                                                    <form 
+                                                        id="user-form-<%= user._id %>" 
+                                                        action="/admin/<%= user.isBlocked ? 'unblock' : 'block' %>/<%= user._id %>" 
+                                                        method="POST" 
+                                                        onsubmit="return handleFormSubmit(event, '<%= user.isBlocked ? 'Unblock' : 'Block' %>', '<%= user.firstName %>', '<%= user._id %>');">
                                                         <button type="submit" class="btn <%= user.isBlocked ? 'btn-success' : 'btn-danger' %>">
                                                             <%= user.isBlocked ? 'UNBLOCK' : 'BLOCK' %>
                                                         </button>
-                                                    </form>                                                    
+                                                    </form>                                                
                                                 </td>
                                             </tr>
                                         <% }); %>
@@ -89,12 +93,11 @@
                                         </tr>
                                     <% } %>
                                 </tbody>
-                                
                             </table>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>  
         </div>
     </div>
 
@@ -110,13 +113,9 @@
     <script src="/admin-assets/assets/js/misc.js"></script>
     <script src="/admin-assets/assets/js/settings.js"></script>
     <script src="/admin-assets/assets/js/todolist.js"></script>
-    
     <script src="/admin-assets/assets/js/dashboard.js"></script>
-    <!-- End custom js for this page -->
-    <!-- Include SweetAlert -->
-   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+<script>
     function confirmAction(action, userName) {
         return Swal.fire({
             title: 'Are you sure?',
@@ -127,15 +126,17 @@
             cancelButtonColor: '#d33',
             confirmButtonText: `Yes, ${action.toLowerCase()}!`,
             cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                return true; 
-            } else {
-                return false; 
-            }
         });
     }
-</script>  
+
+    async function handleFormSubmit(event, action, userName, userId) {
+        event.preventDefault(); 
+        const result = await confirmAction(action, userName);
+        
+        if (result.isConfirmed) {
+            document.getElementById(`user-form-${userId}`).submit();         }
+    }
+</script> 
   </body>
 
   <%- include('../admin-layouts/footer.ejs') %>
