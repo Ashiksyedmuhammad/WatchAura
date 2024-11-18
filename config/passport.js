@@ -3,8 +3,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const passport = require('passport');
 const User = require('../model/user/userModel');
 
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 passport.use(new GoogleStrategy({
   clientID: '872090645959-etaqkri741ugi9qphtifi6oiecaanm9a.apps.googleusercontent.com',
@@ -42,31 +40,15 @@ passport.use(new GoogleStrategy({
 
 
 
-// Serialize user into the session
+
 passport.serializeUser((user, done) => {
 done(null, user);
 });
 
-// Deserialize user out of the session
+
 passport.deserializeUser((obj, done) => {
 done(null, obj);
 });
-
-
-// // Routes
-// app.get('/', (req, res) => {
-//   res.send('<a href="/auth/google">Authenticate with Google</a>');
-// });
-
-// app.get('/auth/google',
-//   passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/' }),
-//   (req, res) => {
-//     // Successful authentication, redirect home.
-//     res.redirect('/');
-//   });
 
 
 

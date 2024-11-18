@@ -19,25 +19,25 @@ const loadCart = async (req, res) => {
     let productDetails = [];
 
     if (cart && cart.items) {
-      // Get all product IDs and their category IDs
+     
       const productIds = cart.items.map(item => item.productId._id);
       const products = await Product.find({ _id: { $in: productIds } })
         .populate('category')
         .lean();
       
-      // Create a map of product ID to category ID
+      
       const productCategoryMap = new Map(
         products.map(product => [product._id.toString(), product.category])
       );
 
-      // Get all relevant offer IDs (both product and category offers)
+     
       const productOfferIds = cart.items
         .map(item => item.productId.offerId)
         .filter(Boolean);
       
       const categoryIds = [...new Set(products.map(product => product.category._id))];
 
-      // Fetch all relevant offers
+     
       const [productOffers, categoryOffers] = await Promise.all([
         Offer.find({ 
           _id: { $in: productOfferIds },
@@ -51,7 +51,7 @@ const loadCart = async (req, res) => {
         }).lean()
       ]);
 
-      // Create maps for quick lookup
+      
       const productOffersMap = new Map(
         productOffers.map(offer => [offer._id.toString(), offer])
       );
@@ -65,15 +65,15 @@ const loadCart = async (req, res) => {
           const product = item.productId;
           const category = productCategoryMap.get(product._id.toString());
           
-          // Check for product-specific offer
+         
           const productOffer = productOffersMap.get(product.offerId?.toString());
           const productDiscount = productOffer?.discount || 0;
           
-          // Check for category offer
+       
           const categoryOffer = categoryOffersMap.get(category?._id.toString());
           const categoryDiscount = categoryOffer?.discount || 0;
           
-          // Use the better discount
+         
           const bestDiscount = Math.max(productDiscount, categoryDiscount);
           
           return {
@@ -89,7 +89,7 @@ const loadCart = async (req, res) => {
         })
       );
 
-      // Calculate subtotal with the best applicable discount for each item
+    
       cart.items.forEach((cartItem) => {
         const product = cartItem.productId;
         const quantity = cartItem.quantity;

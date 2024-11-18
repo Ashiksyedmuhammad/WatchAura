@@ -3,6 +3,71 @@
 
 
     <style>
+        .box-navigation, .nav-icon {
+    padding: 0;
+    margin: 0;
+}
+
+.box-nav-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.box-nav-ul .menu-item {
+    font-size: 1rem;
+}
+
+.box-nav-ul .menu-item a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.box-nav-ul .menu-item a:hover {
+    color: #007bff;
+}
+
+.nav-icon-item {
+    color: #333;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-icon-item:hover {
+    color: #007bff;
+}
+
+.btn-logout {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.btn-logout:hover {
+    color: #dc3545;
+}
+
+.nav-icon .count-box {
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    margin-left: 4px;
+}
+
+.nav-user p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+
         .offer-badge {
             position: absolute;
             top: 10px;
@@ -26,17 +91,63 @@
             font-weight: bold;
         }
 
-        .filter-section {
-            padding: 20px 0;
-            background: #f8f9fa;
-            margin-bottom: 30px;
-        }
+       /* Filter Section */
+.filter-section {
+    background-color: #f8f9fa; /* Light background for contrast */
+    padding: 1.5rem; /* Add padding for spacing */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-        .filter-section .form-control,
-        .filter-section .form-select {
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
+.filter-section .form-control,
+.filter-section .form-select {
+    height: 42px;
+    font-size: 0.95rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.filter-section .input-group .form-control {
+    border-radius: 6px;
+}
+
+.filter-section .input-group input[type="number"] {
+    width: 50%; /* Make min and max inputs share equal space */
+}
+
+.filter-section .input-group .form-control:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.filter-section .input-group .form-control:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important; 
+}
+
+.filter-section .form-select {
+    padding-right: 1.75rem; 
+}
+
+
+@media (max-width: 767px) {
+    .filter-section {
+        padding: 1rem;
+    }
+}
+
 
         .pagination {
             display: flex;
@@ -79,7 +190,7 @@
                         </div>
                         <div class="col-xl-3 col-md-4 col-6">
                             <a href="index.html" class="logo-header">
-                                <img src="assets/images/logo/logo.svg" alt="logo" class="logo">
+                                <img src="assets/images/logo/WL.png" alt="logo" style="width: 100px;">
                             </a>
                         </div>
                         <div class="col-xl-6 tf-md-hidden">
@@ -127,7 +238,7 @@
                                     <li class="nav-user">
                                         <a href="/profile" class="nav-icon-item">
                                             <p class="mb-0">
-                                                <%= locals.userData[0]?.firstName %>
+                                                <%= locals.userData?.firstName %>
                                             </p>
                                         </a>
                                     </li>
@@ -144,14 +255,14 @@
 
                                             <li class="nav-wishlist">
                                                 <a href="/wishlist" class="nav-icon-item">
-                                                    <i class="icon icon-heart"></i><span class="count-box">0</span>
+                                                    <i class="icon icon-heart"></i>
                                                 </a>
                                             </li>
 
 
                                             <li class="nav-cart">
                                                 <a href="/cart" class="nav-icon-item">
-                                                    <i class="icon icon-bag"></i><span class="count-box"></span>
+                                                    <i class="icon icon-bag"></i>
                                                 </a>
                                             </li>
                             </ul>
@@ -166,19 +277,6 @@
                     <p class="text-center text-2 text_black-2 mt_5">Shop through our all products</p>
                 </div>
             </div>
-
-            <ul class="tf-control-layout d-flex justify-content-center">
-                <li class="tf-view-layout-switch sw-layout-2" data-value-grid="grid-2">
-                    <div class="item"><span class="icon icon-grid-2"></span></div>
-                </li>
-                <li class="tf-view-layout-switch sw-layout-3" data-value-grid="grid-3">
-                    <div class="item"><span class="icon icon-grid-3"></span></div>
-                </li>
-                <li class="tf-view-layout-switch sw-layout-4 active" data-value-grid="grid-4">
-                    <div class="item"><span class="icon icon-grid-4"></span></div>
-                </li>
-
-            </ul>
             <div class="filter-section mb-4">
                 <div class="container">
                     <div class="row">
@@ -578,7 +676,7 @@
                             <div class="col-12">
                                 <div
                                     class="footer-bottom-wrap d-flex gap-20 flex-wrap justify-content-between align-items-center">
-                                    <div class="footer-menu_item">© 2024 Ecomus Store. All Rights Reserved</div>
+                                    <div class="footer-menu_item">© 2024 WatchAura Store. All Rights Reserved</div>
                                     <div class="tf-payment">
                                         <img src="images/payments/visa.png" alt="">
                                         <img src="images/payments/img-1.png" alt="">

@@ -164,9 +164,9 @@
 
                             <!-- Show User Name -->
                             <li class="nav-user">
-                                <p class="mb-0">
-                                    <%= locals.userData[0]?.firstName %>
-                                </p>
+                                <a href="/profile">  
+                                  <p class="mb-0"><%= locals.userData?.firstName %></p>
+                                </a>
                             </li>
                             <% } else { %>
                                 <!-- Show Login Button if not logged in -->
@@ -179,7 +179,7 @@
 
                                     <!-- Wishlist Icon -->
                                     <li class="nav-wishlist">
-                                        <a href="wishlist.html" class="nav-icon-item">
+                                        <a href="/wishlist" class="nav-icon-item">
                                             <i class="icon icon-heart"></i><span class="count-box">0</span>
                                         </a>
                                     </li>
@@ -275,14 +275,19 @@
                                         <% } %>
                                     </tbody>
                                 </table>
+
                             </div>
+                            <a href="/shop" style="justify-content: center;"><button>SHOP</button></a>
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
     </section>
-    
+
 
     <footer id="footer" class="footer">
         <div class="footer-wrap">

@@ -1,3 +1,4 @@
+const { type } = require("event");
 const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
     firstName: {
@@ -14,6 +15,12 @@ const userSchema = mongoose.Schema({
     },
     password:{
         type:String,
+    },
+    resetPasswordToken:{
+        type: String,
+    },
+    resetPasswordExpires:{
+        type:Date,
     },
     isValid:{
         type:Boolean

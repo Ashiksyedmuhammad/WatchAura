@@ -188,9 +188,9 @@
 
                             <!-- Show User Name -->
                             <li class="nav-user">
-                                <p class="mb-0">
-                                    <%= locals.userData[0]?.firstName %>
-                                </p>
+                                <a href="/profile">  
+                                  <p class="mb-0"><%= locals.userData?.firstName %></p>
+                                </a>
                             </li>
                             <% } else { %>
                                 <!-- Show Login Button if not logged in -->

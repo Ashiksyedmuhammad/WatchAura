@@ -156,7 +156,7 @@ const applyCoupon = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid or expired coupon' });
         }
 
-        // Get cart with populated product details
+        
         const cart = await Cart.findOne({ userId })
             .populate({
                 path: 'items.productId',
@@ -169,12 +169,12 @@ const applyCoupon = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
-        // Get all product IDs and category IDs from cart
+        
         const productIds = cart.items.map(item => item.productId._id);
         const categoryIds = [...new Set(cart.items.map(item => 
             item.productId.category?._id).filter(Boolean))];
 
-        // Fetch active offers for products and categories
+      
         const [productOffers, categoryOffers] = await Promise.all([
             Offer.find({
                 products: { $in: productIds },
@@ -188,7 +188,7 @@ const applyCoupon = async (req, res) => {
             })
         ]);
 
-        // Create maps for quick lookup
+     
         const productOffersMap = new Map(
             productOffers.flatMap(offer => 
                 offer.products.map(productId => [productId.toString(), offer]))
@@ -199,32 +199,32 @@ const applyCoupon = async (req, res) => {
                 offer.categories.map(categoryId => [categoryId.toString(), offer]))
         );
 
-        // Calculate subtotal using effective prices after offers
+       
         let subTotal = 0;
         cart.items.forEach((item) => {
             const product = item.productId;
             const quantity = item.quantity;
 
-            // Get product and category offers
+       
             const productOffer = productOffersMap.get(product._id.toString());
             const categoryOffer = product.category ? 
                 categoryOffersMap.get(product.category._id.toString()) : null;
 
-            // Get the best discount
+            
             const productDiscount = productOffer?.discount || 0;
             const categoryDiscount = categoryOffer?.discount || 0;
             const bestDiscount = Math.max(productDiscount, categoryDiscount);
 
-            // Calculate effective price after the best offer
+           
             const effectivePrice = product.price * (1 - bestDiscount / 100);
             
             subTotal += effectivePrice * quantity;
         });
 
-        // Round subtotal to 2 decimal places
+        
         subTotal = Math.round(subTotal * 100) / 100;
 
-        // Validate minimum and maximum purchase amounts
+     
         if (subTotal < coupon.minPurchaseAmount) {
             return res.status(400).json({
                 success: false,
@@ -238,11 +238,10 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        // Calculate coupon discount based on subtotal after offers
         const discountAmount = Math.round((subTotal * coupon.discount) / 100 * 100) / 100;
         const totalAfterDiscount = Math.round((subTotal - discountAmount) * 100) / 100;
 
-        // Store applied coupon in session
+       
         req.session.appliedCoupon = {
             code: coupon.couponId,
             discountAmount,
@@ -303,7 +302,7 @@ const placeOrder = async (req, res) => {
         const userId = req.session.userSession;
         const { addressId, paymentMethod } = req.body;
 
-        // Fetch cart with all necessary populated fields
+       
         const [cart, user, address] = await Promise.all([
             Cart.findOne({ userId })
                 .populate({
@@ -316,7 +315,7 @@ const placeOrder = async (req, res) => {
             Address.findById(addressId)
         ]);
 
-        // Basic validations
+       
         if (!cart || cart.items.length < 1) {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
@@ -327,12 +326,12 @@ const placeOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Address not found' });
         }
 
-        // Get all product IDs and category IDs from cart
+  
         const productIds = cart.items.map(item => item.productId._id);
         const categoryIds = [...new Set(cart.items.map(item => 
             item.productId.category?._id).filter(Boolean))];
 
-        // Fetch active offers for products and categories
+        
         const [productOffers, categoryOffers] = await Promise.all([
             Offer.find({
                 products: { $in: productIds },
@@ -346,7 +345,7 @@ const placeOrder = async (req, res) => {
             })
         ]);
 
-        // Create maps for quick offer lookups
+       
         const productOffersMap = new Map(
             productOffers.flatMap(offer => 
                 offer.products.map(productId => [productId.toString(), offer]))
@@ -357,33 +356,33 @@ const placeOrder = async (req, res) => {
                 offer.categories.map(categoryId => [categoryId.toString(), offer]))
         );
 
-        // Calculate total amount with offers
+        
         let totalAmount = 0;
         let discountAmount = 0;
         let couponId = null;
 
-        // Process each cart item
+        
         const orderItems = cart.items.map(item => {
             const product = item.productId;
             const quantity = item.quantity;
 
-            // Get product and category offers
+            
             const productOffer = productOffersMap.get(product._id.toString());
             const categoryOffer = product.category ? 
                 categoryOffersMap.get(product.category._id.toString()) : null;
 
-            // Get the best discount
+        
             const productDiscount = productOffer?.discount || 0;
             const categoryDiscount = categoryOffer?.discount || 0;
             const bestDiscount = Math.max(productDiscount, categoryDiscount);
 
-            // Calculate effective price after the best offer
+            
             const effectivePrice = Math.round(product.price * (1 - bestDiscount / 100) * 100) / 100;
             
-            // Add to total amount
+           
             totalAmount += effectivePrice * quantity;
 
-            // Return item details for order
+         
             return {
                 productId: product._id,
                 name: product.productName,
@@ -400,10 +399,10 @@ const placeOrder = async (req, res) => {
             };
         });
 
-        // Round total amount
+        
         totalAmount = Math.round(totalAmount * 100) / 100;
 
-        // Apply coupon if exists
+       
         if (req.session.appliedCoupon) {
             discountAmount = req.session.appliedCoupon.discountAmount;
             couponId = req.session.appliedCoupon.code;
@@ -411,7 +410,7 @@ const placeOrder = async (req, res) => {
         }
 
 
-        // COD validation
+        
         if (totalAmount > 1000 && paymentMethod === 'COD') {
             return res.status(400).json({ 
                 success: false, 
@@ -419,17 +418,17 @@ const placeOrder = async (req, res) => {
             });
         }
 
-        // Validate payment type
+        
         const payment_type_objId = await Payment.findOne({ payType: paymentMethod });
         if (!payment_type_objId) {
             return res.status(400).json({ success: false, message: 'Invalid payment type' });
         }
 
 
-        // Generate order ID
+       
         const randomOrderId = Math.floor(10000 + Math.random() * 90000);
 
-        // Create new order
+        
         const newOrder = new UserOrder({
             userId: userId,
             orderId: `ORD-${randomOrderId}`,
@@ -445,7 +444,7 @@ const placeOrder = async (req, res) => {
 
         await newOrder.save();
 
-        // Handle coupon usage
+       
         if (couponId) {
             await Coupon.findOneAndUpdate(
                 { couponId: couponId },
@@ -454,9 +453,9 @@ const placeOrder = async (req, res) => {
             delete req.session.appliedCoupon;
         }
 
-        // Handle different payment methods
+      
         if (paymentMethod === 'COD') {
-            // Update product stock and clear cart
+           
             for (let item of cart.items) {
                 await Product.findByIdAndUpdate(
                     item.productId._id,
@@ -585,7 +584,7 @@ const quantityCheck = async (req, res) => {
     try {
         const userId = req.session.userSession;
         
-        // Populate the productId field
+       
         const cart = await Cart.findOne({ userId }).populate('items.productId');
 
         if (!cart || cart.items.length === 0) {
@@ -593,13 +592,13 @@ const quantityCheck = async (req, res) => {
         }
 
         for (const item of cart.items) {
-            const product = item.productId; // Access product from populated productId field
+            const product = item.productId; 
             if (product.stock < item.quantity) {
                 return res.status(400).json({ message: `Not enough stock for ${product.name}` });
             }
         }
 
-        // Stock is sufficient
+       
         res.status(200).json({ message: 'Stock verified' });
     } catch (error) {
         console.error(error);

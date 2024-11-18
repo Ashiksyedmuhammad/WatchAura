@@ -109,7 +109,7 @@
                             </li>
 
                             <!-- Conditional for showing Logout and User name if logged in, or Login if not -->
-                            <% if(locals.userData){ %>
+                            <% if(locals.user){ %>
                                 <!-- Show Logout Button -->
                                 <li class="nav-logout">
                                     <form action="/logout" method="POST" class="nav-icon-item" style="display: inline;">
@@ -122,9 +122,10 @@
 
                                 <!-- Show User Name -->
                                 <li class="nav-user">
-                                    <p class="mb-0">
-                                        <%= locals.userData[0]?.firstName %>
-                                    </p>
+                                    <a href="/profile"><p class="mb-0">
+                                        <%= locals.user?.firstName %>
+                                    </p></a>
+                                    
                                 </li>
                                 <% } else { %>
                                     <!-- Show Login Button if not logged in -->
@@ -137,14 +138,14 @@
 
                                         <!-- Wishlist Icon -->
                                         <li class="nav-wishlist">
-                                            <a href="wishlist.html" class="nav-icon-item">
+                                            <a href="/wishlist" class="nav-icon-item">
                                                 <i class="icon icon-heart"></i><span class="count-box">0</span>
                                             </a>
                                         </li>
 
                                         <!-- Cart Icon -->
                                         <li class="nav-cart">
-                                            <a href="#shoppingCart" data-bs-toggle="modal" class="nav-icon-item">
+                                            <a href="/cart" data-bs-toggle="modal" class="nav-icon-item">
                                                 <i class="icon icon-bag"></i><span class="count-box">0</span>
                                             </a>
                                         </li>
@@ -188,7 +189,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% if(cart!==undefined){%>
+                                    <% if(cart!==undefined && cart !== null && cart.items.length > 0){%>
                                         <%cart.items.forEach((item)=>{%>
                                             <tr class="tf-cart-item file-delete">
                                                 <td class="tf-cart-item_product">
@@ -200,7 +201,7 @@
                                                         <a href="/product/:id" class="cart-title link">
                                                             <%=item.productId.productName%>
                                                         </a>
-                                                        <!-- <span class="remove-cart link remove">Remove</span> -->
+                                                       
                                                     </div>
                                                 </td>
                                                 <td class="tf-cart-item_price" cart-data-title="Price">
@@ -307,17 +308,17 @@
                                 </div>
 
                                 <%if (cart!==undefined){%>
-                                    <!-- <div class="cart-checkout-btn">
+                                    <div class="cart-checkout-btn">
                                         <a href="/checkout"
                                             class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
                                             <span>Check out</span>
                                         </a>
-                                    </div> -->
-                                    <div class="cart-checkout-btn">
+                                    </div>
+                                    <!-- <div class="cart-checkout-btn">
                                         <button type="button" id="checkout-button" class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
                                             <span>Check out</span>
                                         </button>
-                                    </div>
+                                    </div> -->
                                     
                                     <%}else{%>
                                         <div class="cart-checkout-btn">

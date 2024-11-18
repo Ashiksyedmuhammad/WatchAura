@@ -411,7 +411,6 @@ const returnOrder = async (req, res) => {
     const order = await Order.findOne({ _id: orderId, userId });
 
     if (!order) {
-      console.log("Order not found");
       return res
         .status(404)
         .json({ success: false, message: "Order not found" });
@@ -425,7 +424,10 @@ const returnOrder = async (req, res) => {
           success: false,
           message: "Only delivered orders can be returned",
         });
+
     }
+ 
+
 
     const refundAmount = calculateRefundAmount(order, products);
 
@@ -441,10 +443,14 @@ const returnOrder = async (req, res) => {
     await returnRequest.save();
 
     products.status = "Return Requested";
-
+    if(products.price<1000){
+      return res.status(400).json({
+        success:true,
+        message:"Sorry You are not eligible to Return this Product"
+      });
+    }
     await order.save();
 
-    console.log("Return request submitted successfully");
     res.json({
       success: true,
       message: "Return request submitted successfully",

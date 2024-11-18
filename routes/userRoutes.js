@@ -48,9 +48,9 @@ userRoute.get('/auth/google/callback',
 
 //FORGOT PASSWORD
 userRoute.post('/forgot-password', userController.forgotPassword);
-userRoute.get('/resetpassword/:token', userController.loadResetPassword); 
+userRoute.get('/resetpassword/:id', userController.loadResetPassword); 
 userRoute.post('/reset-password', userController.resetPassword);
-userRoute.get('/404', userController.fourNotFour); 
+// userRoute.get('/404', userController.fourNotFour);
 
 //LOADSHOPE
 userRoute.get('/shop', productController.loadShop);
@@ -95,5 +95,8 @@ userRoute.get('/wallet', userAuth.isLogin,dashboard.loadWallet) ;
 userRoute.get('/download-invoice/:id',userAuth.isLogin, dashboard.downloadInvoice);
 
 
+userRoute.use((req,res,next) => {
+  res.status(404).render('404');
+})
 
 module.exports = userRoute;

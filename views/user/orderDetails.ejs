@@ -127,8 +127,8 @@
                     </a>
                 </div>
                 <div class="col-xl-3 col-md-4 col-6">
-                    <a href="index.html" class="logo-header">
-                        <img src="assets/images/logo/logo.svg" alt="logo" class="logo">
+                    <a href="/" class="logo-header">
+                        <img src="/assets/images/logo/WL.png" alt="logo"  style="width: 100px;">
                     </a>
                 </div>
                 <div class="col-xl-6 tf-md-hidden">
@@ -173,9 +173,9 @@
 
                             <!-- Show User Name -->
                             <li class="nav-user">
-                                <p class="mb-0">
-                                    <%= locals.userData[0]?.firstName %>
-                                </p>
+                                <a href="/profile">  
+                                  <p class="mb-0"><%= locals.userData?.firstName %></p>
+                                </a>
                             </li>
                             <% } else { %>
                                 <!-- Show Login Button if not logged in -->
@@ -188,7 +188,7 @@
 
                                     <!-- Wishlist Icon -->
                                     <li class="nav-wishlist">
-                                        <a href="wishlist.html" class="nav-icon-item">
+                                        <a href="/wishlist" class="nav-icon-item">
                                             <i class="icon icon-heart"></i><span class="count-box">0</span>
                                         </a>
                                     </li>
@@ -217,7 +217,7 @@
                 <div class="col-lg-3">
                     <ul class="my-account-nav">
                         <li><a href="/profile" class="my-account-nav-item ">Dashboard</a></li>
-                        <li><a href="my-account-orders.html" class="my-account-nav-item active">Orders</a></li>
+                        <li><a href="/orders" class="my-account-nav-item active">Orders</a></li>
                         <li><a href="/address" class="my-account-nav-item  ">Address</a></li>
                         <li><a href="/account" class="my-account-nav-item">Account Details</a></li>
                         <li><a href="/wishlist" class="my-account-nav-item">Wishlist</a></li>

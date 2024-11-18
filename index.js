@@ -38,9 +38,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/admin', adminRoute);
 app.use('/', userRoute);
-app.use('/*',(req,res)=>{
-    res.redirect('/404')
-});
+// app.use('/*',(req,res,next)=>{
+//     res.status(404).redirect('/404')
+// });
 
 
 const port = process.env.PORT

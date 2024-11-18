@@ -1,5 +1,73 @@
 <%- include('../user-layouts/header.ejs') %>
 
+<style>
+    /* General Layout */
+.box-navigation, .nav-icon {
+    padding: 0;
+    margin: 0;
+}
+
+.box-nav-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.box-nav-ul .menu-item {
+    font-size: 1rem;
+}
+
+.box-nav-ul .menu-item a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.box-nav-ul .menu-item a:hover {
+    color: #007bff;
+}
+
+.nav-icon-item {
+    color: #333;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-icon-item:hover {
+    color: #007bff;
+}
+
+.btn-logout {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.btn-logout:hover {
+    color: #dc3545;
+}
+
+.nav-icon .count-box {
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    margin-left: 4px;
+}
+
+.nav-user p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+</style>
+</head>
     <body class="preload-wrapper">
         <!-- preload -->
         <div class="preload preload-container">
@@ -28,85 +96,70 @@
                                 <img src="assets/images/logo/WL.png" alt="logo" class="logo" style="width: 100px;">
                             </a>
                         </div>
-                        <div class="col-xl-6 tf-md-hidden">
+                        <div class="col-xl-6 col-md-6 d-none d-md-flex justify-content-center">
                             <nav class="box-navigation text-center">
-                                <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-20">
+                                <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-3">
                                     <li class="menu-item">
-                                        <a href="#" class="item-link">Home<i class="icon icon-arrow-down"></i></a>
+                                        <a href="/" class="item-link">Home<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="/shop" class="item-link">Shope<i class="icon icon-arrow-down"></i></a>
+                                        <a href="/shop" class="item-link">Shop<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="#" class="item-link">About<i class="icon icon-arrow-down"></i></a>
+                                        <a href="#" class="item-link">About<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="#" class="item-link">Contact<i class="icon icon-arrow-down"></i></a>
+                                        <a href="#" class="item-link">Contact<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                 </ul>
                             </nav>
                         </div>
-                        <div class="col-xl-3 col-md-4 col-3">
-                            <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
-                                <!-- Search Icon -->
+                        <div class="col-xl-3 col-md-6 col-6 d-flex justify-content-end">
+                            <ul class="nav-icon d-flex align-items-center gap-3">
                                 <li class="nav-search">
-                                    <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft"
-                                        class="nav-icon-item">
+                                    <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft" class="nav-icon-item">
                                         <i class="icon icon-search"></i>
                                     </a>
                                 </li>
-
-                                <!-- Conditional for showing Logout and User name if logged in, or Login if not -->
                                 <% if(locals.userData){ %>
-                                    <!-- Show Logout Button -->
+                                    <li class="nav-user">
+                                        <a href="/profile" class="nav-icon-item">
+                                            <p class="mb-0"><%= locals.userData[0]?.firstName %></p>
+                                        </a>
+                                    </li>
                                     <li class="nav-logout">
-                                        <form action="/logout" method="POST" class="nav-icon-item"
-                                            style="display: inline;">
-                                            <button type="submit" class="btn-logout"
-                                                style="background: none; border: none; padding: 0; cursor: pointer;">
-                                                <i class="icon icon-logout"></i> Logout
+                                        <form action="/logout" method="POST" class="d-inline">
+                                            <button type="submit" class="btn-logout" style="background: none; border: none; padding: 0;">
+                                                <i class="icon icon-logout"></i> 
                                             </button>
                                         </form>
                                     </li>
-
-                                    <!-- Show User Name with link to Profile Page -->
-                                    <li class="nav-user">
-                                        <a href="/profile" class="nav-icon-item">
-                                            <p class="mb-0">
-                                                <%= locals.userData[0]?.firstName %>
-                                            </p>
+                                <% } else { %>
+                                    <li class="nav-account">
+                                        <a href="#login" data-bs-toggle="modal" class="nav-icon-item">
+                                            <i class="icon icon-account"></i> 
                                         </a>
                                     </li>
-                                    <% } else { %>
-                                        <!-- Show Login Button if not logged in -->
-                                        <li class="nav-account">
-                                            <a href="#login" data-bs-toggle="modal" class="nav-icon-item">
-                                                <i class="icon icon-account"></i> Login
-                                            </a>
-                                        </li>
-                                        <% } %>
-
-
-                                            <!-- Wishlist Icon -->
-                                            <li class="nav-wishlist">
-                                                <a href="/wishlist" class="nav-icon-item">
-                                                    <i class="icon icon-heart"></i><span class="count-box"></span>
-                                                </a>
-                                            </li>
-
-                                            <!-- Cart Icon -->
-                                            <li class="nav-cart">
-                                                <a href="/cart" class="nav-icon-item">
-                                                    <i class="icon icon-bag"></i><span class="count-box"></span>
-                                                </a>
-                                            </li>
-                                            
+                                <% } %>
+                                <% if (typeof wishlist !== 'undefined' && wishlist.length > 0) { %>
+                                    <li class="nav-wishlist">
+                                      <a href="/wishlist" class="nav-icon-item">
+                                        <i class="icon icon-heart"><span class="count-box"><%= wishlist.length %></span></i>
+                                      </a>
+                                    </li>
+                                  <% } %>
+                                <li class="nav-cart">
+                                    <a href="/cart" class="nav-icon-item">
+                                        <i class="icon icon-bag"></i>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
+                        
                     </div>
                 </div>
             </header>
-            <!-- /Header -->
+       
 
             <!-- Slider -->
             <div class="tf-slideshow slider-home-2 slider-effect-fade position-relative">
@@ -444,7 +497,7 @@
                                                 <p>Address: 1234 Fashion Street, Suite 567, <br> New York, NY 10001</p>
                                             </li>
                                             <li>
-                                                <p>Email: <a href="#">info@fashionshop.com</a></p>
+                                                <p>Email: <a href="#">info@WatchAura.com</a></p>
                                             </li>
                                             <li>
                                                 <p>Phone: <a href="#">(212) 555-1234</a></p>
@@ -561,7 +614,7 @@
                                 <div class="col-12">
                                     <div
                                         class="footer-bottom-wrap d-flex gap-20 flex-wrap justify-content-between align-items-center">
-                                        <div class="footer-menu_item">© 2024 Ecomus Store. All Rights Reserved</div>
+                                        <div class="footer-menu_item">© 2024 WatchAura Store. All Rights Reserved</div>
                                         <div class="tf-payment">
                                             <img src="assets/images/payments/visa.png" alt="">
                                             <img src="assets/images/payments/img-1.png" alt="">

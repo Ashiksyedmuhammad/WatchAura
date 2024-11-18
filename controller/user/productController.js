@@ -7,9 +7,6 @@ require('dotenv').config();
 const Offer = require('../../model/admin/offerModal');
 
 
-
-
-
 const loadShop = async (req, res) => {
     try {
         const userId = req.session.userSession;
@@ -112,6 +109,9 @@ const loadShop = async (req, res) => {
 const productDetails = async (req, res) => {
     try {
         const productId = req.params.id;
+        if(!mongoose.Types.ObjectId.isValid(productId)){
+            return res.render('404')
+        }
         const product = await Product.findById(productId)
             .populate('offerId')
             .populate('category');  
