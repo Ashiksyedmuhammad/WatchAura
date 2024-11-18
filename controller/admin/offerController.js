@@ -18,7 +18,6 @@ const loadOffer = async (req, res) => {
 const addOffer = async (req, res) => {
   try {
     const { title, discount, products, categories, status, type, expiryDate } = req.body;
-    console.log(req.body);
     
 
     if (!title || !discount || !status || !type || !expiryDate) {
@@ -100,7 +99,6 @@ const loadCateOffer =async(req,res)=>{
 }
 
 const updateOffer = async (req, res) => {
-
   try {
     const { title, discount, products, expiryDate, status, type, offerId } = req.body;
 

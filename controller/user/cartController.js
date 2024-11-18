@@ -19,40 +19,85 @@ const loadCart = async (req, res) => {
     let productDetails = [];
 
     if (cart && cart.items) {
-      const offerIds = cart.items
-        .map((item) => item.productId.offerId)
-        .filter(Boolean);
+      // Get all product IDs and their category IDs
+      const productIds = cart.items.map(item => item.productId._id);
+      const products = await Product.find({ _id: { $in: productIds } })
+        .populate('category')
+        .lean();
+      
+      // Create a map of product ID to category ID
+      const productCategoryMap = new Map(
+        products.map(product => [product._id.toString(), product.category])
+      );
 
-      const offers = await Offer.find({ _id: { $in: offerIds } }).lean();
-      const offersMap = new Map(
-        offers.map((offer) => [offer._id.toString(), offer.discount])
+      // Get all relevant offer IDs (both product and category offers)
+      const productOfferIds = cart.items
+        .map(item => item.productId.offerId)
+        .filter(Boolean);
+      
+      const categoryIds = [...new Set(products.map(product => product.category._id))];
+
+      // Fetch all relevant offers
+      const [productOffers, categoryOffers] = await Promise.all([
+        Offer.find({ 
+          _id: { $in: productOfferIds },
+          status: 'active',
+          expiryDate: { $gt: new Date() }
+        }).lean(),
+        Offer.find({ 
+          categories: { $in: categoryIds },
+          status: 'active',
+          expiryDate: { $gt: new Date() }
+        }).lean()
+      ]);
+
+      // Create maps for quick lookup
+      const productOffersMap = new Map(
+        productOffers.map(offer => [offer._id.toString(), offer])
+      );
+      
+      const categoryOffersMap = new Map(
+        categoryOffers.map(offer => [offer.categories[0].toString(), offer])
       );
 
       productDetails = await Promise.all(
         cart.items.map(async (item) => {
           const product = item.productId;
-          const offerId = product.offerId;
-
-          const discount = offersMap.get(offerId?.toString()) || 0;
-
+          const category = productCategoryMap.get(product._id.toString());
+          
+          // Check for product-specific offer
+          const productOffer = productOffersMap.get(product.offerId?.toString());
+          const productDiscount = productOffer?.discount || 0;
+          
+          // Check for category offer
+          const categoryOffer = categoryOffersMap.get(category?._id.toString());
+          const categoryDiscount = categoryOffer?.discount || 0;
+          
+          // Use the better discount
+          const bestDiscount = Math.max(productDiscount, categoryDiscount);
+          
           return {
             productId: product._id,
             name: product.productName,
             price: product.price,
-            offerId: offerId,
-            discount: discount,
+            offerId: productOffer?._id || categoryOffer?._id,
+            discount: bestDiscount,
+            originalPrice: product.price,
+            discountType: bestDiscount === productDiscount ? 'product' : 'category',
+            offerTitle: bestDiscount === productDiscount ? productOffer?.title : categoryOffer?.title
           };
         })
       );
 
+      // Calculate subtotal with the best applicable discount for each item
       cart.items.forEach((cartItem) => {
         const product = cartItem.productId;
         const quantity = cartItem.quantity;
-
-        const offerId = product.offerId;
-        const discount = offersMap.get(offerId?.toString()) || 0;
-
-        const effectivePrice = product.price * (1 - discount / 100);
+        const productDetail = productDetails.find(
+          detail => detail.productId.toString() === product._id.toString()
+        );
+        
+        const effectivePrice = product.price * (1 - (productDetail.discount / 100));
         subTotal += effectivePrice * quantity;
       });
     }
@@ -63,30 +108,19 @@ const loadCart = async (req, res) => {
         subTotal,
       });
     } else {
-      if (!cart) {
-        res.render("cart", {
-          cart: undefined,
-          user,
-          subTotal,
-          productDetails,
-        });
-      } else {
-        res.render("cart", {
-          cart,
-          user,
-          subTotal,
-          productDetails,
-        });
-      }
+      res.render("cart", {
+        cart,
+        user,
+        subTotal,
+        productDetails,
+      });
     }
   } catch (error) {
     console.error("Error Loading Cart:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while loading the Cart",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while loading the Cart",
+    });
   }
 };
 
@@ -137,7 +171,14 @@ const updateCartQuantity = async (req, res) => {
   const cartId = req.query.cartId;
 
   try {
-    let cart = await Cart.findOne({ _id: cartId }).populate("items.productId");
+    let cart = await Cart.findOne({ _id: cartId })
+      .populate('items.productId')
+      .populate({
+        path: 'items.productId',
+        populate: {
+          path: 'category'
+        }
+      });
 
     if (cart) {
       const productIndex = cart.items.findIndex(
@@ -146,34 +187,73 @@ const updateCartQuantity = async (req, res) => {
 
       if (productIndex > -1) {
         cart.items[productIndex].quantity = quantity;
-
         await cart.save();
 
         let subTotal = 0;
         let itemTotal = 0;
 
+        // Fetch all relevant offers
+        const productOfferIds = cart.items
+          .map(item => item.productId.offerId)
+          .filter(Boolean);
+
+        const categoryIds = [...new Set(
+          cart.items.map(item => item.productId.category?._id)
+        )].filter(Boolean);
+
+        const [productOffers, categoryOffers] = await Promise.all([
+          Offer.find({
+            _id: { $in: productOfferIds },
+            status: 'active',
+            expiryDate: { $gt: new Date() }
+          }).lean(),
+          Offer.find({
+            categories: { $in: categoryIds },
+            status: 'active',
+            expiryDate: { $gt: new Date() }
+          }).lean()
+        ]);
+
+        // Create maps for quick lookup
+        const productOffersMap = new Map(
+          productOffers.map(offer => [offer._id.toString(), offer])
+        );
+        
+        const categoryOffersMap = new Map(
+          categoryOffers.map(offer => [offer.categories[0].toString(), offer])
+        );
+
+        // Calculate totals with offers
         for (const item of cart.items) {
           const product = item.productId;
-          const offerId = product.offerId;
+          const category = product.category;
 
-          let price = product.price;
-          let discount = 0;
+          // Get product-specific offer
+          const productOffer = product.offerId ? 
+            productOffersMap.get(product.offerId.toString()) : null;
+          const productDiscount = productOffer?.discount || 0;
 
-          if (offerId) {
-            const offer = await Offer.findById(offerId);
-            if (offer) {
-              discount = offer.discount;
-            }
-          }
+          // Get category offer
+          const categoryOffer = category?._id ? 
+            categoryOffersMap.get(category._id.toString()) : null;
+          const categoryDiscount = categoryOffer?.discount || 0;
 
-          const effectivePrice = price * (1 - discount / 100);
+          // Use the better discount
+          const bestDiscount = Math.max(productDiscount, categoryDiscount);
+          const effectivePrice = product.price * (1 - bestDiscount / 100);
 
+          // Calculate item total if this is the updated item
           if (product._id.toString() === productId) {
             itemTotal = effectivePrice * quantity;
           }
 
+          // Add to subtotal
           subTotal += effectivePrice * item.quantity;
         }
+
+        // Round the totals to 2 decimal places
+        itemTotal = Math.round(itemTotal * 100) / 100;
+        subTotal = Math.round(subTotal * 100) / 100;
 
         return res.status(200).json({
           success: true,

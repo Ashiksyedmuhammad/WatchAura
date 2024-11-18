@@ -9,15 +9,25 @@ const Wallet = require ('../../model/user/userWallet');
 
 const loadProducts = async (req, res) => {
     try {
-        const [products, categories] = await Promise.all([
-            Product.find({}),
+        const PAGE_SIZE = 10;
+        const page = parseInt(req.query.page) || 1; 
+        const skip = (page - 1) * PAGE_SIZE; 
+        
+        const [products, categories, totalProducts] = await Promise.all([
+            Product.find({})
+                .skip(skip)
+                .limit(PAGE_SIZE),
             Category.find({}),
+            Product.countDocuments({}),
         ]);
-
-
+        
+        const totalPages = Math.ceil(totalProducts / PAGE_SIZE);
+        
         res.render('product', {
             products,
-            categories
+            categories,
+            currentPage: page,
+            totalPages,
         });
     } catch (error) {
         console.error('Error Loading Products:', error);
@@ -171,10 +181,22 @@ const editProduct = async (req, res) => {
 
 const loadOrders = async (req, res) => {
     try {
-        const orders = await Orders.find({}).populate('userId items.productId paymentMethod')
-
+        const PAGE_SIZE = 10; 
+        const page = parseInt(req.query.page) || 1; 
+        const skip = (page - 1) * PAGE_SIZE; 
+        
+        const orders = await Orders.find({})
+            .populate('userId items.productId paymentMethod')
+            .skip(skip)
+            .limit(PAGE_SIZE);
+        
+        const totalOrders = await Orders.countDocuments({});
+        const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
+        
         res.render('orders', {
-            orders
+            orders,
+            currentPage: page,
+            totalPages,
         });
     } catch (error) {
         console.error('Error Loading Products:', error);
@@ -213,6 +235,23 @@ const cancelOrder = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to cancel order' });
     }
 };
+const calculateRefundAmount = (order, productToCancel) => {
+    let refundAmount =
+      parseFloat(productToCancel.price) * productToCancel.quantity;
+  
+    if (order.couponApplied && order.discountAmount > 0) {
+      const orderSubtotal = order.items.reduce(
+        (sum, item) => sum + parseFloat(item.price) * item.quantity,
+        0
+      );
+      const itemPortionOfTotal =
+        (productToCancel.price * productToCancel.quantity) / orderSubtotal;
+      const itemDiscountPortion = order.discountAmount * itemPortionOfTotal;
+      refundAmount -= itemDiscountPortion;
+    }
+  
+    return refundAmount;
+  };
 
 const approveOrder = async (req, res) => {
     try {
@@ -236,7 +275,8 @@ const approveOrder = async (req, res) => {
 
         if (products.status = 'Returned') {
             const randomID = Math.floor(100000 + Math.random() * 900000);
-            const refundAmount = parseFloat(currentTotal);
+            const refundAmount = calculateRefundAmount(order, products);
+
             
 
             let wallet = await Wallet.findOne({ userId: userId });

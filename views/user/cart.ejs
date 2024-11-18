@@ -204,17 +204,23 @@
                                                     </div>
                                                 </td>
                                                 <td class="tf-cart-item_price" cart-data-title="Price">
-                                                    <div style="display: flex; justify-content: center;" class="cart-price">
+                                                    <div style="display: flex; flex-direction: column; align-items: center;" class="cart-price">
                                                         <% 
                                                             let productDetail = productDetails.find(detail => 
                                                                 detail.productId.toString() === item.productId._id.toString()
                                                             ); 
                                                         %>
-                                                        <% if (productDetail && productDetail.offerId && productDetail.discount) { %>
-                                                            <!-- Calculate and display the offer price with the discount applied -->
-                                                            <%= (productDetail.price * (100 - productDetail.discount)) / 100 %>
+                                                        <% if (productDetail && productDetail.discount > 0) { %>
+                                                            <div class="original-price" style="text-decoration: line-through; color: #999;">
+                                                                <%= productDetail.originalPrice %>
+                                                            </div>
+                                                            <div class="discounted-price">
+                                                                <%= (productDetail.price * (100 - productDetail.discount)) / 100 %>
+                                                            </div>
+                                                            <!-- <div class="offer-badge" style="font-size: 0.8em; color: #28a745;">
+                                                                </%= productDetail.offerTitle %> (</%= productDetail.discount %>% off)
+                                                            </div> -->
                                                         <% } else { %>
-                                                            <!-- Display the regular price if no discount -->
                                                             <%= item.productId.price %>
                                                         <% } %>
                                                     </div>
@@ -248,10 +254,6 @@
                                                                         onclick="updateQuantity(this, 1)">+</button>
                                                     </div>
                                                 </td>
-
-
-
-
                                                 <input id="stockCheck<%= item.productId.stock %>" hidden type="text"
                                                     value="<%= item.productId.stock %>">
 
@@ -305,12 +307,18 @@
                                 </div>
 
                                 <%if (cart!==undefined){%>
-                                    <div class="cart-checkout-btn">
+                                    <!-- <div class="cart-checkout-btn">
                                         <a href="/checkout"
                                             class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
                                             <span>Check out</span>
                                         </a>
+                                    </div> -->
+                                    <div class="cart-checkout-btn">
+                                        <button type="button" id="checkout-button" class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
+                                            <span>Check out</span>
+                                        </button>
                                     </div>
+                                    
                                     <%}else{%>
                                         <div class="cart-checkout-btn">
                                             <a href="/shop"
@@ -656,70 +664,72 @@
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script>
 
             document.addEventListener('DOMContentLoaded', function () {
                 
                 function updateQuantity(button, change) {
-                  
-                    
-                    const input = button.closest('.cart-quantity').querySelector('input');
-                    const max = parseInt(input.max);
-                    const min = parseInt(input.min);
-                    let currentQuantity = parseInt(input.value);
+    const container = button.closest('.cart-product-quantity');
+    const input = container.querySelector('input');
+    const cartItemRow = button.closest('.tf-cart-item');
+    const cartId = document.querySelector('[data-cart-item-id]').dataset.cartItemId;
+    const productId = cartItemRow.querySelector('.btn-remove').dataset.productid;
+    
+    let newQuantity = parseInt(input.value) + change;
+    const maxStock = parseInt(input.getAttribute('max'));
+    const minStock = parseInt(input.getAttribute('min'));
 
-                    
-                    currentQuantity += change;
+    if (newQuantity < minStock || newQuantity > maxStock) {
+        Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Stock limit exceeded.'
+            });
+              
+        return;
+    }
 
-                    if (currentQuantity >= min && currentQuantity <= max) {
-                        input.value = currentQuantity;
-                        
-                        updateCartQuantity(input);
-                    }
-                }
+   
+    input.value = newQuantity;
 
-               
-                async function updateCartQuantity(input) {
-                    const cartId = input.closest('tr').querySelector('.btn-remove').getAttribute('data-cart-item-id');
-                    const productId = input.closest('tr').querySelector('.btn-remove').getAttribute('data-productId');
-                    const newQuantity = parseInt(input.value);
+   
+    fetch(`/update-cart-quantity?cartId=${cartId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            productId: productId,
+            quantity: newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+           
+            const totalCell = cartItemRow.querySelector('.tf-cart-item_total .cart-total');
+            totalCell.textContent = data.itemTotal.toFixed(2);
 
-                    if (isNaN(newQuantity) || newQuantity < 1) {
-                        alert('Please enter a valid quantity');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch(`/update-cart-quantity?cartId=${cartId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ productId, quantity: newQuantity }),
-                        });
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            input.value = data.quantity;
-                            const totalEl = input.closest('tr').querySelector('.tf-cart-item_total .cart-total');
-                            totalEl.textContent = '₹' + data.itemTotal;
-                            let total = document.getElementById('sub-total');
-                            if (total) {
-                                total.innerHTML = data.subTotal;
-                            } else {
-                                console.log('Subtotal not found');
-                            }
-                        } else {
-                            alert(data.message);
-                        }
-                    } catch (error) {
-                        console.error('Error updating cart quantity:', error);
-                        alert('An error occurred while updating the cart');
-                    }
-                }
-
+            // Update subtotal
+            const subtotalElement = document.getElementById('sub-total');
+            if (subtotalElement) {
+                subtotalElement.textContent = data.subTotal.toFixed(2);
+            }
+        } else {
+            // Revert the input value if update failed
+            input.value = newQuantity - change;
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+      
+        input.value = newQuantity - change;
+        alert('Error updating quantity');
+    });
+}
                
                 document.querySelectorAll('.btn-quantity-increase').forEach(button => {
                     button.addEventListener('click', function () {
@@ -866,7 +876,38 @@
 
                 }
             }
+            document.getElementById('checkout-button').addEventListener('click', async function() {
+        try {
+            const response = await fetch('/quantityCheck', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+               
+            });
 
+            const result = await response.json();
+
+            if (response.ok) {
+              
+                    window.location.href = '/checkOut';
+            } else {
+               
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: result.message || 'Not enough stock for one or more items in your cart.'
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again later.'
+            });
+        }
+    });
         </script>
 
         <%- include('../user-layouts/footer.ejs') %>

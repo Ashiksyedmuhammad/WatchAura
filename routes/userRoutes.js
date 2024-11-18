@@ -61,36 +61,38 @@ userRoute.get('/cart',userAuth.isLogin,cartController.loadCart);
 userRoute.post('/addCartItem',userAuth.isLogin,cartController.addToCart);
 userRoute.post('/update-cart-quantity',userAuth.isLogin,cartController.updateCartQuantity);
 userRoute.post('/remove-cart-item',userAuth.isLogin,cartController.removeItem)
-
+userRoute.post('/quantityCheck',checkOutController.quantityCheck)
 //CHECKOUT
 userRoute.get('/checkOut',userAuth.isLogin,checkOutController.loadCheckOut);
 userRoute.get('/placeOrder',userAuth.isLogin,checkOutController.placeOrder);
 userRoute.post('/place-order',userAuth.isLogin,checkOutController.placeOrder);
 userRoute.get('/orderSummary/:id',userAuth.isLogin,dashboard.loadOrderSummary);
-userRoute.post('/verify-payment',checkOutController.verifyPayment)
+userRoute.post('/verify-payment',userAuth.isLogin,checkOutController.verifyPayment);
+userRoute.get('/initiate-payment/:orderId', userAuth.isLogin,checkOutController.initiateRetryPayment);
 
 
 // COUPON
-userRoute.post('/apply-coupon', checkOutController.applyCoupon);
-userRoute.post('/remove-coupon', checkOutController.removeCoupon);
+userRoute.post('/apply-coupon',userAuth.isLogin, checkOutController.applyCoupon);
+userRoute.post('/remove-coupon', userAuth.isLogin, checkOutController.removeCoupon);
 
 
 //DASHBOARD
 userRoute.get('/profile',userAuth.isLogin, dashboard.loadDashboard);
 userRoute.get('/address',userAuth.isLogin, dashboard.loadAddressPage);
-userRoute.post('/addAddress', dashboard.addAddress);
-userRoute.put('/editAddress/:id', dashboard.editAddress);
-userRoute.delete('/deleteAddress/:id', dashboard.deleteAddress);
+userRoute.post('/addAddress',userAuth.isLogin, dashboard.addAddress);
+userRoute.put('/editAddress/:id',userAuth.isLogin, dashboard.editAddress);
+userRoute.delete('/deleteAddress/:id',userAuth.isLogin,  dashboard.deleteAddress);
 userRoute.get('/account',userAuth.isLogin, dashboard.loadAccount);
 userRoute.post('/update-account', dashboard.updateUserData)
 userRoute.get('/orders',userAuth.isLogin,dashboard.loadOrder)
 userRoute.get('/order-details/:id',userAuth.isLogin,dashboard.getOrderDetails);
-userRoute.post('/cancelOrder', dashboard.cancelOrder);
-userRoute.post('/returnOrder/:id', dashboard.returnOrder);
-userRoute.get('/wishlist',dashboard.loadWishlist);
-userRoute.post('/addWishlistItem', dashboard.addWishlistItem);
-userRoute.delete('/removeWishlistItem', dashboard.removeWishlistItem);
-userRoute.get('/wallet',dashboard.loadWallet)
+userRoute.post('/cancelOrder',userAuth.isLogin, dashboard.cancelOrder);
+userRoute.post('/returnOrder/:id',userAuth.isLogin, dashboard.returnOrder);
+userRoute.get('/wishlist',userAuth.isLogin, dashboard.loadWishlist);
+userRoute.post('/addWishlistItem',userAuth.isLogin, dashboard.addWishlistItem);
+userRoute.delete('/removeWishlistItem', userAuth.isLogin, dashboard.removeWishlistItem);
+userRoute.get('/wallet', userAuth.isLogin,dashboard.loadWallet) ;
+userRoute.get('/download-invoice/:id',userAuth.isLogin, dashboard.downloadInvoice);
 
 
 

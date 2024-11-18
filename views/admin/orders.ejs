@@ -74,16 +74,27 @@
                                             <th>AMOUNT</th>
                                             <th>SHIP TO</th>
                                             <th>USER NAME</th>
-                                            <!-- <th>PAYMENT TYPE</th> -->
+                                            <th>STATUS</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <% if (orders.length > 0) { %>
                                             <% orders.forEach((order) => { %>
-                                                <tr>
+                                                <% 
+                                                    
+                                                    const hasReturnRequest = order.items.some(item => item.status === 'Return Requested');
+                                                    const hasReturnedItems = order.items.some(item => item.status === 'Returned');
+                                                %>
+                                                <tr class="<%= hasReturnRequest ? 'bg-warning bg-opacity-10' : '' %> <%= hasReturnedItems ? 'bg-success bg-opacity-10' : '' %>">
                                                     <td>
                                                         <a href="#" class="view-order" data-bs-toggle="modal" data-bs-target="#orderModal-<%= order._id %>">
                                                             #<%= order.orderId %>
+                                                            <% if (hasReturnRequest) { %>
+                                                                <span class="badge bg-warning text-dark">Return Requested</span>
+                                                            <% } %>
+                                                            <% if (hasReturnedItems) { %>
+                                                                <span class="badge bg-info">Returned</span>
+                                                            <% } %>
                                                         </a>
                                                     </td>
                                                     <td><%= new Date(order.createdAt).toLocaleDateString("en-US", {year: "numeric", month: "long", day: "numeric"}) %></td>
@@ -101,6 +112,31 @@
                                         <% } %>
                                     </tbody>
                                 </table>
+                                <div class="pagination flex justify-center space-x-4 my-4">
+                                    <% if (currentPage > 1) { %>
+                                        <a href="?page=<%= currentPage - 1 %>" class="prev px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                                            <i class="fas fa-chevron-left"></i> Previous
+                                        </a>
+                                    <% } else { %>
+                                        <div class="px-4 py-2 text-gray-400">
+                                            <i class="fas fa-chevron-left"></i> Previous
+                                        </div>
+                                    <% } %>
+                                
+                                    <div class="px-4 py-2 text-gray-600">
+                                        Page <%= currentPage %> of <%= totalPages %>
+                                    </div>
+                                
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="?page=<%= currentPage + 1 %>" class="next px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                                            Next <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    <% } else { %>
+                                        <div class="px-4 py-2 text-gray-400">
+                                            Next <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -165,7 +201,7 @@
                                                     <td>₹<%= product.price %></td> 
                                                     <td><%= product.status %></td>
                                                     <td>
-                                                        <% if (product.status !== 'Cancelled' && product.status !== 'Delivered' && product.status !== 'Return Requested') { %>
+                                                        <% if (product.status !== 'Cancelled' && product.status !== 'Delivered' && product.status !== 'Return Requested'&& product.status !== 'Returned') { %>
                                                             <a href="/admin/updateStatus?itemid=<%= product._id %>&orderid=<%= order._id %>" class="btn btn-primary btn-sm">EDIT</a>
                                                             <button class="btn btn-danger btn-sm cancel-order" 
                                                                     data-order-id="<%= order._id %>" 
@@ -196,6 +232,7 @@
                 </div>
             </div>
         <% }) %>
+        
     </body>
 
     <!-- container-scroller -->

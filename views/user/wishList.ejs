@@ -218,25 +218,26 @@
                                                     <%= product.productName %>
                                                 </a>
                                                 <% if (product.price != null) { %>
-                                                    <span class="price">₹<%= product.price.toFixed(2) %></span>
+                                                    <% const offerResult = calculateBestOffer(product, offers) %>
+                                                    <% if (offerResult.hasDiscount) { %>
+                                                        <div class="price-container">
+                                                            <span class="original-price text-decoration-line-through text-muted">
+                                                                ₹<%= product.price.toFixed(2) %>
+                                                            </span>
+                                                            <span class="discounted-price ms-2">
+                                                                ₹<%= offerResult.discountedPrice %>
+                                                            </span>
+                                                            <span class="discount-badge ms-2 text-success">
+                                                                <%= offerResult.bestDiscount %>% OFF
+                                                            </span>
+                                                        </div>
+                                                    <% } else { %>
+                                                        <span class="price">₹<%= product.price.toFixed(2) %></span>
+                                                    <% } %>
                                                 <% } else { %>
                                                     <span class="price">Price Not Available</span>
                                                 <% } %>
-                                                <ul class="list-color-product">
-                                                    <% if (product.colors) { %>
-                                                        <% product.colors.forEach(color => { %>
-                                                            <li class="list-color-item color-swatch">
-                                                                <span class="tooltip"><%= color.name %></span>
-                                                                <% if (color.image) { %>
-                                                                    <img class="ls-is-cached lazyloaded" 
-                                                                         data-src="/uploads/<%= color.image %>" 
-                                                                         src="/uploads/<%= color.image %>" 
-                                                                         alt="image-product">
-                                                                <% } %>
-                                                            </li>
-                                                        <% }) %>
-                                                    <% } %>
-                                                </ul>
+                                                
                                             </div>
                                         </div>
                                     <% } %>

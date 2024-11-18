@@ -85,8 +85,8 @@ adminRoute.get('/categoryOffer', adminAuth.isLogin, offerController.loadCateOffe
 adminRoute.put('/offer/edit/:id',adminAuth.isLogin, offerController.updateOffer);
 adminRoute.delete('/delete-offer?:id', adminAuth.isLogin, offerController.deleteOffer);
 
-adminRoute.get('/salesreport', salesController.loadSales);
-adminRoute.get('/salesreport/pdf', salesController.downloadPDF);
-adminRoute.get('/salesreport/excel', salesController.downloadExcel);
+adminRoute.get('/salesreport',adminAuth.isLogin, salesController.loadSales);
+adminRoute.get('/salesreport/pdf',adminAuth.isLogin, salesController.downloadPDF);
+adminRoute.get('/salesreport/excel',adminAuth.isLogin, salesController.downloadExcel);
 
 module.exports = adminRoute;

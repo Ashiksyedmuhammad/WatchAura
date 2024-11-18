@@ -6,7 +6,7 @@ const fs = require("fs");
 const loadSales = async (req, res) => {
   try {
     const { reportType, startDate, endDate } = req.query;
-    const query = {};
+    const query = {orderStatus: 'Delivered'};
     const dateRange = calculateDateRange(reportType, startDate, endDate);
     if (dateRange.start && dateRange.end) {
       query.createdAt = {
@@ -37,7 +37,7 @@ const loadSales = async (req, res) => {
 const downloadPDF = async (req, res) => {
   try {
     const { reportType, startDate, endDate } = req.query;
-    const query = {};
+    const query = {orderStatus: 'Delivered'};
     const dateRange = calculateDateRange(reportType, startDate, endDate);
 
     if (dateRange.start && dateRange.end) {
@@ -185,8 +185,10 @@ function generatePDFContent(doc, orders, summary) {
     doc.text(order.orderId, 50, yPosition);
     doc.text(order.createdAt.toLocaleDateString(), 150, yPosition);
     doc.text(order.items.length.toString(), 250, yPosition);
-    doc.text(order.totalAmount.toFixed(2), 350, yPosition);
     doc.text((order.discountAmount || 0).toFixed(2), 450, yPosition);
+
+    doc.text(order.totalAmount.toFixed(2), 350, yPosition);
+    
 
     yPosition += 20;
   });
@@ -196,8 +198,9 @@ function generatePDFContent(doc, orders, summary) {
   doc.fontSize(14).text("Summary");
   doc.fontSize(12);
   doc.text(`Total Orders: ${summary.totalOrders}`);
-  doc.text(`Total Amount: ${summary.totalAmount.toFixed(2)}`);
   doc.text(`Total Discount: ${summary.totalDiscount.toFixed(2)}`);
+  doc.text(`Total Amount: ${summary.totalAmount.toFixed(2)}`);
+ 
 }
 
 async function generateExcelContent(workbook, orders, summary) {

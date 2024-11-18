@@ -69,7 +69,7 @@ const loadShop = async (req, res) => {
                 sortQuery = { featured: -1 };
         }
 
-        const [products, categories, totalProducts,offer] = await Promise.all([
+        const [products, categories, totalProducts,offers] = await Promise.all([
             Product.find(query)
                 .populate('offerId')
                 .sort(sortQuery)
@@ -79,9 +79,11 @@ const loadShop = async (req, res) => {
             Product.countDocuments(query),
             Offer.find({status: 'active'}).populate('products').populate('categories')
         ]);
+        
 
         const totalPages = Math.ceil(totalProducts / limit);
 
+       
         res.render('shope', {
             userData : user,
             products,
@@ -95,7 +97,7 @@ const loadShop = async (req, res) => {
                 maxPrice,
                 category
             },
-            offer
+            offers
         });
     } catch (error) {
         console.error('Error Loading Shop:', error);
@@ -114,18 +116,23 @@ const productDetails = async (req, res) => {
             .populate('offerId')
             .populate('category');  
         const userData = await User.find({ _id: req.session.userSession });
-        
+        const offers = await Offer.find({
+            status: 'active',
+            $or: [
+                { type: 'PRODUCT' },
+                { type: 'CATEGORY', categories: product.category._id }
+            ]
+        }).populate('products').populate('categories');
         if (!product || !product.isListed) {
             return res.status(404).json({ success: false, message: 'Product not found or not available' });
         }
 
-        // Find category offer if exists
-        const categoryOffer = await Offer.findOne({
-            type: "CATEGORY",
-            categories: product.category,
-            status: true,
-            expiryDate: { $gt: new Date() }
-        });
+        // const categoryOffer = await Offer.findOne({
+        //     type: "CATEGORY",
+        //     categories: product.category,
+        //     status: true,
+        //     expiryDate: { $gt: new Date() }
+        // });
 
         const relatedProducts = await Product.find({
             category: product.category,
@@ -137,7 +144,7 @@ const productDetails = async (req, res) => {
             product, 
             relatedProducts, 
             userData,
-            categoryOffer  // Pass category offer to template
+            offers
         });
     } catch (error) {
         console.error('Error Getting Product Details:', error);

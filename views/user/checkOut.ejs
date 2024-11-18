@@ -180,6 +180,42 @@
         text-decoration: none;
         cursor: pointer;
     }
+
+    .product-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .price-container {
+        margin-left: auto;
+    }
+
+    .checkout-product-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .img-product {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .original-price {
+        font-size: 0.9em;
+        color: #999;
+    }
+
+    .discounted-price {
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .offer-info {
+        font-size: 0.85em;
+        color: #28a745;
+    }
     </style>
 
     </head>
@@ -447,22 +483,43 @@
                                         <li class="checkout-product-item">
                                             <figure class="img-product" id="productCards">
                                                 <img width="80px" height="80px"
-                                                    src="/uploads/<%= item.productId.images[0] %>" alt="product">
-                                                <span class="product-name">
-                                                    <%= item.productId.productName %>
-                                                </span>
-                                                <span class="quantity">
-                                                    <%= item.quantity %>
-                                                </span>
-                                                <span class="price">
+                                                    src="/uploads/<%= item.productId.images[0] %>" 
+                                                    alt="<%= item.productId.productName %>">
+                                                
+                                                <div class="product-details">
+                                                    <span class="product-name">
+                                                        <%= item.productId.productName %>
+                                                    </span>
+                                                    
+                                                    <!-- Display offer information if a discount exists -->
                                                     <% if (productDetail.discount > 0) { %>
-                                                        <!-- Show discounted price if offer exists -->
-                                                        <%= (productDetail.effectivePrice * item.quantity).toFixed(2) %> 
-                                                    <% } else { %>
-                                                        <!-- Show regular price if no offer -->
-                                                        <%= (item.productId.price * item.quantity).toFixed(2) %> 
+                                                        <small class="offer-info" style="color: #28a745; font-size: 0.85em;">
+                                                            <%= productDetail.offerTitle %> (<%= productDetail.discount %>% off)
+                                                        </small>
                                                     <% } %>
+                                                </div>
+                                
+                                                <span class="quantity">
+                                                    × <%= item.quantity %>
                                                 </span>
+                                
+                                                <div class="price-container" style="display: flex; flex-direction: column; align-items: flex-end;">
+                                                    <% if (productDetail.discount > 0) { %>
+                                                        <!-- Original price (struck through) -->
+                                                        <span class="original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em;">
+                                                            ₹<%= (item.productId.price * item.quantity).toFixed(2) %>
+                                                        </span>
+                                                        <!-- Discounted price -->
+                                                        <span class="discounted-price" style="color: #28a745; font-weight: bold;">
+                                                            ₹<%= (productDetail.effectivePrice * item.quantity).toFixed(2) %>
+                                                        </span>
+                                                    <% } else { %>
+                                                        <!-- Regular price when no discount -->
+                                                        <span class="price">
+                                                            ₹<%= (item.productId.price * item.quantity).toFixed(2) %>
+                                                        </span>
+                                                    <% } %>
+                                                </div>
                                             </figure>
                                         </li>
                                     <% }) %>
@@ -1052,12 +1109,12 @@
                                     return;
                                 }
 
-                                // Create a formData object and convert it into a plain object
+                               
                                 const formData = new FormData(form);
                                 const data = Object.fromEntries(formData.entries());
 
                                 try {
-                                    // Send the address data to the server
+                                   
                                     const response = await fetch('/addAddress', {
                                         method: 'POST',
                                         headers: {
@@ -1069,7 +1126,7 @@
                                     if (!response.ok) {
                                         throw new Error(result.error || 'Network response was not ok');
                                     }
-                                    // Show success message
+                                   
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success',
@@ -1078,11 +1135,11 @@
                                         location.reload()
                                     });
 
-                                    // Clear form fields
+                               
                                     form.reset();
                                 } catch (error) {
                                     console.error('Error:', error);
-                                    // Show error message
+                                    
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
@@ -1136,7 +1193,7 @@
                             }
 
 
-                            // Function to show field-specific error messages
+                           
                             function showFieldError(field, message) {
                                 clearFieldError(field);
                                 const errorDiv = document.createElement('div');
@@ -1146,7 +1203,7 @@
                                 field.classList.add('is-invalid');
                             }
 
-                            // Function to clear field-specific error messages
+                           
                             function clearFieldError(field) {
                                 const existingError = field.parentNode.querySelector('.field-error');
                                 if (existingError) {
@@ -1155,7 +1212,7 @@
                                 field.classList.remove('is-invalid');
                             }
 
-                            // Function to display success or error messages
+                           
                             function showMessage(message, type) {
 
                                 const existingAlert = document.querySelector('.alert');
@@ -1335,9 +1392,13 @@
                             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
 
                             if (!selectedAddress) {
-                                alert('Please select a delivery address');
-                                return;
-                            }
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Please select a delivery address',
+                                    });
+                                    return;
+                                }
 
                             const formData = {
                                 addressId: selectedAddress.value,
@@ -1362,35 +1423,13 @@
                                                 key: 'rzp_test_O3ME5jMYgYC8PP',
                                                 amount: data.amount,
                                                 currency: "INR",
-                                                name: "Your Company Name",
+                                                name: "WatchAura",
                                                 description: "Order Payment",
                                                 order_id: data.razorpayOrderId,
                                                 handler: function (response) {
-
-                                                    fetch('/verify-payment', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json'
-                                                        },
-                                                        body: JSON.stringify({
-                                                            orderId: data.orderId,
-                                                            razorpay_payment_id: response.razorpay_payment_id,
-                                                            razorpay_order_id: response.razorpay_order_id,
-                                                            razorpay_signature: response.razorpay_signature
-                                                        })
-                                                    })
-                                                        .then(response => response.json())
-                                                        .then(data => {
-                                                            if (data.success) {
-                                                                window.location.href = `/orderSummary/${data.orderId}`;
-                                                            } else {
-                                                                alert(data.message);
-                                                            }
-                                                        })
-                                                        .catch(error => {
-                                                            console.error('Error:', error);
-                                                            alert('An error occurred while verifying the payment');
-                                                        });
+                                                    
+                                                    updateStatus(data.orderId, 'Completed')
+                                                    
                                                 },
                                                 prefill: {
                                                     name: "Customer Name",
@@ -1399,20 +1438,60 @@
                                                 },
                                                 theme: {
                                                     color: "#fffff"
+                                                },
+                                                modal:{
+                                                    ondismiss : function(){
+                                                        updateStatus(data.orderId, 'Failed')
+                                                    }
                                                 }
                                             };
                                             const rzp1 = new Razorpay(options);
                                             rzp1.open();
                                         }
-                                    } else {
-                                        alert(data.message || 'An error occurred while placing the order');
+                                    } else  {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: data.message,
+                                        });
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    alert('An error occurred while placing the order');
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'An error occurred while placing the order',
+                                    });
                                 });
                         });
+
+
+                    const updateStatus = (orderId, status) => {
+                        fetch('/verify-payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                orderId,
+                                status
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = `/orderSummary/${data.orderId}`;
+                                } else {
+                                    alert(data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while verifying the payment');
+                            });
+                    }
+
                     </script>
 
                     <!-- COUPON -->

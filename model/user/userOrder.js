@@ -16,6 +16,9 @@ const userOrderSchema = new mongoose.Schema({
             ref: 'Product',
             required: true
         },
+        name:{
+            type:String
+        },
         quantity: {
             type: Number,
             required: true,
@@ -95,7 +98,7 @@ const userOrderSchema = new mongoose.Schema({
         required: true,
         enum: ['Placed',  'Shipped', 'Delivered'],
         default: 'Placed'
-    }   
+    }
 },{
     timestamps:true
 });

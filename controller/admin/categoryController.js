@@ -2,8 +2,24 @@ const Category = require('../../model/admin/categoryList');
 
 const loadCategory = async (req, res) => {
     try {
-        const categoryData = await Category.find({});
-        res.render('category', { category: categoryData })
+        const PAGE_SIZE = 10;
+        const page = parseInt(req.query.page) || 1; 
+        const skip = (page - 1) * PAGE_SIZE; 
+        
+        const [categoryData, totalCategories] = await Promise.all([
+            Category.find({})
+                .skip(skip)
+                .limit(PAGE_SIZE),
+            Category.countDocuments({}),
+        ]);
+        
+        const totalPages = Math.ceil(totalCategories / PAGE_SIZE);
+        
+        res.render('category', {
+            category: categoryData,
+            currentPage: page,
+            totalPages,
+        });
     } catch (error) {
         console.error('Error load category:', error);
         res.status(500).json({ success: false, message: 'An error occurred while processing your request' });
