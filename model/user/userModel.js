@@ -1,4 +1,3 @@
-const { type } = require("event");
 const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
     firstName: {
