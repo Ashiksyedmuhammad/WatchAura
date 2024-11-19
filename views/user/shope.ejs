@@ -3,7 +3,7 @@
 
 
     <style>
-        .box-navigation, .nav-icon {
+        /* .box-navigation, .nav-icon {
     padding: 0;
     margin: 0;
 }
@@ -65,7 +65,7 @@
     font-size: 1rem;
     font-weight: bold;
     color: #333;
-}
+} */
 
 
         .offer-badge {
@@ -175,6 +175,7 @@
             </div>
             <!-- /Top bar -->
             <!-- Header -->
+           
             <header id="header" class="header-default">
                 <div class="px_15 lg-px_40">
                     <div class="row wrapper-header align-items-center">
@@ -190,83 +191,63 @@
                         </div>
                         <div class="col-xl-3 col-md-4 col-6">
                             <a href="index.html" class="logo-header">
-                                <img src="assets/images/logo/WL.png" alt="logo" style="width: 100px;">
+                                <img src="assets/images/logo/WL.png" alt="logo" class="logo" style="width: 100px;">
                             </a>
                         </div>
-                        <div class="col-xl-6 tf-md-hidden">
+                        <div class="col-xl-6 col-md-6 d-none d-md-flex justify-content-center">
                             <nav class="box-navigation text-center">
-                                <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-20">
+                                <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-3">
                                     <li class="menu-item">
-                                        <a href="/" class="item-link">Home<i class="icon icon-arrow-down"></i></a>
+                                        <a href="/" class="item-link">Home<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="/shop" class="item-link">Shope<i class="icon icon-arrow-down"></i></a>
+                                        <a href="/shop" class="item-link">Shop<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="#" class="item-link">About<i class="icon icon-arrow-down"></i></a>
+                                        <a href="#" class="item-link">About<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="#" class="item-link">Contact<i class="icon icon-arrow-down"></i></a>
+                                        <a href="#" class="item-link">Contact<i class="icon icon-arrow-down ms-1"></i></a>
                                     </li>
                                 </ul>
                             </nav>
                         </div>
-                        <div class="col-xl-3 col-md-4 col-3">
-                            <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
-                                <!-- Search Icon -->
-                                <li class="nav-search">
-                                    <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft"
-                                        class="nav-icon-item">
-                                        <i class="icon icon-search"></i>
-                                    </a>
-                                </li>
-
-
+                        <div class="col-xl-3 col-md-6 col-6 d-flex justify-content-end">
+                            <ul class="nav-icon d-flex align-items-center gap-3">
+                               
                                 <% if(locals.userData){ %>
-                                    <!-- Show Logout Button -->
+                                    <li class="nav-user">
+                                        <a href="/profile" class="nav-icon-item">
+                                            <p class="mb-0"><%= locals.userData?.firstName %></p>
+                                        </a>
+                                    </li>
                                     <li class="nav-logout">
-                                        <form action="/logout" method="POST" class="nav-icon-item"
-                                            style="display: inline;">
-                                            <button type="submit" class="btn-logout"
-                                                style="background: none; border: none; padding: 0; cursor: pointer;">
-                                                <i class="icon icon-logout"></i> Logout
+                                        <form action="/logout" method="POST" class="d-inline">
+                                            <button type="submit" class="btn-logout" style="background: none; border: none; padding: 0;">
+                                                <i class="icon icon-logout"></i> 
                                             </button>
                                         </form>
                                     </li>
-
-
-                                    <li class="nav-user">
-                                        <a href="/profile" class="nav-icon-item">
-                                            <p class="mb-0">
-                                                <%= locals.userData?.firstName %>
-                                            </p>
+                                <% } else { %>
+                                    <li class="nav-account">
+                                        <a href="#login" data-bs-toggle="modal" class="nav-icon-item">
+                                            <i class="icon icon-account"></i> 
                                         </a>
                                     </li>
-                                    <% } else { %>
-
-                                        <li class="nav-account">
-                                            <a href="#login" data-bs-toggle="modal" class="nav-icon-item">
-                                                <i class="icon icon-account"></i> Login
-                                            </a>
-                                        </li>
-                                        <% } %>
-
-
-
-                                            <li class="nav-wishlist">
-                                                <a href="/wishlist" class="nav-icon-item">
-                                                    <i class="icon icon-heart"></i>
-                                                </a>
-                                            </li>
-
-
-                                            <li class="nav-cart">
-                                                <a href="/cart" class="nav-icon-item">
-                                                    <i class="icon icon-bag"></i>
-                                                </a>
-                                            </li>
+                                <% } %>
+                                <li class="nav-wishlist">
+                                    <a href="/wishlist" class="nav-icon-item">
+                                      <i class="icon icon-heart"></i>
+                                    </a>
+                                  </li>
+                                <li class="nav-cart">
+                                    <a href="/cart" class="nav-icon-item">
+                                        <i class="icon icon-bag"></i>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
+                        
                     </div>
                 </div>
             </header>

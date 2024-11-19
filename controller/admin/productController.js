@@ -183,7 +183,9 @@ const loadOrders = async (req, res) => {
     try {
         const PAGE_SIZE = 10; 
         const page = parseInt(req.query.page) || 1; 
-        const skip = (page - 1) * PAGE_SIZE; 
+        
+        const skip = (page - 1) * PAGE_SIZE;
+         
         
         const orders = await Orders.find({})
             .populate('userId items.productId paymentMethod')

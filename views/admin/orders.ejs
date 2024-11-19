@@ -101,8 +101,8 @@
                                                     <td><%= order.items.length %></td>
                                                     <td><%= order.totalAmount %></td>
                                                     <td><%= order.shippingAddress.firstName %></td>
-                                                    <td><%= order.userId.firstName %></td>
-                                                    <td><%= order.paymentMethod.payType %></td>
+                                                    <td><%= order.userId?.firstName %></td>
+                                                    <td><%= order.paymentMethod?.payType %></td>
                                                 </tr>
                                             <% }); %>
                                         <% } else { %>

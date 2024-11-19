@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const flash = require('connect-flash');
 const passport = require('../../config/passport');
 const Wishlist = require('../../model/user/userWishList')
+const Cart = require('../../model/user/cart')
 
 
 
@@ -48,8 +49,9 @@ const checkLogin = async (req, res) => {
 const loadHome = async (req, res) => {
     if (req.session.userSession) {
         const userData = await User.find({ _id: req.session.userSession })
-        const wishlist = await Wishlist.find({});
-        res.render('home', { userData,wishlist })
+        const wishlist = await Wishlist.find({userId:req.session.userSession});
+        const cart = await Cart.find({userId:req.session.userSession})
+        res.render('home', { userData,wishlist,cart })
     } else {
         res.render('home')
     }

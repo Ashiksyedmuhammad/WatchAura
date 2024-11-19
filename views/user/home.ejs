@@ -2,7 +2,7 @@
 
 <style>
     /* General Layout */
-.box-navigation, .nav-icon {
+/* .box-navigation, .nav-icon {
     padding: 0;
     margin: 0;
 }
@@ -64,7 +64,7 @@
     font-size: 1rem;
     font-weight: bold;
     color: #333;
-}
+} */
 
 </style>
 </head>
@@ -116,11 +116,7 @@
                         </div>
                         <div class="col-xl-3 col-md-6 col-6 d-flex justify-content-end">
                             <ul class="nav-icon d-flex align-items-center gap-3">
-                                <li class="nav-search">
-                                    <a href="#canvasSearch" data-bs-toggle="offcanvas" aria-controls="offcanvasLeft" class="nav-icon-item">
-                                        <i class="icon icon-search"></i>
-                                    </a>
-                                </li>
+                               
                                 <% if(locals.userData){ %>
                                     <li class="nav-user">
                                         <a href="/profile" class="nav-icon-item">
@@ -141,16 +137,24 @@
                                         </a>
                                     </li>
                                 <% } %>
-                                <% if (typeof wishlist !== 'undefined' && wishlist.length > 0) { %>
-                                    <li class="nav-wishlist">
-                                      <a href="/wishlist" class="nav-icon-item">
-                                        <i class="icon icon-heart"><span class="count-box"><%= wishlist.length %></span></i>
-                                      </a>
-                                    </li>
-                                  <% } %>
+                                <li class="nav-wishlist">
+                                    <a href="/wishlist" class="nav-icon-item">
+                                      <i class="icon icon-heart">
+                                        <% if(locals.wishlist){%>
+                                            <span class="count-box"><%=wishlist[0]?.items.length %>
+                                            <%}%>
+                                      </span></i>
+                                    </a>
+                                  </li>
+                              
                                 <li class="nav-cart">
                                     <a href="/cart" class="nav-icon-item">
-                                        <i class="icon icon-bag"></i>
+                                        <i class="icon icon-bag">
+                                            <% if(locals.cart){%>
+                                                <span class="count-box"><%=cart[0]?.items.length%></span>
+                                                <%}%>
+                                          </span></i>
+                                            
                                     </a>
                                 </li>
                             </ul>
@@ -1946,8 +1950,6 @@
             </div>
         </div>
 
-        <!-- /modal quick_view -->
-
         <!-- modal login -->
 
         <div class="modal modalCentered fade form-sign-in modal-part-content" id="login">
@@ -2169,7 +2171,6 @@
 
                 const email = this.querySelector('input[name="email"]').value;
 
-                console.log(email);
                 
                 fetch('/forgot-password', {
                     method: 'POST',
@@ -2203,7 +2204,7 @@
                 registerForm.addEventListener("submit", function (event) {
                     event.preventDefault();
 
-                    // Get input values
+                   
                     const firstName = document.getElementById('firstNameR').value.trim();
                     const lastName = document.getElementById('lastNameR').value.trim();
                     const email = document.getElementById('email').value.trim();
@@ -2211,17 +2212,29 @@
 
                     let isValid = true;
 
-                    clearErrors(); // Clear previous errors
+                    clearErrors(); 
 
                     // Validate First Name
                     if (firstName === "") {
                         showError('firstNameR', 'First name is required');
+                        isValid = false;
+                    }else if (firstName.length < 3) {
+                        showError('firstNameR', 'First name must be at least 3 characters long');
+                        isValid = false;
+                    } else if (!/^[A-Za-z\s'-]+$/.test(firstName)) {
+                        showError('firstNameR', 'First name can only contain letters, spaces, hyphens, and apostrophes');
                         isValid = false;
                     }
 
                     // Validate Last Name
                     if (lastName === "") {
                         showError('lastNameR', 'Last name is required');
+                        isValid = false;
+                    }else if (lastName.length < 2) {
+                        showError('lastNameR', 'Last name must be at least 2 characters long');
+                        isValid = false;
+                    } else if (!/^[A-Za-z\s'-]+$/.test(lastName)) {
+                        showError('lastNameR', 'Last name can only contain letters, spaces, hyphens, and apostrophes');
                         isValid = false;
                     }
 
@@ -2233,7 +2246,23 @@
                         showError('email', 'Please enter a valid email address');
                         isValid = false;
                     }
-
+                    function isValidEmail(email) {
+                        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                        const domainRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        
+                        // Check overall email format
+                        if (!emailRegex.test(email)) return false;
+                        
+                        // Additional checks
+                        const parts = email.split('@');
+                        if (parts[0].length > 64) return false;
+                        
+                        // Check domain
+                        const domain = parts[1];
+                        if (!domainRegex.test(domain)) return false;
+                        
+                        return true;
+                    }
                     // Validate Password
                     if (password === "") {
                         showError('passwordR', 'Password is required');
@@ -2262,9 +2291,8 @@
                                 return response.json();
                             })
                             .then(data => {
-                                // Close modal on successful registration
+                                
                                 $('#register').modal('hide');
-                                // OTP modal display or redirect as needed
                                 $('#otpModal').modal('show');
                             })
                             .catch(error => {
@@ -2360,7 +2388,7 @@
                     errorElement.textContent = message;
                     inputElement.parentNode.appendChild(errorElement);
 
-                    // Also display the error using Notyf
+                    
                     const notyf = new Notyf({
                         position: {
                             x: 'center',
@@ -2395,7 +2423,6 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                // Redirect or reload on success
                                 window.location.href = data.redirectUrl || '/';
                             } else {
                                 displayError(emailInput, data.message || 'Login failed. Please try again.');
@@ -2407,7 +2434,7 @@
                         });
                 }
 
-                // Add input event listeners for real-time validation
+               
                 emailInput.addEventListener('input', function () {
                     if (this.classList.contains('error')) {
                         validateForm();
@@ -2429,22 +2456,22 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('otp-form').addEventListener('submit', async function (event) {
-                    event.preventDefault(); // Ensure the form doesn't submit the traditional way
+                    event.preventDefault(); 
 
                     let otp = '';
                     document.querySelectorAll('.otp-input').forEach(input => {
                         otp += input.value;
                     });
 
-                    // Check if the OTP is less than 6 digits
+                 
                     if (otp.length < 6) {
                         const notyf = new Notyf({
                             position: {
-                                x: 'center',  // Options: 'left', 'center', 'right'
-                                y: 'center' // Options: 'top', 'bottom'
+                                x: 'center',  
+                                y: 'center'
                             }
                         });
-                        // Display a notification
+                       
                         notyf.error('Please enter a complete 6-digit OTP.');
 
 
@@ -2460,14 +2487,14 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ otp }), // Send the OTP in the request body
+                            body: JSON.stringify({ otp }), 
                         });
 
-                        const result = await response.json(); // Parse the JSON response
+                        const result = await response.json(); 
 
                         // Handle the result based on success
                         if (response.ok && result.success) {
-                            window.location.href = '/'; // Redirect on success
+                            window.location.href = '/'; 
                         } else {
                             const notyf1 = new Notyf({
                                 position: {
@@ -2476,7 +2503,7 @@
                                 }
                             });
                             notyf1.error(result.message || 'An error occurred. Please try again.')
-                            // alert(); // Show error message
+                           
                         }
                     } catch (error) {
                         console.error('Error:', error);
@@ -2507,13 +2534,13 @@
                 function startTimer() {
                     let timeLeft = 60;
                     timerElement.textContent = timeLeft;
-                    timerElement.style.display = "inline"; // Show timer
+                    timerElement.style.display = "inline"; 
 
                     resendButton.style.pointerEvents = "none";
-                    resendButton.style.opacity = "0.5"; // Disable the
+                    resendButton.style.opacity = "0.5"; 
 
 
-                    resendButton.style.opacity = "0.5"; // Disable the button
+                    resendButton.style.opacity = "0.5"; 
 
                     timer = setInterval(() => {
                         timeLeft--;
@@ -2522,8 +2549,8 @@
                         if (timeLeft <= 0) {
                             clearInterval(timer);
                             resendButton.style.pointerEvents = "auto";
-                            resendButton.style.opacity = "1"; // Enable the button
-                            timerElement.style.display = "none"; // Hide timer
+                            resendButton.style.opacity = "1"; 
+                            timerElement.style.display = "none";
                         }
                     }, 1000);
                 }
@@ -2536,13 +2563,12 @@
                 // Restart the timer when "Resend OTP" is clicked
                 resendButton.addEventListener("click", function (e) {
                     e.preventDefault();
-                    clearInterval(timer); // Clear the previous timer
-                    startTimer(); // Start a new timer
-
+                    clearInterval(timer); 
+                    startTimer(); 
 
                 });
 
-                // Handle OTP pasting into all boxes
+                
                 otpInputs.forEach((input, index) => {
                     input.addEventListener("paste", function (e) {
                         e.preventDefault();
@@ -2554,7 +2580,7 @@
                         });
                     });
 
-                    // Automatically focus on the next input box when a digit is entered
+                   
                     input.addEventListener("input", function () {
                         if (input.value.length === 1 && index < otpInputs.length - 1) {
                             otpInputs[index + 1].focus();

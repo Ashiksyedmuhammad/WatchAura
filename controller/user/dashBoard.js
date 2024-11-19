@@ -463,6 +463,10 @@ const returnOrder = async (req, res) => {
 
 const loadOrderSummary = async (req, res) => {
   try {
+    const userId = req.session.userSession;
+    const user = await User.findById(userId)
+    
+    
     const orderId = req.params.id;
     const order = await Order.findById(orderId).populate(
       "items.productId userId"
@@ -470,7 +474,7 @@ const loadOrderSummary = async (req, res) => {
     if (!order) {
       return res.status(404).send("Order Not Found");
     }
-    res.render("orderSummary", { order });
+    res.render("orderSummary", { order ,userData:user});
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
