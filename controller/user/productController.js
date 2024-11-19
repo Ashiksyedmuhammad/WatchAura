@@ -115,7 +115,7 @@ const productDetails = async (req, res) => {
         const product = await Product.findById(productId)
             .populate('offerId')
             .populate('category');  
-        const userData = await User.find({ _id: req.session.userSession });
+        const userData = await User.findOne({ _id: req.session.userSession });
         const offers = await Offer.find({
             status: 'active',
             $or: [

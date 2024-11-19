@@ -196,7 +196,7 @@ const adminDashboard = async (req, res) => {
         const totalRevenue = revenueStats.reduce((sum, stat) => sum + stat.totalRevenue, 0);
         const totalOrders = revenueStats.reduce((sum, stat) => sum + stat.ordersCount, 0);
 
-        res.render('dashboard', {
+        res.render('dashBoard', {
             timeFrame,
             revenueStats: JSON.stringify(revenueStats),
             bestSellingProducts,

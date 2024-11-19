@@ -7,7 +7,7 @@ const User = require('../model/user/userModel');
 passport.use(new GoogleStrategy({
   clientID: '872090645959-etaqkri741ugi9qphtifi6oiecaanm9a.apps.googleusercontent.com',
   clientSecret: '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',
-  callbackURL: "http://localhost:3001/auth/google/callback",
+  callbackURL: "https://www.ashiq.store/auth/google/callback",
   passReqToCallback: true
 },
                 async function(req, accessToken, refreshToken, profile, done) {

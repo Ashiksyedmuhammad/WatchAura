@@ -246,7 +246,7 @@ const forgotPassword = async (req, res) => {
             subject: 'Reset Password',
             html: `
                 <p>You requested a password reset. Click the link below to reset your password:</p>
-                <a href="http://localhost:3001/resetpassword/${encodeURIComponent(resetToken)}">
+                <a href="https://www.ashiq.store/resetpassword/${encodeURIComponent(resetToken)}">
                     Reset Password
                 </a>
                 <p>This link will expire in 1 hour.</p>
