@@ -115,7 +115,10 @@ const productDetails = async (req, res) => {
         const product = await Product.findById(productId)
             .populate('offerId')
             .populate('category');  
+        console.log(product);
+        
         const userData = await User.findOne({ _id: req.session.userSession });
+        
         const offers = await Offer.find({
             status: 'active',
             $or: [
@@ -123,6 +126,7 @@ const productDetails = async (req, res) => {
                 { type: 'CATEGORY', categories: product.category._id }
             ]
         }).populate('products').populate('categories');
+
         if (!product || !product.isListed) {
             return res.status(404).json({ success: false, message: 'Product not found or not available' });
         }

@@ -515,7 +515,6 @@ const verifyPayment = async (req, res) => {
         order.paymentStatus = status;
         await order.save();
 
-        console.log('verify');
         
 
         for (let item of order.items) {

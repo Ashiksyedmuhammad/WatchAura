@@ -32,76 +32,75 @@
                     </div>
                     <div class="col-xl-3 col-md-4 col-6">
                         <a href="index.html" class="logo-header">
-                            <img src="/assets/images/logo/WL.png" alt="logo" style="width: 100px;">
+                            <img src="assets/images/logo/WL.png" alt="logo" class="logo" style="width: 100px;">
                         </a>
                     </div>
-                    <div class="col-xl-6 tf-md-hidden">
+                    <div class="col-xl-6 col-md-6 d-none d-md-flex justify-content-center">
                         <nav class="box-navigation text-center">
-                            <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-30">
+                            <ul class="box-nav-ul d-flex align-items-center justify-content-center gap-3">
                                 <li class="menu-item">
-                                    <a href="/" class="item-link">Home<i class="icon icon-arrow-down"></i></a>
+                                    <a href="/" class="item-link">Home<i class="icon icon-arrow-down ms-1"></i></a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="#" class="item-link">Shope<i class="icon icon-arrow-down"></i></a>
+                                    <a href="/shop" class="item-link">Shop<i class="icon icon-arrow-down ms-1"></i></a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="#" class="item-link">About<i class="icon icon-arrow-down"></i></a>
+                                    <a href="#" class="item-link">About<i class="icon icon-arrow-down ms-1"></i></a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="#" class="item-link">Contact<i class="icon icon-arrow-down"></i></a>
+                                    <a href="#" class="item-link">Contact<i class="icon icon-arrow-down ms-1"></i></a>
                                 </li>
                             </ul>
                         </nav>
                     </div>
-                    <div class="col-xl-3 col-md-4 col-3">
-                        <ul class="nav-icon d-flex justify-content-end align-items-center gap-20">
-                        
-
-                            <% if(locals.userData && locals.userData[0]?.firstName ){ %>
+                    <div class="col-xl-3 col-md-6 col-6 d-flex justify-content-end">
+                        <ul class="nav-icon d-flex align-items-center gap-3">
+                           
+                            <% if(locals.user){ %>
+                                <li class="nav-user">
+                                    <a href="/profile" class="nav-icon-item">
+                                        <p class="mb-0"><%= locals.user?.firstName %></p>
+                                    </a>
+                                </li>
                                 <li class="nav-logout">
-                                    <form action="/logout" method="POST" class="nav-icon-item" style="display: inline;">
-                                        <button type="submit" class="btn-logout"
-                                            style="background: none; border: none; padding: 0; cursor: pointer;">
-                                            <i class="icon icon-logout"></i> Logout
+                                    <form action="/logout" method="POST" class="d-inline">
+                                        <button type="submit" class="btn-logout" style="background: none; border: none; padding: 0;">
+                                            <i class="icon icon-logout"></i> 
                                         </button>
                                     </form>
                                 </li>
-
-                                
-                                <li class="nav-user">
-                                    <p class="mb-0">
-                                        <%= locals.userData[0]?.firstName %>
-                                    </p>
+                            <% } else { %>
+                                <li class="nav-account">
+                                    <a href="#login" data-bs-toggle="modal" class="nav-icon-item">
+                                        <i class="icon icon-account"></i> 
+                                    </a>
                                 </li>
-                                <% } else { %>
-                                    <!-- Show Login Button if not logged in -->
-                                    <li class="nav-account">
-                                        <a href="/"  class="nav-icon-item">
-                                            <i class="icon icon-account"></i> Login
-                                        </a>
-                                    </li>
-
-                                    <% } %>
-
-                                        <!-- Wishlist Icon -->
-                                        <li class="nav-wishlist">
-                                            <a href="wishlist.html" class="nav-icon-item">
-                                                <i class="icon icon-heart"></i><span class="count-box">0</span>
-                                            </a>
-                                        </li>
-
-                                        <!-- Cart Icon -->
-                                        <li class="nav-cart">
-                                            <a href="/cart"  class="nav-icon-item">
-                                                <i class="icon icon-bag"></i><span class="count-box">0</span>
-                                            </a>
-                                        </li>
+                            <% } %>
+                            <li class="nav-wishlist">
+                                <a href="/wishlist" class="nav-icon-item">
+                                  <i class="icon icon-heart">
+                                    <% if(locals.wishlist){%>
+                                        <span class="count-box"><%=wishlist[0]?.items.length %>
+                                        <%}%>
+                                  </span></i>
+                                </a>
+                              </li>
+                          
+                            <li class="nav-cart">
+                                <a href="/cart" class="nav-icon-item">
+                                    <i class="icon icon-bag">
+                                        <% if(locals.cart){%>
+                                            <span class="count-box"><%=cart[0]?.items.length%></span>
+                                            <%}%>
+                                      </span></i>
+                                        
+                                </a>
+                            </li>
                         </ul>
                     </div>
-
+                    
                 </div>
             </div>
-
         </header>
 
         <section class="page-404-wrap"></section>
@@ -281,32 +280,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tf-languages">
-                                                <div
-                                                    class="dropdown bootstrap-select image-select center style-default type-languages">
-                                                    <select class="image-select center style-default type-languages">
-                                                        <option>English</option>
-                                                        <option>العربية</option>
-                                                        <option>简体中文</option>
-                                                        <option>اردو</option>
-                                                    </select><button type="button" tabindex="-1"
-                                                        class="btn dropdown-toggle btn-light" data-bs-toggle="dropdown"
-                                                        role="combobox" aria-owns="bs-select-2" aria-haspopup="listbox"
-                                                        aria-expanded="false" title="English">
-                                                        <div class="filter-option">
-                                                            <div class="filter-option-inner">
-                                                                <div class="filter-option-inner-inner">English</div>
-                                                            </div>
-                                                        </div>
-                                                    </button>
-                                                    <div class="dropdown-menu ">
-                                                        <div class="inner show" role="listbox" id="bs-select-2"
-                                                            tabindex="-1">
-                                                            <ul class="dropdown-menu inner show" role="presentation"></ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                           
                                         </div>
                                     </div>
                                 </div>

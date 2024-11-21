@@ -331,7 +331,9 @@ const resetPassword = async (req, res) => {
 
 const fourNotFour = async(req,res)=>{
     try {
-        res.render('404')
+        const userId = req.session.userSession;
+        const user = await User.findById(userId)
+        res.render('404',user)
     } catch (error) {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }

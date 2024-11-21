@@ -202,12 +202,15 @@
                                                     <td><%= product.status %></td>
                                                     <td>
                                                         <% if (product.status !== 'Cancelled' && product.status !== 'Delivered' && product.status !== 'Return Requested'&& product.status !== 'Returned') { %>
+                                                            <% if(order.paymentStatus!=='Failed'){%>
                                                             <a href="/admin/updateStatus?itemid=<%= product._id %>&orderid=<%= order._id %>" class="btn btn-primary btn-sm">EDIT</a>
                                                             <button class="btn btn-danger btn-sm cancel-order" 
                                                                     data-order-id="<%= order._id %>" 
                                                                     data-item-id="<%= product._id %>">
                                                                 CANCEL
                                                             </button>
+                                                            <%}%>
+
                                                         <% } else if(product.status == 'Return Requested') {%>
                                                             
                                                             <button class="btn btn-success btn-sm approve-order" 

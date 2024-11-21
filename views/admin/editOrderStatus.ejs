@@ -187,69 +187,122 @@
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                 <script defer src="https://cdn.crop.guide/loader/l.js?c=YMTDVY"></script>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-    const updateOrderStatusForm = document.getElementById('update-order-status');
-    const statusSelect = document.getElementById('product-status');
-    const hiddenOrderId = document.getElementById('hiddenid');
-    const hiddenItemId = document.getElementById('hiddenitemid');
-
-    updateOrderStatusForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const statusValue = statusSelect.value.trim();
-        const orderId = hiddenOrderId.value.trim();
-        const itemId = hiddenItemId.value.trim();
-        updateOrderStatus(statusValue, orderId, itemId);
-    });
-
-    const updateOrderStatus = async (statusValue, orderId, itemId) => {
-        try {
-            const response = await fetch('/admin/updateStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    orderid: orderId,
-                    itemid: itemId,
-                    productStatus: statusValue
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: data.message || 'Order status has been updated successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed && data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        window.location.reload();
+                document.addEventListener('DOMContentLoaded', function() {
+                    const updateOrderStatusForm = document.getElementById('update-order-status');
+                    const statusSelect = document.getElementById('product-status');
+                    const hiddenOrderId = document.getElementById('hiddenid');
+                    const hiddenItemId = document.getElementById('hiddenitemid');
+                
+                    // Define the order status hierarchy
+                    const statusHierarchy = {
+                        'Pending': 0,
+                        'Processing': 1,
+                        'Shipped': 2,
+                        'Delivered': 3
+                    };
+                
+                    // Get the initial status when page loads
+                    const initialStatus = statusSelect.value;
+                    const initialStatusRank = statusHierarchy[initialStatus];
+                
+                    // Disable options based on initial status
+                    function updateSelectOptions() {
+                        const currentStatusRank = statusHierarchy[statusSelect.value];
+                        
+                        Array.from(statusSelect.options).forEach(option => {
+                            const optionRank = statusHierarchy[option.value];
+                            
+                            // Disable options that have a lower rank than current status
+                            if (optionRank < currentStatusRank) {
+                                option.disabled = true;
+                            }
+                            
+                            // Special case: if current status is 'Shipped' or higher,
+                            // disable all options below 'Shipped'
+                            if (currentStatusRank >= statusHierarchy['Shipped'] && 
+                                optionRank < statusHierarchy['Shipped']) {
+                                option.disabled = true;
+                            }
+                        });
+                    }
+                
+                    // Initial update of options
+                    updateSelectOptions();
+                
+                    // Update options when selection changes
+                    statusSelect.addEventListener('change', updateSelectOptions);
+                
+                    updateOrderStatusForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        const statusValue = statusSelect.value.trim();
+                        const orderId = hiddenOrderId.value.trim();
+                        const itemId = hiddenItemId.value.trim();
+                
+                        // Validate status change before submitting
+                        const newStatusRank = statusHierarchy[statusValue];
+                        if (newStatusRank < initialStatusRank) {
+                            Swal.fire({
+                                title: 'Invalid Status Change',
+                                text: 'Cannot change to a previous status.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+                
+                        updateOrderStatus(statusValue, orderId, itemId);
+                    });
+                
+                    const updateOrderStatus = async (statusValue, orderId, itemId) => {
+                        try {
+                            const response = await fetch('/admin/updateStatus', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    orderid: orderId,
+                                    itemid: itemId,
+                                    productStatus: statusValue
+                                })
+                            });
+                
+                            const data = await response.json();
+                
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: data.message || 'Order status has been updated successfully.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed && data.redirectUrl) {
+                                        window.location.href = data.redirectUrl;
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message || 'Failed to update order status. Please try again.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Error during order status update:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'An unexpected error occurred. Please try again later.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
                     }
                 });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: data.message || 'Failed to update order status. Please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        } catch (error) {
-            console.error('Error during order status update:', error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred. Please try again later.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    }
-});
-                </script>
-               
+              
+
+               </script>
 
     <%- include('../admin-layouts/footer.ejs') %>

@@ -193,7 +193,7 @@
     <div class="tf-page-title">
         <div class="container-full">
             <div class="heading text-center">Your Orders</div>
-            <!-- <p class="text-center text-2 text_black-2 mt_5">Shop through our all products</p>  -->
+            <p class="text-center text-2 text_black-2 mt_5">Take a look to your Orders</p> 
         </div>
     </div>
     <section class="flat-spacing-11">
@@ -336,7 +336,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <% if (order.paymentStatus==='Failed' ) { %>
+                                                        <% if (order.paymentStatus === 'Failed' && order.items.some(item => item.status !== 'Cancelled')) { %>
                                                             <div class="item">
                                                                 <div class="text-2 text_black-2">Payment Status</div>
                                                                 <div class="text-2 mt_4 fw-6 text-danger">Failed</div>
@@ -344,11 +344,10 @@
                                                             <div class="item">
                                                                 <div class="text-2 text_black-2">Retry Payment</div>
                                                                 <div class="text-2 mt_4 fw-6">
-                                                                    <button class="btn btn-primary"
-                                                                        id="retryPaymentBtn">Pay Now</button>
+                                                                    <button class="btn btn-primary" id="retryPaymentBtn">Pay Now</button>
                                                                 </div>
                                                             </div>
-                                                            <% } %>
+                                                        <% } %>
                                                     </div>
                             </div>
                         </div>

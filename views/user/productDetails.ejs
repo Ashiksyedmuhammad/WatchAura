@@ -575,7 +575,7 @@
                                             return {
                                                 hasDiscount,
                                                 bestDiscount,
-                                                discountedPrice: Math.round(discountedPrice * 100) / 100 // Round to 2 decimal places
+                                                discountedPrice: Math.round(discountedPrice * 100) / 100 
                                             };
                                             }
                                         %>
@@ -661,22 +661,28 @@
                                                     <%if(product.stock > 5) {%>
                                                         <input type="number" id="qty" class="form-control" value="1" min="1" max="5" step="1" data-decimals="0" required>
                                                     <%} else {%>
-                                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="</%=product.stock%>" step="1" data-decimals="0" required>
+                                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="<%=product.stock%>" step="1" data-decimals="0" required>
                                                     <%}%>
                                                 </div>
                 
                                                 <!-- Action Buttons -->
+
                                                 <div class="tf-product-info-buy-button">
-                                                    <% if(locals.userData && locals.userData[0]?.firstName ) { %>
+                                                    
+                                                    <% if(locals.userData && locals.userData?.firstName ) { %>
+                                                        
                                                         <%if (product.stock<=0){%>
+                                                            
                                                             <span class="offer-price">Out Of Stock</span>
-                                                            <button class="btn-add-to-cart" data-product-id="<%= product._id %>" data-user-id="<%= locals.userData[0]?._id %> " disabled>
+                                                            <button class="btn-add-to-cart"   disabled>
                                                                 Add to Cart
                                                             </button>    
                                                             <%}else{%>
-                                                        <button class="btn-add-to-cart" data-product-id="<%= product._id %>" data-user-id="<%= locals.userData[0]?._id %>">
-                                                            Add to Cart
-                                                        </button><%}%>
+                                                                
+                                                        <button class="btn-add-to-cart" data-product-id="<%= product._id %>" data-user-id="<%= locals.userData?._id %>">
+                                                              Add to Cart
+                                                        </button>
+                                                        <%}%>
                                                     <% } else { %>
                                                         <a href="" class="btn-add-to-cart">
                                                             <span>Add to cart</span>
@@ -736,7 +742,7 @@
                                                     <p>Address: 1234 Fashion Street, Suite 567, <br> New York, NY 10001</p>
                                                 </li>
                                                 <li>
-                                                    <p>Email: <a href="#">info@fashionshop.com</a></p>
+                                                    <p>Email: <a href="#">info@WatchAura.com</a></p>
                                                 </li>
                                                 <li>
                                                     <p>Phone: <a href="#">(212) 555-1234</a></p>
@@ -843,45 +849,7 @@
                                                     </div>
                                                     <div id="subscribe-msg"></div>
                                                 </form>
-                                                <div class="tf-cur">
-                                                    <div class="tf-currencies">
-                                                        <div
-                                                            class="dropdown bootstrap-select image-select center style-default type-currencies">
-                                                            <select class="image-select center style-default type-currencies">
-                                                                <option data-thumbnail="images/country/fr.svg"
-                                                                    data-content="<img src='images/country/fr.svg'/> EUR € | France">
-                                                                    EUR € | France</option>
-                                                                <option data-thumbnail="images/country/de.svg"
-                                                                    data-content="<img src='images/country/de.svg'/> EUR € | Germany">
-                                                                    EUR € | Germany</option>
-                                                                <option selected="" data-thumbnail="images/country/us.svg"
-                                                                    data-content="<img src='images/country/us.svg'/> USD $ | United States">
-                                                                    USD $ | United States</option>
-                                                                <option data-thumbnail="images/country/vn.svg"
-                                                                    data-content="<img src='images/country/vn.svg'/> VND ₫ | Vietnam">
-                                                                    VND ₫ | Vietnam</option>
-                                                            </select><button type="button" tabindex="-1"
-                                                                class="btn dropdown-toggle btn-light" data-bs-toggle="dropdown"
-                                                                role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox"
-                                                                aria-expanded="false" title="USD $ | United States">
-                                                                <div class="filter-option">
-                                                                    <div class="filter-option-inner">
-                                                                        <div class="filter-option-inner-inner"><img
-                                                                                src="images/country/us.svg"> USD $ | United
-                                                                            States</div>
-                                                                    </div>
-                                                                </div>
-                                                            </button>
-                                                            <div class="dropdown-menu ">
-                                                                <div class="inner show" role="listbox" id="bs-select-1"
-                                                                    tabindex="-1">
-                                                                    <ul class="dropdown-menu inner show" role="presentation">
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -894,7 +862,7 @@
                                     <div class="col-12">
                                         <div
                                             class="footer-bottom-wrap d-flex gap-20 flex-wrap justify-content-between align-items-center">
-                                            <div class="footer-menu_item">© 2024 Ecomus Store. All Rights Reserved</div>
+                                            <div class="footer-menu_item">© 2024 WatchAura Store. All Rights Reserved</div>
                                             <div class="tf-payment">
                                                 <img src="images/payments/visa.png" alt="">
                                                 <img src="images/payments/img-1.png" alt="">
@@ -957,6 +925,8 @@
                         const productId = this.getAttribute('data-product-id');
                         const userId = this.getAttribute('data-user-id');
                         const quantity = document.getElementById('qty').value;
+                        console.log(productId,userId);
+                        
 
                         try {
                             const response = await fetch('/addCartItem', {
