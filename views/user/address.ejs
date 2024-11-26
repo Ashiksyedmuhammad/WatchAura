@@ -417,7 +417,7 @@
     </section>
 
     <!-- EDIT ADDRESS -->
-    <!-- Edit Modal Structure -->
+   
     <% address.forEach((address)=> { %>
         <div class="modal fade" id="editModal-<%= address._id %>" tabindex="-1" aria-labelledby="editAddressModalLabel"
             aria-hidden="true">
@@ -719,137 +719,160 @@
         </footer> 
 
             <!-- ADD ADDRESS  -->
+
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const form = document.getElementById('formnewAddress');
 
-                    form.addEventListener('submit', async function (e) {
-                        e.preventDefault();
-
-                        if (!validateForm()) {
-                            return;
-                        }
-
-                        // Create a formData object and convert it into a plain object
-                        const formData = new FormData(form);
-                        const data = Object.fromEntries(formData.entries());
-
-                        try {
-                            // Send the address data to the server
-                            const response = await fetch('/addAddress', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(data),
-                            });
-                            const result = await response.json();
-                            if (!response.ok) {
-                                throw new Error(result.error || 'Network response was not ok');
-                            }
-                            // Show success message
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: 'Address added successfully',
-                            }).then(() => {
-                                location.reload()
-                            });
-
-                            // Clear form fields
-                            form.reset();
-                        } catch (error) {
-                            console.error('Error:', error);
-                            // Show error message
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.message || 'There was a problem saving your address. Please try again.',
-                            });
-                        }
-                    });
-
-                    // Function to validate the form
-                    function validateForm() {
-                        const requiredFields = ['first_name', 'last_name', 'address', 'city', 'state', 'postal_code'];
-                        let isValid = true;
-
-                        requiredFields.forEach(fieldName => {
-                            const field = form.elements[fieldName];
-                            if (!field.value.trim()) {
-                                isValid = false;
-                                showFieldError(field, 'This field is required');
-                            } else {
-                                clearFieldError(field);
-                            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('formnewAddress');
+            
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+            
+                    if (!validateForm()) {
+                        return;
+                    }
+            
+                    // Create a formData object and convert it into a plain object
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+            
+                    try {
+                        // Send the address data to the server
+                        const response = await fetch('/addAddress', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
                         });
-
-                        // Validate phone number (optional field)
-                        const phoneField = form.elements['phone'];
-                        if (phoneField && phoneField.value.trim() && !isValidPhone(phoneField.value)) {
-                            isValid = false;
-                            showFieldError(phoneField, 'Please enter a valid phone number');
+                        const result = await response.json();
+                        if (!response.ok) {
+                            throw new Error(result.error || 'Network response was not ok');
                         }
-
-                        // Validate postal code
-                        const postalCodeField = form.elements['postal_code'];
-                        if (!isValidPostalCode(postalCodeField.value)) {
-                            isValid = false;
-                            showFieldError(postalCodeField, 'Please enter 6 digit postal code');
-                        }
-
-                        return isValid;
-                    }
-
-                    // Helper function to validate phone number format
-                    function isValidPhone(phone) {
-                        const phoneRegex = /^\+?1?\s*\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-                        return phoneRegex.test(phone);
-                    }
-
-
-                    function isValidPostalCode(postalCode) {
-                        const postalCodeRegex = /^[1-9][0-9]{5}$/;
-                        return postalCodeRegex.test(postalCode);
-                    }
-
-
-                    // Function to show field-specific error messages
-                    function showFieldError(field, message) {
-                        clearFieldError(field);
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'field-error text-danger';
-                        errorDiv.textContent = message;
-                        field.parentNode.insertBefore(errorDiv, field.nextSibling);
-                        field.classList.add('is-invalid');
-                    }
-
-                    // Function to clear field-specific error messages
-                    function clearFieldError(field) {
-                        const existingError = field.parentNode.querySelector('.field-error');
-                        if (existingError) {
-                            existingError.remove();
-                        }
-                        field.classList.remove('is-invalid');
-                    }
-
-                    // Function to display success or error messages
-                    function showMessage(message, type) {
-
-                        const existingAlert = document.querySelector('.alert');
-                        if (existingAlert) existingAlert.remove();
-
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = `alert alert-${type}`;
-                        messageDiv.textContent = message;
-
-                        form.prepend(messageDiv);
-
-                        setTimeout(() => {
-                            messageDiv.remove();
-                        }, 3000);
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Address added successfully',
+                        }).then(() => {
+                            location.reload()
+                        });
+            
+                        // Clear form fields
+                        form.reset();
+                    } catch (error) {
+                        console.error('Error:', error);
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'There was a problem saving your address. Please try again.',
+                        });
                     }
                 });
+            
+                // Function to validate the form
+                function validateForm() {
+                    let isValid = true;
+            
+                    // Validate First Name
+                    const firstNameField = form.elements['first_name'];
+                    if (!validateName(firstNameField, 'First Name')) {
+                        isValid = false;
+                    }
+            
+                    // Validate Last Name
+                    const lastNameField = form.elements['last_name'];
+                    if (!validateName(lastNameField, 'Last Name')) {
+                        isValid = false;
+                    }
+            
+                    // Validate other required fields
+                    const requiredFields = ['address', 'city', 'state', 'postal_code'];
+                    requiredFields.forEach(fieldName => {
+                        const field = form.elements[fieldName];
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            showFieldError(field, `${fieldName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} is required`);
+                        } else {
+                            clearFieldError(field);
+                        }
+                    });
+                    
+                    // Validate phone number (optional field)
+                    const phoneField = form.elements['phone'];
+                    if (phoneField && phoneField.value.trim() && !isValidPhone(phoneField.value)) {
+                        isValid = false;
+                        showFieldError(phoneField, 'Please enter a valid phone number');
+                    }
+            
+                    // Validate postal code
+                    const postalCodeField = form.elements['postal_code'];
+                    if (!isValidPostalCode(postalCodeField.value)) {
+                        isValid = false;
+                        showFieldError(postalCodeField, 'Please enter 6 digit postal code');
+                    }
+            
+                    return isValid;
+                }
+            
+                // Validate name with custom rules
+                function validateName(field, fieldLabel) {
+                    const value = field.value.trim();
+                    
+                    // Check if field is empty
+                    if (!value) {
+                        showFieldError(field, `${fieldLabel} is required`);
+                        return false;
+                    }
+            
+                    // Check if name contains only letters
+                    if (!/^[A-Za-z]+$/.test(value)) {
+                        showFieldError(field, `${fieldLabel} must contain only letters`);
+                        return false;
+                    }
+            
+                    // Check minimum length of 3 letters
+                    if (value.length < 3) {
+                        showFieldError(field, `${fieldLabel} must be at least 3 characters long`);
+                        return false;
+                    }
+            
+                    // Clear any existing errors
+                    clearFieldError(field);
+                    return true;
+                }
+            
+                // Helper function to validate phone number format
+                function isValidPhone(phone) {
+                    const phoneRegex = /^\+?1?\s*\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+                    return phoneRegex.test(phone);
+                }
+            
+                function isValidPostalCode(postalCode) {
+                    const postalCodeRegex = /^[1-9][0-9]{5}$/;
+                    return postalCodeRegex.test(postalCode);
+                }
+            
+                // Function to show field-specific error messages
+                function showFieldError(field, message) {
+                    clearFieldError(field);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'field-error text-danger';
+                    errorDiv.textContent = message;
+                    field.parentNode.insertBefore(errorDiv, field.nextSibling);
+                    field.classList.add('is-invalid');
+                }
+            
+                // Function to clear field-specific error messages
+                function clearFieldError(field) {
+                    const existingError = field.parentNode.querySelector('.field-error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                    field.classList.remove('is-invalid');
+                }
+            });
             </script>
 
             <!-- EDIT ADDRESS -->
@@ -859,71 +882,141 @@
                     element.addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const id = element.getAttribute('data-id');
-                        const firstName = document.getElementById(`editFirstName${id}`);
-                        const lastName = document.getElementById(`editLastName${id}`);
-                        const address = document.getElementById(`address${id}`);
-                        const city = document.getElementById(`city${id}`);
-                        const state = document.getElementById(`state${id}`);
-                        const postalCode = document.getElementById(`postal_code${id}`);
-                        const phone = document.getElementById(`phone${id}`);
-
-
+                        
+                        // Get all form input elements
+                        const inputs = {
+                            firstName: document.getElementById(`editFirstName${id}`),
+                            lastName: document.getElementById(`editLastName${id}`),
+                            address: document.getElementById(`address${id}`),
+                            city: document.getElementById(`city${id}`),
+                            state: document.getElementById(`state${id}`),
+                            postalCode: document.getElementById(`postal_code${id}`),
+                            phone: document.getElementById(`phone${id}`)
+                        };
+                
+                        // Remove any existing error messages
                         element.querySelectorAll('.error-message').forEach(el => el.remove());
-
-                        // Validation
-                        let isValid = true;
-
+                
+                        // Validation function
+                        function validateInput(input, validationRules) {
+                            const value = input.value.trim();
+                            
+                            // Check if input is empty
+                            if (validationRules.required && !value) {
+                                showError(input, validationRules.emptyMessage);
+                                return false;
+                            }
+                
+                            // Minimum length validation
+                            if (validationRules.minLength && value.length < validationRules.minLength) {
+                                showError(input, validationRules.minLengthMessage);
+                                return false;
+                            }
+                
+                            // Maximum length validation
+                            if (validationRules.maxLength && value.length > validationRules.maxLength) {
+                                showError(input, validationRules.maxLengthMessage);
+                                return false;
+                            }
+                
+                            // Regex pattern validation
+                            if (validationRules.pattern && !validationRules.pattern.test(value)) {
+                                showError(input, validationRules.patternMessage);
+                                return false;
+                            }
+                
+                            return true;
+                        }
+                
+                        // Error display function
                         function showError(input, message) {
-                            isValid = false;
                             const errorDiv = document.createElement('div');
                             errorDiv.className = 'error-message';
                             errorDiv.style.color = 'red';
                             errorDiv.textContent = message;
                             input.parentNode.insertBefore(errorDiv, input.nextSibling);
                         }
-
-                        if (!firstName.value.trim() || firstName.value.trim().length < 2) {
-                            showError(firstName, "First name should be at least 2 characters long.");
-                        }
-
-                        if (!lastName.value.trim() || lastName.value.trim().length < 2) {
-                            showError(lastName, "Last name should be at least 2 characters long.");
-                        }
-
-                        if (!address.value.trim() || address.value.trim().length < 5) {
-                            showError(address, "Address should be at least 5 characters long.");
-                        }
-
-                        if (!city.value.trim() || city.value.trim().length < 2) {
-                            showError(city, "City should be at least 2 characters long.");
-                        }
-
-                        if (!state.value) {
-                            showError(state, "Please select a state.");
-                        }
-
-                        if (!postalCode.value.trim() || !/^[1-9][0-9]{5}$/.test(postalCode.value.trim())) {
-                            showError(postalCode, "Please enter a valid 6-digit PIN code.");
-                        }
-
-                        if (!phone.value.trim() || !/^[6-9]\d{9}$/.test(phone.value.trim())) {
-                            showError(phone, "Please enter a valid 10-digit mobile number.");
-                        }
-
+                
+                        // Validation rules
+                        const validationRules = {
+                            firstName: {
+                                required: true,
+                                minLength: 2,
+                                maxLength: 50,
+                                pattern: /^[A-Za-z\s]+$/,
+                                emptyMessage: "First name is required.",
+                                minLengthMessage: "First name should be at least 2 characters long.",
+                                maxLengthMessage: "First name cannot exceed 50 characters.",
+                                patternMessage: "First name should contain only letters and spaces."
+                            },
+                            lastName: {
+                                required: true,
+                                minLength: 2,
+                                maxLength: 50,
+                                pattern: /^[A-Za-z\s]+$/,
+                                emptyMessage: "Last name is required.",
+                                minLengthMessage: "Last name should be at least 2 characters long.",
+                                maxLengthMessage: "Last name cannot exceed 50 characters.",
+                                patternMessage: "Last name should contain only letters and spaces."
+                            },
+                            address: {
+                                required: true,
+                                minLength: 5,
+                                maxLength: 200,
+                                emptyMessage: "Address is required.",
+                                minLengthMessage: "Address should be at least 5 characters long.",
+                                maxLengthMessage: "Address cannot exceed 200 characters."
+                            },
+                            city: {
+                                required: true,
+                                minLength: 2,
+                                maxLength: 100,
+                                pattern: /^[A-Za-z\s]+$/,
+                                emptyMessage: "City is required.",
+                                minLengthMessage: "City should be at least 2 characters long.",
+                                maxLengthMessage: "City cannot exceed 100 characters.",
+                                patternMessage: "City should contain only letters and spaces."
+                            },
+                            state: {
+                                required: true,
+                                emptyMessage: "Please select a state."
+                            },
+                            postalCode: {
+                                required: true,
+                                pattern: /^[1-9][0-9]{5}$/,
+                                patternMessage: "Please enter a valid 6-digit PIN code."
+                            },
+                            phone: {
+                                required: true,
+                                pattern: /^[6-9]\d{9}$/,
+                                patternMessage: "Please enter a valid 10-digit mobile number starting with 6-9."
+                            }
+                        };
+                
+                        // Perform validation
+                        let isValid = true;
+                        Object.keys(inputs).forEach(key => {
+                            if (!validateInput(inputs[key], validationRules[key])) {
+                                isValid = false;
+                            }
+                        });
+                
+                        // If validation fails, stop form submission
                         if (!isValid) {
                             return;
                         }
-
+                
+                        // Prepare data for submission
                         const data = {
-                            firstName: firstName.value.trim(),
-                            lastName: lastName.value.trim(),
-                            address: address.value.trim(),
-                            city: city.value.trim(),
-                            state: state.value,
-                            postal_code: postalCode.value.trim(),
-                            phone: phone.value.trim()
+                            firstName: inputs.firstName.value.trim(),
+                            lastName: inputs.lastName.value.trim(),
+                            address: inputs.address.value.trim(),
+                            city: inputs.city.value.trim(),
+                            state: inputs.state.value,
+                            postal_code: inputs.postalCode.value.trim(),
+                            phone: inputs.phone.value.trim()
                         };
-
+                
                         try {
                             const response = await fetch(`/editAddress/${id}`, {
                                 method: 'PUT',
@@ -932,9 +1025,9 @@
                                 },
                                 body: JSON.stringify(data),
                             });
-
+                
                             const result = await response.json();
-
+                
                             if (!result.success) {
                                 Swal.fire({
                                     icon: 'error',
@@ -943,7 +1036,7 @@
                                 });
                                 return;
                             }
-
+                
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
@@ -951,7 +1044,7 @@
                             }).then(() => {
                                 location.reload();
                             });
-
+                
                         } catch (error) {
                             console.error('Error submitting form:', error);
                             Swal.fire({
@@ -962,7 +1055,7 @@
                         }
                     });
                 });
-            </script>
+                </script>
 
             <!-- DELETE ADDRESS -->
 

@@ -126,7 +126,6 @@ const loadCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   const { productId, quantity, userId } = req.body;
-  console.log(productId, quantity, userId);
   
 
   try {

@@ -291,7 +291,7 @@
 
                                 <%if (cart!==undefined){%>
                                     <div class="cart-checkout-btn">
-                                        <a href="/checkout"
+                                        <a id="check-out-btn" href=""
                                             class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
                                             <span>Check out</span>
                                         </a>
@@ -794,7 +794,7 @@
 
                 }
             }
-            document.getElementById('checkout-button').addEventListener('click', async function() {
+            document.getElementById('check-out-btn').addEventListener('click', async function() {
         try {
             const response = await fetch('/quantityCheck', {
                 method: 'POST',

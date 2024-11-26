@@ -159,7 +159,7 @@
 
     </div> 
     
-    <script defer src="https://cdn.crop.guide/loader/l.js?c=XYRGMS"></script>
+    <script defer src="https://cdn.crop.guide/loader/l.js?c=TCTRMB"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -179,12 +179,15 @@ function validateForm() {
 
     // Validate Product Name
     if (productName.value.trim() === '') {
-        showError(productName, 'Product Name is required');
+    showError(productName, 'Product Name is required');
+    isValid = false;
+    } else if (!/^[A-Za-z\s]+$/.test(productName.value.trim())) {
+        showError(productName, 'Product Name can only contain letters');
         isValid = false;
     } else {
         removeError(productName);
     }
-
+    
     // Validate Product Description
     if (productDescription.value.trim() === '') {
         showError(productDescription, 'Product Description is required');

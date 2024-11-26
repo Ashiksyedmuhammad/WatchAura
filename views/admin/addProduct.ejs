@@ -236,8 +236,7 @@
             </div>
         </form>
     </div>
-    <script defer src="https://cdn.crop.guide/loader/l.js?c=XYRGMS"></script>
-    
+    <script defer src="https://cdn.crop.guide/loader/l.js?c=TCTRMB"></script>    
 
 <!-- Add these just before your closing </body> tag -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -258,7 +257,10 @@ function validateForm() {
 
     // Validate Product Name
     if (productName.value.trim() === '') {
-        showError(productName, 'Product Name is required');
+    showError(productName, 'Product Name is required');
+    isValid = false;
+    } else if (!/^[A-Za-z\s]+$/.test(productName.value.trim())) {
+        showError(productName, 'Product Name can only contain letters');
         isValid = false;
     } else {
         removeError(productName);

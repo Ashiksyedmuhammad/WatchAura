@@ -26,9 +26,13 @@ const loadShop = async (req, res) => {
         let query = { isListed: true };
 
         if (search) {
-            query.productName = { $regex: search, $options: 'i' };
+            if (search.trim() === '*') {
+                
+            } else {
+                query.productName = { $regex: search, $options: 'i' };
+            }
         }
-
+        
         if (category) {
             query.category = category;
         }

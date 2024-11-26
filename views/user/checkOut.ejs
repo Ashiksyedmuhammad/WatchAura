@@ -1031,20 +1031,18 @@
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const form = document.getElementById('formnewAddress');
-
+                        
                             form.addEventListener('submit', async function (e) {
                                 e.preventDefault();
-
+                        
                                 if (!validateForm()) {
                                     return;
                                 }
-
-                               
+                        
                                 const formData = new FormData(form);
                                 const data = Object.fromEntries(formData.entries());
-
+                        
                                 try {
-                                   
                                     const response = await fetch('/addAddress', {
                                         method: 'POST',
                                         headers: {
@@ -1064,8 +1062,7 @@
                                     }).then(() => {
                                         location.reload()
                                     });
-
-                               
+                        
                                     form.reset();
                                 } catch (error) {
                                     console.error('Error:', error);
@@ -1077,89 +1074,171 @@
                                     });
                                 }
                             });
-
-
+                        
                             function validateForm() {
-                                const requiredFields = ['first_name', 'last_name', 'address', 'city', 'state', 'postal_code'];
-                                let isValid = true;
+                                        const requiredFields = ['first_name', 'last_name', 'address', 'city', 'postal_code', 'phone'];
+                                        let isValid = true;
 
-                                requiredFields.forEach(fieldName => {
-                                    const field = form.elements[fieldName];
-                                    if (!field.value.trim()) {
-                                        isValid = false;
-                                        showFieldError(field, 'This field is required');
-                                    } else {
-                                        clearFieldError(field);
+                                        // Validate first name and last name with letter-only and minimum length check
+                                        const firstNameField = document.getElementById('firstname');
+                                        const lastNameField = document.getElementById('lastname');
+
+                                        if (!isValidName(firstNameField.value)) {
+                                            isValid = false;
+                                            showFieldError(firstNameField, 'First name must contain only letters and be at least 3 characters long');
+                                        } else {
+                                            clearFieldError(firstNameField);
+                                        }
+
+                                        if (!isValidName(lastNameField.value)) {
+                                            isValid = false;
+                                            showFieldError(lastNameField, 'Last name must contain only letters and be at least 3 characters long');
+                                        } else {
+                                            clearFieldError(lastNameField);
+                                        }
+
+                                        // Validate other required fields
+                                        requiredFields.forEach(fieldName => {
+                                            const field = document.getElementsByName(fieldName)[0];
+                                            if (!field.value.trim()) {
+                                                isValid = false;
+                                                showFieldError(field, 'This field is required');
+                                            } else {
+                                                clearFieldError(field);
+                                            }
+                                        });
+
+                                        // Phone validation
+                                        const phoneField = document.getElementById('phone');
+                                        if (phoneField.value.trim() && !isValidPhone(phoneField.value)) {
+                                            isValid = false;
+                                            showFieldError(phoneField, 'Please enter a valid phone number');
+                                        }
+
+                                        // Postal code validation
+                                        const postalCodeField = document.getElementById('postal_code');
+                                        if (!isValidPostalCode(postalCodeField.value)) {
+                                            isValid = false;
+                                            showFieldError(postalCodeField, 'Please enter a valid 6-digit postal code');
+                                        }
+
+                                        return isValid;
                                     }
+
+                                    // Validation helper functions
+                                    function isValidName(name) {
+                                        // Regex to check if the name contains only letters and is at least 3 characters long
+                                        const nameRegex = /^[A-Za-z]{3,}$/;
+                                        return nameRegex.test(name);
+                                    }
+
+                                    function isValidPhone(phone) {
+                                        const phoneRegex = /^\+?1?\s*\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+                                        return phoneRegex.test(phone);
+                                    }
+
+                                    function isValidPostalCode(postalCode) {
+                                        const postalCodeRegex = /^[1-9][0-9]{5}$/;
+                                        return postalCodeRegex.test(postalCode);
+                                    }
+
+                                    function showFieldError(field, message) {
+                                        // Clear any existing errors first
+                                        clearFieldError(field);
+                                        
+                                        // Create error message element
+                                        const errorDiv = document.createElement('div');
+                                        errorDiv.className = 'field-error text-danger';
+                                        errorDiv.textContent = message;
+                                        
+                                        // Find the parent container to insert the error message
+                                        const parentContainer = field.closest('.tf-field') || field.parentNode;
+                                        parentContainer.appendChild(errorDiv);
+                                        
+                                        // Add error class to the input
+                                        field.classList.add('is-invalid');
+                                    }
+
+                                    function clearFieldError(field) {
+                                        // Remove existing error message
+                                        const existingError = field.closest('.tf-field')?.querySelector('.field-error') || 
+                                                            field.parentNode.querySelector('.field-error');
+                                        if (existingError) {
+                                            existingError.remove();
+                                        }
+                                        field.classList.remove('is-invalid');
+                                    }
+
+                                    function showMessage(message, type) {
+                                        // Remove existing alerts
+                                        const existingAlert = form.querySelector('.alert');
+                                        if (existingAlert) existingAlert.remove();
+
+                                        // Create new alert
+                                        const messageDiv = document.createElement('div');
+                                        messageDiv.className = `alert alert-${type}`;
+                                        messageDiv.textContent = message;
+
+                                        // Add alert before the first box-field
+                                        const firstBoxField = form.querySelector('.box-field');
+                                        form.insertBefore(messageDiv, firstBoxField);
+
+                                        // Remove alert after 3 seconds
+                                        setTimeout(() => {
+                                            messageDiv.remove();
+                                        }, 3000);
+                                    }
+
+                                    // Event listener for form submission
+                                    form.addEventListener('submit', function(event) {
+                                        event.preventDefault();
+                                        if (validateForm()) {
+                                            // Form is valid, proceed with submission
+                                            showMessage('Address saved successfully!', 'success');
+                                            // Add your form submission logic here, e.g.:
+                                            // this.submit();
+                                        } else {
+                                            showMessage('Please correct the errors in the form.', 'danger');
+                                        }
+                                    });
+
+                                    // Optional: Add real-time validation on input
+                                    const inputFields = form.querySelectorAll('input');
+                                    inputFields.forEach(field => {
+                                        field.addEventListener('blur', function() {
+                                            // Validate specific fields on blur
+                                            if (this.name === 'first_name') {
+                                                if (!isValidName(this.value)) {
+                                                    showFieldError(this, 'First name must contain only letters and be at least 3 characters long');
+                                                } else {
+                                                    clearFieldError(this);
+                                                }
+                                            }
+                                            if (this.name === 'last_name') {
+                                                if (!isValidName(this.value)) {
+                                                    showFieldError(this, 'Last name must contain only letters and be at least 3 characters long');
+                                                } else {
+                                                    clearFieldError(this);
+                                                }
+                                            }
+                                            if (this.name === 'phone') {
+                                                if (this.value.trim() && !isValidPhone(this.value)) {
+                                                    showFieldError(this, 'Please enter a valid phone number');
+                                                } else {
+                                                    clearFieldError(this);
+                                                }
+                                            }
+                                            if (this.name === 'postal_code') {
+                                                if (!isValidPostalCode(this.value)) {
+                                                    showFieldError(this, 'Please enter a valid 6-digit postal code');
+                                                } else {
+                                                    clearFieldError(this);
+                                                }
+                                            }
+                                        });
+                                    });
                                 });
-
-                             
-                                const phoneField = form.elements['phone'];
-                                if (phoneField && phoneField.value.trim() && !isValidPhone(phoneField.value)) {
-                                    isValid = false;
-                                    showFieldError(phoneField, 'Please enter a valid phone number');
-                                }
-
-                                
-                                const postalCodeField = form.elements['postal_code'];
-                                if (!isValidPostalCode(postalCodeField.value)) {
-                                    isValid = false;
-                                    showFieldError(postalCodeField, 'Please enter 6 digit postal code');
-                                }
-
-                                return isValid;
-                            }
-
-                           
-                            function isValidPhone(phone) {
-                                const phoneRegex = /^\+?1?\s*\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-                                return phoneRegex.test(phone);
-                            }
-
-
-                            function isValidPostalCode(postalCode) {
-                                const postalCodeRegex = /^[1-9][0-9]{5}$/;
-                                return postalCodeRegex.test(postalCode);
-                            }
-
-
-                           
-                            function showFieldError(field, message) {
-                                clearFieldError(field);
-                                const errorDiv = document.createElement('div');
-                                errorDiv.className = 'field-error text-danger';
-                                errorDiv.textContent = message;
-                                field.parentNode.insertBefore(errorDiv, field.nextSibling);
-                                field.classList.add('is-invalid');
-                            }
-
-                           
-                            function clearFieldError(field) {
-                                const existingError = field.parentNode.querySelector('.field-error');
-                                if (existingError) {
-                                    existingError.remove();
-                                }
-                                field.classList.remove('is-invalid');
-                            }
-
-                           
-                            function showMessage(message, type) {
-
-                                const existingAlert = document.querySelector('.alert');
-                                if (existingAlert) existingAlert.remove();
-
-                                const messageDiv = document.createElement('div');
-                                messageDiv.className = `alert alert-${type}`;
-                                messageDiv.textContent = message;
-
-                                form.prepend(messageDiv);
-
-                                setTimeout(() => {
-                                    messageDiv.remove();
-                                }, 3000);
-                            }
-                        });
-                    </script>
+                        </script>
 
                     <!-- EDIT ADDRESS -->
                     <script>
@@ -1175,13 +1254,12 @@
                                 const state = document.getElementById(`state${id}`);
                                 const postalCode = document.getElementById(`postal_code${id}`);
                                 const phone = document.getElementById(`phone${id}`);
-
-
+                        
                                 element.querySelectorAll('.error-message').forEach(el => el.remove());
-
+                        
                                 // Validation
                                 let isValid = true;
-
+                        
                                 function showError(input, message) {
                                     isValid = false;
                                     const errorDiv = document.createElement('div');
@@ -1190,39 +1268,47 @@
                                     errorDiv.textContent = message;
                                     input.parentNode.insertBefore(errorDiv, input.nextSibling);
                                 }
-
-                                if (!firstName.value.trim() || firstName.value.trim().length < 2) {
-                                    showError(firstName, "First name should be at least 2 characters long.");
+                        
+                                // Updated first name validation to only allow letters and require at least 3 characters
+                                if (!isValidName(firstName.value)) {
+                                    showError(firstName, "First name must contain only letters and be at least 3 characters long.");
                                 }
-
-                                if (!lastName.value.trim() || lastName.value.trim().length < 2) {
-                                    showError(lastName, "Last name should be at least 2 characters long.");
+                        
+                                // Updated last name validation to only allow letters and require at least 3 characters
+                                if (!isValidName(lastName.value)) {
+                                    showError(lastName, "Last name must contain only letters and be at least 3 characters long.");
                                 }
-
+                        
                                 if (!address.value.trim() || address.value.trim().length < 5) {
                                     showError(address, "Address should be at least 5 characters long.");
                                 }
-
+                        
                                 if (!city.value.trim() || city.value.trim().length < 2) {
                                     showError(city, "City should be at least 2 characters long.");
                                 }
-
+                        
                                 if (!state.value) {
                                     showError(state, "Please select a state.");
                                 }
-
+                        
                                 if (!postalCode.value.trim() || !/^[1-9][0-9]{5}$/.test(postalCode.value.trim())) {
                                     showError(postalCode, "Please enter a valid 6-digit PIN code.");
                                 }
-
+                        
                                 if (!phone.value.trim() || !/^[6-9]\d{9}$/.test(phone.value.trim())) {
                                     showError(phone, "Please enter a valid 10-digit mobile number.");
                                 }
-
+                        
+                                // Function to validate name (only letters, at least 3 characters)
+                                function isValidName(name) {
+                                    const nameRegex = /^[A-Za-z]{3,}$/;
+                                    return nameRegex.test(name);
+                                }
+                        
                                 if (!isValid) {
                                     return;
                                 }
-
+                        
                                 const data = {
                                     firstName: firstName.value.trim(),
                                     lastName: lastName.value.trim(),
@@ -1232,7 +1318,7 @@
                                     postal_code: postalCode.value.trim(),
                                     phone: phone.value.trim()
                                 };
-
+                        
                                 try {
                                     const response = await fetch(`/editAddress/${id}`, {
                                         method: 'PUT',
@@ -1241,9 +1327,9 @@
                                         },
                                         body: JSON.stringify(data),
                                     });
-
+                        
                                     const result = await response.json();
-
+                        
                                     if (!result.success) {
                                         Swal.fire({
                                             icon: 'error',
@@ -1252,7 +1338,7 @@
                                         });
                                         return;
                                     }
-
+                        
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success',
@@ -1260,7 +1346,7 @@
                                     }).then(() => {
                                         location.reload();
                                     });
-
+                        
                                 } catch (error) {
                                     console.error('Error submitting form:', error);
                                     Swal.fire({
@@ -1271,7 +1357,7 @@
                                 }
                             });
                         });
-                    </script>
+                        </script>
 
                     <script>
                         document.querySelectorAll('.btn-delete').forEach(button => {

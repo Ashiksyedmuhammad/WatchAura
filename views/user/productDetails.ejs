@@ -617,7 +617,7 @@
                                                 </div>
                                                 
                                                 <div class="tf-product-info-badges">
-                                                    <div class="badges">Best seller</div>
+                                                    <!-- <div class="badges">Best seller</div> -->
                                                 </div>
                 
                                                 <!-- Price Section -->
@@ -626,7 +626,7 @@
                                                     <% 
                                                             const offerResult = calculateBestOffer(product, offers);
                                                             %>
-                                                    <% if (offerResult ) { %>
+                                                    <% if (offerResult && offerResult.bestDiscount > 0 ) { %>
                                                         <div class="price-wrapper">
                                                             <span class="original-price">₹<%= product.price %></span>
                                                             <span class="offer-price">₹<%= offerResult.discountedPrice %></span>
@@ -635,17 +635,11 @@
                                                             <%= offerResult.bestDiscount %>% OFF
                                                             
                                                         </div>
-                                                      
-                                                       
-                                                            
+
                                                         </span>
                                                         <% } else { %>
                                                             <span class="regular-price">₹<%= product.price %></span>
                                                             <% } %>
-                                                    
-                                            
-
-
 
                                                 </div>
                 
@@ -688,9 +682,16 @@
                                                             <span>Add to cart</span>
                                                         </a>
                                                     <% } %>
-                                                    <!-- <a href="javascript:void(0);" class="tf-product-btn-wishlist">
+                                                    <% if(locals.userData && locals.userData?.firstName) { %>
+                                                        <a href="javascript:void(0);"
+                                                        class="box-icon bg_white wishlist btn-icon-action"
+                                                        data-product-id="<%= product._id %>"
+                                                        data-user-id="<%= locals.userData?._id %>">
                                                         <span class="icon icon-heart"></span>
-                                                    </a> -->
+                                                        <span class="tooltip">Add to Wishlist</span>
+                                                        <span class="icon icon-delete"></span>
+                                                    </a>
+                                                      <% } %>
                                                 </div>
                                             </div>
                                         </div>
@@ -959,6 +960,43 @@
                         }
                     });
                 });
+
+
+                // ADD TO WISHLIST
+
+                document.querySelectorAll('.wishlist').forEach(link => {
+                link.addEventListener('click', async function (event) {
+                    event.preventDefault();
+
+                    const productId = this.getAttribute('data-product-id');
+                    const userId = this.getAttribute('data-user-id');
+                    const notyf = new Notyf({
+                        duration: 5000,
+                        position: { x: 'center', y: 'bottom' },
+                    });
+
+                    try {
+                        const response = await fetch('/addWishlistItem', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productId, userId }),
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            notyf.success(data.message);
+                        } else {
+                            notyf.error(data.message);
+                        }
+                    } catch (error) {
+                        // console.error('Error:', error);
+                        notyf.error("Failed to add product to wishlist");
+                    }
+                });
+            });
             </script>
 
                 <%- include('../user-layouts/footer.ejs') %>

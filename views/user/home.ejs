@@ -1648,7 +1648,7 @@
         <!-- /shoppingCart -->
 
         <!-- modal compare -->
-        <div class="offcanvas offcanvas-bottom canvas-compare" id="compare">
+        <!-- <div class="offcanvas offcanvas-bottom canvas-compare" id="compare">
             <div class="canvas-wrapper">
                 <header class="canvas-header">
                     <div class="close-popup">
@@ -1702,7 +1702,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- /modal compare -->
 
         <!-- modal quick_add -->
@@ -2221,8 +2221,8 @@
                     }else if (firstName.length < 3) {
                         showError('firstNameR', 'First name must be at least 3 characters long');
                         isValid = false;
-                    } else if (!/^[A-Za-z\s'-]+$/.test(firstName)) {
-                        showError('firstNameR', 'First name can only contain letters, spaces, hyphens, and apostrophes');
+                    } else if (!/^[A-Za-z]+$/.test(firstName)) {
+                        showError('firstNameR', 'First name can only contain letters');
                         isValid = false;
                     }
 
@@ -2233,10 +2233,10 @@
                     }else if (lastName.length < 2) {
                         showError('lastNameR', 'Last name must be at least 2 characters long');
                         isValid = false;
-                    } else if (!/^[A-Za-z\s'-]+$/.test(lastName)) {
-                        showError('lastNameR', 'Last name can only contain letters, spaces, hyphens, and apostrophes');
+                    } else if (!/^[A-Za-z]+$/.test(lastName)) {
+                        showError('lastNameR', 'Last name can only contain letters');
                         isValid = false;
-                    }
+                    }   
 
                     // Validate Email
                     if (email === "") {

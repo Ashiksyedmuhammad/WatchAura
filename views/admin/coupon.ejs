@@ -324,59 +324,70 @@
                             <script
                                 src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                             <script>
-                                // Validation function
-                                function validateCouponForm(formData) {
-                                    const errors = {};
+                               document.addEventListener('DOMContentLoaded', function () {
+                                    // Validation function
+                                    function validateCouponForm(formData) {
+                                        const errors = {};
 
-                                    // Coupon ID validation
-                                    const couponId = formData.get('couponId');
-                                    if (!couponId || couponId.trim() === '') {
-                                        errors.couponId = 'Coupon ID is required';
-                                    } else if (!/^[A-Za-z0-9]+$/.test(couponId)) {
-                                        errors.couponId = 'Coupon ID should only contain letters and numbers';
+                                        // Coupon ID validation
+                                        const couponId = formData.get('couponId');
+                                        if (!couponId || couponId.trim() === '') {
+                                            errors.couponId = 'Coupon ID is required';
+                                        } else if (!/^[A-Za-z0-9]+$/.test(couponId)) {
+                                            errors.couponId = 'Coupon ID should only contain letters and numbers';
+                                        }
+
+                                        // Discount validation
+                                        const discount = parseFloat(formData.get('discount'));
+                                        if (isNaN(discount) || discount < 0 || discount > 90) {
+                                            errors.discount = 'Discount must be a number between 0 and 90';
+                                        }
+
+                                        // Minimum Purchase Amount validation
+                                        const minPurchaseAmount = parseFloat(formData.get('minPurchaseAmount'));
+                                        if (isNaN(minPurchaseAmount) || minPurchaseAmount < 0) {
+                                            errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number';
+                                        }
+
+                                        // Maximum Amount validation
+                                        const maxAmount = parseFloat(formData.get('maxAmount'));
+                                        if (isNaN(maxAmount) || maxAmount < 0) {
+                                            errors.maxAmount = 'Maximum Amount must be a positive number';
+                                        }
+
+                                        // Comparative validation for purchase amounts
+                                        if (minPurchaseAmount >= maxAmount) {
+                                            errors.maxAmount = 'Maximum Purchase Amount must be greater than Minimum Purchase Amount';
+                                        }
+
+                                        // Expiry Date validation
+                                        const expiryDate = new Date(formData.get('expiryDate'));
+                                        const today = new Date();
+                                        if (isNaN(expiryDate.getTime()) || expiryDate < today) {
+                                            errors.expiryDate = 'Expiry Date must be a valid future date';
+                                        }
+
+                                        return errors;
                                     }
 
-                                    // Discount validation
-                                    const discount = formData.get('discount');
-                                    if (!discount || isNaN(discount) || discount < 0 || discount > 100) {
-                                        errors.discount = 'Discount must be a number between 0 and 100';
+                                    // Error display function
+                                    function displayErrors(errors, formId) {
+                                        // Clear previous errors
+                                        const errorElements = document.querySelectorAll('.error-message');
+                                        errorElements.forEach(el => el.remove());
+
+                                        // Display new errors
+                                        Object.keys(errors).forEach(field => {
+                                            const input = document.querySelector(`#${formId} [name="${field}"]`);
+                                            if (input) {
+                                                const errorSpan = document.createElement('span');
+                                                errorSpan.className = 'error-message text-red-500';
+                                                errorSpan.textContent = errors[field];
+                                                input.parentNode.insertBefore(errorSpan, input.nextSibling);
+                                            }
+                                        });
                                     }
 
-                                    // Minimum Purchase Amount validation
-                                    const minPurchaseAmount = formData.get('minPurchaseAmount');
-                                    if (!minPurchaseAmount || isNaN(minPurchaseAmount) || minPurchaseAmount < 0) {
-                                        errors.minPurchaseAmount = 'Minimum Purchase Amount must be a positive number';
-                                    }
-
-
-                                    const maxPurchaseAmount = parseFloat(formData.get('maxAmount'));
-                                    if (isNaN(maxPurchaseAmount) || maxPurchaseAmount < 0) {
-                                        errors.maxPurchaseAmount = 'Maximum Purchase Amount must be a positive number';
-                                    }
-
-                                    if (minPurchaseAmount >= maxPurchaseAmount) {
-                                        errors.maxPurchaseAmount = 'Maximum Purchase Amount must be greater than Minimum Purchase Amount';
-                                    }
-
-                                    // Maximum Amount validation
-                                    const maxAmount = formData.get('maxAmount');
-                                    if (!maxAmount || isNaN(maxAmount) || maxAmount < 0) {
-                                        errors.maxAmount = 'Maximum Amount must be a positive number';
-                                    }
-
-                                    // Expiry Date validation
-                                    const expiryDate = new Date(formData.get('expiryDate'));
-                                    const today = new Date();
-                                    if (isNaN(expiryDate.getTime()) || expiryDate < today) {
-                                        errors.expiryDate = 'Expiry Date must be a valid future date';
-                                    }
-
-
-
-                                    return errors;
-                                }
-
-                                document.addEventListener('DOMContentLoaded', function () {
                                     // Add Coupon Form Validation
                                     const addCouponForm = document.getElementById('addCouponForm');
                                     if (addCouponForm) {
@@ -386,7 +397,6 @@
                                             const errors = validateCouponForm(formData);
 
                                             if (Object.keys(errors).length === 0) {
-
                                                 fetch('/admin/add-coupon', {
                                                     method: 'POST',
                                                     body: new URLSearchParams(formData),
@@ -394,35 +404,35 @@
                                                         'Content-Type': 'application/x-www-form-urlencoded',
                                                     }
                                                 })
-                                                    .then(response => response.json())
-                                                    .then(data => {
-                                                        if (data.success) {
-                                                            Swal.fire({
-                                                                icon: 'success',
-                                                                title: 'Success!',
-                                                                text: data.message,
-                                                            }).then(() => {
-                                                                window.location.href = data.redirectUrl;
-                                                            });
-                                                        } else {
-                                                            Swal.fire({
-                                                                icon: 'error',
-                                                                title: 'Oops...',
-                                                                text: data.message,
-                                                            });
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error('Error:', error);
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Success!',
+                                                            text: data.message,
+                                                        }).then(() => {
+                                                            window.location.href = data.redirectUrl;
+                                                        });
+                                                    } else {
                                                         Swal.fire({
                                                             icon: 'error',
                                                             title: 'Oops...',
-                                                            text: 'An error occurred while adding the coupon.',
+                                                            text: data.message,
                                                         });
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Oops...',
+                                                        text: 'An error occurred while adding the coupon.',
                                                     });
+                                                });
                                             } else {
-
-                                                // displayErrors(errors, 'addCouponForm');
+                                                // Display form validation errors
+                                                displayErrors(errors, 'addCouponForm');
                                             }
                                         });
                                     }
@@ -430,27 +440,70 @@
                                     // Edit Coupon Form Validation
                                     const editCouponForms = document.querySelectorAll('.edit-coupon-form');
                                     editCouponForms.forEach(form => {
-                                          });
-                                });
+                                        form.addEventListener('submit', function (e) {
+                                            e.preventDefault();
+                                            const formData = new FormData(this);
+                                            const errors = validateCouponForm(formData);
 
-                                // Delete Coupon
-                                const deleteCouponButtons = document.querySelectorAll('.delete-coupon');
-                                deleteCouponButtons.forEach(button => {
-                                    button.addEventListener('click', function () {
-                                        const couponId = this.dataset.couponId;
-                                        Swal.fire({
-                                            title: 'Are you sure?',
-                                            text: "You won't be able to revert this!",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#3085d6',
-                                            cancelButtonColor: '#d33',
-                                            confirmButtonText: 'Yes, delete it!'
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                fetch(`/admin/delete-coupon/${couponId}`, {
-                                                    method: 'DELETE'
+                                            if (Object.keys(errors).length === 0) {
+                                                fetch('/admin/edit-coupon', {
+                                                    method: 'POST',
+                                                    body: new URLSearchParams(formData),
+                                                    headers: {
+                                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                                    }
                                                 })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Success!',
+                                                            text: data.message,
+                                                        }).then(() => {
+                                                            window.location.href = data.redirectUrl;
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: data.message,
+                                                        });
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Oops...',
+                                                        text: 'An error occurred while editing the coupon.',
+                                                    });
+                                                });
+                                            } else {
+                                                // Display form validation errors
+                                                displayErrors(errors, form.id);
+                                            }
+                                        });
+                                    });
+
+                                    // Delete Coupon
+                                    const deleteCouponButtons = document.querySelectorAll('.delete-coupon');
+                                    deleteCouponButtons.forEach(button => {
+                                        button.addEventListener('click', function () {
+                                            const couponId = this.dataset.couponId;
+                                            Swal.fire({
+                                                title: 'Are you sure?',
+                                                text: "You won't be able to revert this!",
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                confirmButtonText: 'Yes, delete it!'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    fetch(`/admin/delete-coupon/${couponId}`, {
+                                                        method: 'DELETE'
+                                                    })
                                                     .then(response => response.json())
                                                     .then(data => {
                                                         if (data.success) {
@@ -459,7 +512,6 @@
                                                                 data.message,
                                                                 'success'
                                                             ).then(() => {
-
                                                                 window.location.reload();
                                                             });
                                                         } else {
@@ -478,7 +530,8 @@
                                                             text: 'An error occurred while deleting the coupon.',
                                                         });
                                                     });
-                                            }
+                                                }
+                                            });
                                         });
                                     });
                                 });

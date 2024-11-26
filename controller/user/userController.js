@@ -64,91 +64,146 @@ const loadAuth = (req, res) => {
 
 // INSERT USER 
 
+const OTP_EXPIRATION_TIME = 2 * 60 * 1000; 
+
 const insertUser = async (req, res) => {
     try {
-
         const { email, firstName, lastName, password } = req.body;
+
+       
         const userCheck = await User.findOne({ email });
         if (userCheck) {
             return res.json({
-                message: "User Already Exists,Please Login..."
+                success: false,
+                message: "User Already Exists, Please Login..."
             });
         }
+
+       
         const securePassword = await bcrypt.hash(password, 10);
-        const newUser = {
+
+    
+        const otp = crypto.randomInt(100000, 999999);
+        req.session.otpStore = otp;
+        req.session.userData = {
             password: securePassword,
             firstName,
             lastName,
             email,
             isValid: true
         };
-        const otp = crypto.randomInt(100000, 999999);
-        req.session.optStore = otp;
-        req.session.userData = newUser;
-        req.session.otpTIme = Date.now();
-        console.log(`${req.session.optStore}`);
+        req.session.otpTime = Date.now(); 
+        console.log(`Generated OTP: ${otp}`);
 
+   
         const mailOptions = {
             from: 'ashiknlpy@gmail.com',
             to: email,
             subject: 'Your OTP for Registration',
-            text: `Your OTP code is ${otp}`
+            text: `Your OTP code is ${otp}. It will expire in 5 minutes.`
         };
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: 'ashiknlpy@gmail.com',
-                pass: 'poyi szct yrox nkue'
+                pass: 'poyi szct yrox nkue' 
             }
         });
+
+        
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log(`Error Details`, error);
-                res.status(500).json({ success: false, message: 'Error Sending email', error: error.message })
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error Sending Email',
+                    error: error.message
+                });
             } else {
-                res.status(200).json({ success: true, redirectUrl: `/otpValidate?id=${email}` })
+                return res.status(200).json({
+                    success: true,
+                    redirectUrl: `/otpValidate?id=${email}`
+                });
             }
-        })
+        });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "An error occurred during registration." });
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred during registration."
+        });
     }
 };
 
+
 // veirify OTP
+
 
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
-        const sessionOtp = req.session.optStore;
+        const sessionOtp = req.session.otpStore;
         const userData = req.session.userData;
+        const otpGeneratedTime = req.session.otpTime;
 
+        if (!sessionOtp || !otpGeneratedTime) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP not found. Please request a new one."
+            });
+        }
+
+        const currentTime = Date.now();
+        const timeElapsed = currentTime - otpGeneratedTime;
+
+        if (timeElapsed > OTP_EXPIRATION_TIME) {
+            
+            req.session.otpStore = null;
+            req.session.otpTime = null;
+            req.session.userData = null;
+
+            return res.status(400).json({
+                success: false,
+                message: "OTP has expired. Please request a new one."
+            });
+        }
+
+        
         if (parseInt(otp) === sessionOtp) {
-
+       
             const newUser = new User(userData);
             await newUser.save();
 
-
-            req.session.optStore = null;
+            
+            req.session.otpStore = null;
             req.session.userData = null;
-            req.session.otpTIme = null;
+            req.session.otpTime = null;
 
-            const userDetails = await User.find({ email: userData.email })
+           
+            req.session.userSession = newUser._id;
 
-            req.session.userSession = userDetails[0]._id
-
-            res.status(200).json({ success: true, message: "Registration successful. Please log in." });
+            return res.status(200).json({
+                success: true,
+                message: "Registration successful. Please log in."
+            });
         } else {
-
-            res.status(400).json({ success: false, message: "Invalid OTP. Please try again." });
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP. Please try again."
+            });
         }
+
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "An error occurred during OTP verification." });
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred during OTP verification."
+        });
     }
 };
+
 
 // RESEND OTP
 
