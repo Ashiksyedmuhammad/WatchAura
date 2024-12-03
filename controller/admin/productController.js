@@ -9,7 +9,7 @@ const Wallet = require ('../../model/user/userWallet');
 
 const loadProducts = async (req, res) => {
     try {
-        const PAGE_SIZE = 10;
+        const PAGE_SIZE = 8;
         const page = parseInt(req.query.page) || 1; 
         const skip = (page - 1) * PAGE_SIZE; 
         

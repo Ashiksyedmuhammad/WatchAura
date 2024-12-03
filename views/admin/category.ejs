@@ -57,76 +57,99 @@
             <div class="col-12 pt-lg-5 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body"> 
-                        <div class="d-flex justify-content-between align-items-center ">
+                        <div class="d-flex justify-content-between align-items-center">
                             <h2 class="card-title">Category Management</h2>    
                             <a href="/admin/product/addCategory" class="btn btn-primary">Add Products</a>
                         </div>   
-                        <button type="button" class="btn btn-success mt-3 mb-4" data-toggle="modal" data-target="#addCategoryModal">
+                        
+                        <button 
+                            type="button" 
+                            class="btn btn-success mt-3 mb-4" 
+                            data-toggle="modal" 
+                            data-target="#addCategoryModal"
+                        >
                             Add Category
                         </button>   
-                        <div class="table-responsive col-10">
-                            <table class="table table-bordered table-hover">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th> CATEGORY NAME </th>
-                                        <th> DESCRIPTION </th>
-                                        <th> STATUS </th>
-                                        <th> ACTION </th>
+                        
+                        <div class="table-responsive">
+                            <table class="table" style="width: 90%; border-collapse: collapse; margin: 20px 0;">
+                              <thead style="background-color: #f8f9fa; text-align: left;">
+                                     <tr>
+                                        <th style="padding: 10px; font-weight: bold;">CATEGORY NAME</th>
+                                        <th style="padding: 10px; font-weight: bold;">DESCRIPTION</th>
+                                        <th style="padding: 10px; font-weight: bold;">STATUS</th>
+                                        <th style="padding: 10px; font-weight: bold;">ACTION</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <% if (category.length > 0) { %>
                                         <% category.forEach((category, index) => { %>
-                                            <tr>
-                                                <td><%= category.categoryName %></td>
-                                                <td><%= category.description %></td>
-                                                <td><%= category.isListed ? 'Unlisted' : 'Listed' %></td>
-                                                <td>     
-                                                    <form action="/admin/category/<%= category.isListed ? 'unlist' : 'list' %>/<%= category._id %>" method="POST">
-                                                    </form>
+                                            <tr style="border-bottom: 1px solid #ddd;">
+                                                <td style="padding: 10px;"><%= category.categoryName %></td>
+                                                <td style="padding: 10px;"><%= category.description %></td>
+                                                <td style="padding: 10px; color: <%= category.status ? 'green' : 'red' %>;">
+                                                    <%= category.status ? 'Listed' : 'Unlisted' %>
+                                                </td>
+                                                <td style="padding: 10px;">
                                                     <button 
-                                                    class="btn btn-primary mt-2" data-toggle="modal" data-target="#editCategoryModal-<%= category._id %>">
-                                                    Edit
-                                                </button>
-                                                  </td>
+                                                        class="btn btn-sm btn-primary mt-2" 
+                                                        data-toggle="modal" 
+                                                        data-target="#editCategoryModal-<%= category._id %>"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
                                             </tr>
                                         <% }); %>
                                     <% } else { %>
                                         <tr>
-                                            <td colspan="5" class="text-center">No categories found.</td>
+                                            <td colspan="4" style="padding: 20px; text-align: center;">
+                                                No categories found.
+                                            </td>
                                         </tr>
                                     <% } %>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="pagination flex justify-center space-x-4 my-4">
+                        
+                        <divdiv class="pagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
                             <% if (currentPage > 1) { %>
-                                <a href="?page=<%= currentPage - 1 %>" class="prev px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                                <a 
+                                    href="?page=<%= currentPage - 1 %>" 
+                                    style="padding: 10px 15px; background-color: #f8f9fa; border: 1px solid #ddd; text-decoration: none; border-radius: 5px; color: #000;"
+                                >
                                     <i class="fas fa-chevron-left"></i> Previous
                                 </a>
                             <% } else { %>
-                                <div class="px-4 py-2 text-gray-400">
+                                <div 
+                                    style="padding: 10px 15px; background-color: #e9ecef; border: 1px solid #ddd; border-radius: 5px; color: #6c757d;"
+                                >
                                     <i class="fas fa-chevron-left"></i> Previous
                                 </div>
                             <% } %>
                         
-                            <div class="px-4 py-2 text-gray-600">
+                            <div style="padding: 10px; color: #6c757d;">
                                 Page <%= currentPage %> of <%= totalPages %>
                             </div>
                         
                             <% if (currentPage < totalPages) { %>
-                                <a href="?page=<%= currentPage + 1 %>" class="next px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                                <a 
+                                    href="?page=<%= currentPage + 1 %>" 
+                                    style="padding: 10px 15px; background-color: #f8f9fa; border: 1px solid #ddd; text-decoration: none; border-radius: 5px; color: #000;"
+                                >
                                     Next <i class="fas fa-chevron-right"></i>
                                 </a>
                             <% } else { %>
-                                <div class="px-4 py-2 text-gray-400">
+                                <div 
+                                    style="padding: 10px 15px; background-color: #e9ecef; border: 1px solid #ddd; border-radius: 5px; color: #6c757d;"
+                                >
                                     Next <i class="fas fa-chevron-right"></i>
                                 </div>
                             <% } %>
                         </div>
                     </div>
                 </div>
-            </div>  
+            </div>
             
 <!-- Add Category Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
@@ -194,10 +217,10 @@
                     <div class="form-group">
                         <label for="editCategoryOption">Status</label>
                         <select class="form-control" id="editCategoryOption<%= category._id %>" name="categoryoption"  value="<%=category.categoryoption%>">
-                            <option value="true">Listed</option>
-                            <option value="false">Unlisted</option>
+                            <option value="true" <%= category.status ? 'selected' : ''%> >Listed</option>
+                            <option value="false"<%= !category.status ? 'selected': ''%>>Unlisted</option>
                         </select>
-                    </div>
+                    </div>      
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -349,6 +372,8 @@ editForms.forEach((element, index) => {
                 text: result.message,
             }).then(() => {
                 $(`#editCategoryModal-${id}`).modal('hide');
+
+                window.location.reload();
             });
 
         } catch (error) {

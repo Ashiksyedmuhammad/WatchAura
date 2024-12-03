@@ -101,10 +101,28 @@ const editCategory = async (req, res) => {
     }
 };
 
+// const deleteCategory = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const category = await Category.findById(id);
+//         if (!category) {
+//             return res.status(404).json({ success: false, message: 'Category not found' });
+//         }
+        
+//         await Category.findByIdAndDelete(id);
+
+//         res.status(200).json({ success: true, message: 'Category deleted successfully', redirectUrl: '/admin/category' });
+//     } catch (error) {
+//         console.error('Error deleting category:', error);
+//         res.status(500).json({ success: false, message: 'An error occurred while processing your request' });
+//     }
+// };
+
+
 
 
 module.exports = {
     loadCategory,
     addCategory,
-    editCategory
+    editCategory,
 }

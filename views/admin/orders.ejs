@@ -85,7 +85,7 @@
                                                     const hasReturnRequest = order.items.some(item => item.status === 'Return Requested');
                                                     const hasReturnedItems = order.items.some(item => item.status === 'Returned');
                                                 %>
-                                                <tr class="<%= hasReturnRequest ? 'bg-warning bg-opacity-10' : '' %> <%= hasReturnedItems ? 'bg-success bg-opacity-10' : '' %>">
+                                                <tr class="<%= hasReturnRequest ? '' : '' %> <%= hasReturnedItems ? '' : '' %>">
                                                     <td>
                                                         <a href="#" class="view-order" data-bs-toggle="modal" data-bs-target="#orderModal-<%= order._id %>">
                                                             #<%= order.orderId %>
@@ -93,7 +93,7 @@
                                                                 <span class="badge bg-warning text-dark">Return Requested</span>
                                                             <% } %>
                                                             <% if (hasReturnedItems) { %>
-                                                                <span class="badge bg-info">Returned</span>
+                                                                <span class="badge bg-info text-dark">Returned</span>
                                                             <% } %>
                                                         </a>
                                                     </td>
@@ -112,7 +112,7 @@
                                         <% } %>
                                     </tbody>
                                 </table>
-                                <div class="pagination flex justify-center space-x-4 my-4">
+                                <div class="pagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
                                     <% if (currentPage > 1) { %>
                                         <a href="?page=<%= currentPage - 1 %>" class="prev px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
                                             <i class="fas fa-chevron-left"></i> Previous

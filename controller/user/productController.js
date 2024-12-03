@@ -6,7 +6,6 @@ const Cart = require('../../model/user/cart');
 require('dotenv').config();
 const Offer = require('../../model/admin/offerModal');
 
-
 const loadShop = async (req, res) => {
     try {
         const userId = req.session.userSession;
@@ -20,21 +19,24 @@ const loadShop = async (req, res) => {
             page = 1 
         } = req.query;
 
-        const limit = 8; 
+        const limit = 8;
         const skip = (page - 1) * limit;
+
+        // Get listed categories using the correct field name 'status'
+        const listedCategories = await Category.find({ status: true });
+        const listedCategoryIds = listedCategories.map(cat => cat._id);
 
         let query = { isListed: true };
 
-        if (search) {
-            if (search.trim() === '*') {
-                
-            } else {
-                query.productName = { $regex: search, $options: 'i' };
-            }
+        if (search && search.trim() !== '*') {
+            query.productName = { $regex: search, $options: 'i' };
         }
         
         if (category) {
             query.category = category;
+        } else {
+           
+            query.category = { $in: listedCategoryIds };
         }
 
         if (minPrice || maxPrice) {
@@ -66,29 +68,33 @@ const loadShop = async (req, res) => {
             case 'popularity':
                 sortQuery = { totalSales: -1 };
                 break;
-            default: 
+            default:
                 sortQuery = { featured: -1 };
         }
 
-        const [products, categories, totalProducts,offers] = await Promise.all([
+        const [products, totalProducts, offers] = await Promise.all([
             Product.find(query)
+                .populate({
+                    path: 'category',
+                    match: { status: true } 
+                })
                 .populate('offerId')
                 .sort(sortQuery)
                 .skip(skip)
                 .limit(limit),
-            Category.find({}),
             Product.countDocuments(query),
-            Offer.find({status: 'active'}).populate('products').populate('categories')
+            Offer.find({ status: 'active' })
+                .populate('products')
+                .populate('categories')
         ]);
-        
+
 
         const totalPages = Math.ceil(totalProducts / limit);
 
-       
         res.render('shope', {
-            userData : user,
+            userData: user,
             products,
-            categories,
+            categories: listedCategories,
             currentPage: parseInt(page),
             totalPages,
             filters: {
@@ -100,15 +106,15 @@ const loadShop = async (req, res) => {
             },
             offers
         });
+
     } catch (error) {
         console.error('Error Loading Shop:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'An error occurred while loading the shop' 
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while loading the shop'
         });
     }
 };
-
 
 const productDetails = async (req, res) => {
     try {
