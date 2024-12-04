@@ -2520,6 +2520,68 @@
             });
         </script>
 
+        <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const resendOtpLink = document.getElementById("btn-link");
+        const timerDisplay = document.getElementById("time");
+        let timer = 60; // Reset timer to 60 seconds
+
+        // Function to start the timer countdown
+        // const startTimer = () => {
+        //     timer = 60;
+        //     const interval = setInterval(() => {
+        //         if (timer > 0) {
+        //             timer--;
+        //             timerDisplay.textContent = timer;
+        //         } else {
+        //             clearInterval(interval); // Stop the timer when it reaches 0
+        //         }
+        //     }, 1000);
+        // };
+
+        // Event listener for Resend OTP link
+        resendOtpLink.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            // Disable the link until the timer resets
+            resendOtpLink.classList.add("disabled");
+            resendOtpLink.style.pointerEvents = "none";
+
+            // Send AJAX request to the backend
+            fetch("/resend-otp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+             // Replace <USER_EMAIL> dynamically
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        // Show success message
+                        alert("OTP resent successfully."); // Replace with Notyf or SweetAlert if needed
+                        startTimer(); // Restart the timer
+                    } else {
+                        // Show error message
+                        alert(data.message); // Replace with Notyf or SweetAlert if needed
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error resending OTP:", error);
+                })
+                .finally(() => {
+                    // Re-enable the link after a delay (60 seconds)
+                    setTimeout(() => {
+                        resendOtpLink.classList.remove("disabled");
+                        resendOtpLink.style.pointerEvents = "auto";
+                    }, 60000);
+                });
+        });
+
+        // Start the initial timer
+        startTimer();
+    });
+</script>
 
 
         <!-- OTP BOX -->
@@ -2591,6 +2653,7 @@
 
 
         </script>
+
 
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

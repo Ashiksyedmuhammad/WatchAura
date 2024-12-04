@@ -171,7 +171,7 @@ const verifyOtp = async (req, res) => {
         }
 
         
-        if (parseInt(otp) === sessionOtp) {
+        if (parseInt(otp) == sessionOtp) {
        
             const newUser = new User(userData);
             await newUser.save();
@@ -209,13 +209,26 @@ const verifyOtp = async (req, res) => {
 
 const resendOtp = async (req, res) => {
     try {
-        const email = req.body['email'];
+        const email = req.session.userData.email;
+        console.log('Recipient email:', email);
+
         const otp = crypto.randomInt(100000, 999999).toString();
         req.session.otpStore = otp;
         req.session.otpTime = Date.now();
-        console.log(`${req.session.otpStore}`);
+
+
+        console.log(`Resended OTP:${req.session.otpStore}`);
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'ashiknlpy@gmail.com', 
+                pass: 'poyi szct yrox nkue '
+            }
+        });
+
         const mailOptions = {
-            from: process.env.SUPER_EMAIL,
+            from: 'ashiknlpy@gmail.com',
             to: email,
             subject: 'Your OTP Code',
             text: `Your OTP code is ${otp}. This OTP is valid for 2 minutes.`
@@ -226,7 +239,11 @@ const resendOtp = async (req, res) => {
                 console.log(error.message);
                 return res.status(500).send('Error sending email');
             } else {
-                res.render('otpform', { email: email, message: "Resended successfully" });
+                res.status(200).json({
+                    success: true,
+                    message: 'OTP resent successfully.',
+                    email: email
+                });
             }
         });
     } catch (error) {

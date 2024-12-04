@@ -29,6 +29,7 @@ userRoute.set('views', './views/user');
 userRoute.get('/', userController.loadHome);
 userRoute.post('/signUp', userController.insertUser);
 userRoute.post('/verify-otp', userController.verifyOtp);
+userRoute.post('/resend-otp',userController.resendOtp);
 userRoute.post('/login', userController.checkLogin);
 userRoute.post('/logout', userController.logout);
 
